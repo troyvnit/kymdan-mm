@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="AccountGrid"></div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script id="departmentTemplate" type="text/x-kendo-tmpl">
+        # if (Department == 1) { #
+        Phòng kinh doanh
+        # } else {#
+        Phòng vật tư
+        # } #
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var accountDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Account/GetAccount",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Account/AddOrUpdateAccount",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Account/DeleteAccount",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Account/AddOrUpdateAccount",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                models: kendo.stringify(options.models)
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: "" },
+                            UserName: { type: "string" },
+                            FirstName: { type: "string" },
+                            LastName: { type: "string" },
+                            Department: { type: "string" },
+                            Roles: { type: "string" }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#AccountGrid").kendoGrid({
+                dataSource: accountDataSource,
+                navigatable: true,
+                pageable: true,
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                height: 500,
+                toolbar: [{ name: "create", text: "Thêm" }, { name: "save", text: "Lưu" }, { name: "cancel", text: "Hủy" }],
+                columns: [
+                    { field: "UserName", title: "Tên đăng nhập" },
+                    { field: "FirstName", title: "Họ" },
+                    { field: "LastName", title: "Tên" },
+                    {
+                        field: "Department", title: "Phòng ban", template: $("#departmentTemplate").html(), editor: departmentDropDownEditor
+                    },
+                    { field: "Roles", title: "Quyền hạn", editor: rolesEditor, width: 200 },
+                    { command: [{ name: "destroy", title: "&nbsp;", width: 70, text: "Xóa" }] }
+                ],
+                editable: true
+            });
+
+            var departmentData = [
+                { text: "Phòng vật tư", value: "0" },
+                { text: "Phòng kinh doanh", value: "1" }
+            ];
+
+            function departmentDropDownEditor(container, options) {
+                $('<input required data-text-field="text" data-value-field="value" data-bind="value:' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: departmentData
+                    });
+            }
+
+            function rolesEditor(container, options) {
+                $('<select multiple="multiple" data-bind="value : Roles"/>')
+                        .appendTo(container)
+                        .kendoMultiSelect({
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "/Account/GetRole",
+                                        type: "post"
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+    </script>
+
+}

@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">Danh sách công việc</div>
+        <div class="panel-body">
+            <div class="pull-right">
+                <a href="#" class="btn btn-danger" role="button">Xóa mục đã chọn</a>
+                <a href="#" class="btn btn-success" role="button">Duyệt mục đã chọn</a>
+                <a href="#" class="btn btn-primary" role="button">Thêm đề xuất</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">&nbsp;</div>
+            <div id="MaterialProposalGrid"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/x-kendo-template" id="materialProposalToolbarTemplate">
+        <div class="toolbar">
+            <div class="col-lg-8">
+                <label>Xem theo:</label>
+                <input id="Department" />
+                <input id="ProgressStatus" />
+                <div class="btn-group" data-toggle="buttons" id="Finished">
+                    <label class="btn btn-success">
+                        <input type="radio" name="finished" value="C300"> Đã duyệt
+                    </label>
+                    <label class="btn btn-warning">
+                        <input type="radio" name="finished" value="C530"> Chờ duyệt
+                    </label>
+                    <label class="btn btn-primary">
+                        <input type="radio" name="finished" value="C700"> Tất cả
+                    </label>
+                </div>
+            </div>
+            <div class="input-group col-lg-3">
+                <input type="text" class="form-control" id="keyWord" placeholder="Từ khóa" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Tìm</button>
+                </span>
+            </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var materialProposalDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterialProposal",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterialProposal",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterialProposal",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterialProposal",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                models: kendo.stringify(options.models)
+                            };
+                        } else {
+                            return {
+                                keyWord: $("#keyWord").val(),
+                                skip: options.skip,
+                                take: options.take
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: "" },
+                            Description: { type: "string" },
+                            ManagementCode: { type: "string" },
+                            ProposalCode: { type: "string" },
+                            ProposerUserName: { type: "string" },
+                            ImplementerUserName: { type: "string" },
+                            Department: { type: "string" },
+                            ProgressStatus: { type: "string" },
+                            Approved: { type: "boolean" },
+                            Finished: { type: "boolean" },
+                            Note: { type: "string" }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#MaterialProposalGrid").kendoGrid({
+                dataSource: materialProposalDataSource,
+                navigatable: true,
+                pageable: true,
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                height: 500,
+                toolbar: kendo.template($("#materialProposalToolbarTemplate").html()),
+                columns: [
+                    { field: "ImplementerUserName", title: "Người thực hiện" },
+                    { field: "Description", title: "Mô tả" },
+                    { field: "ProposerUserName", title: "Người đề nghị" },
+                    {
+                        field: "Department",
+                        title: "Đơn vị đề nghị",
+                        template: $("#departmentTemplate").html()
+                    },
+                    {
+                        field: "ProgressStatus",
+                        title: "Trạng thái tiến độ",
+                        template: $("#departmentTemplate").html()
+                    },
+                    { field: "Approved", title: "Duyệt" },
+                    { field: "Finished", title: "Hoàn thành" },
+                    { field: "Note", title: "Ghi chú" },
+                    { command: [{ name: "destroy", title: "&nbsp;", width: 70, text: "Xóa" }] }
+                ],
+                editable: true
+            });
+
+            $("#Department").kendoDropDownList({
+                dataTextField: "CategoryName",
+                dataValueField: "CategoryID",
+                autoBind: false,
+                optionLabel: "All",
+                dataSource: {
+                    type: "odata",
+                    severFiltering: true,
+                    transport: {
+                        read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
+                    }
+                }
+            });
+
+            $("#ProgressStatus").kendoDropDownList({
+                dataTextField: "CategoryName",
+                dataValueField: "CategoryID",
+                autoBind: false,
+                optionLabel: "All",
+                dataSource: {
+                    type: "odata",
+                    severFiltering: true,
+                    transport: {
+                        read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
+                    }
+                }
+            });
+        });
+    </script>
+
+}
