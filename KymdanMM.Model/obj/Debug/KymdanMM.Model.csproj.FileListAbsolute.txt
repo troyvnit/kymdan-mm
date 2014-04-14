@@ -1,4 +1,0 @@
-c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Model\bin\Debug\KymdanMM.Model.dll
-c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Model\bin\Debug\KymdanMM.Model.pdb
-c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Model\obj\Debug\KymdanMM.Model.dll
-c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Model\obj\Debug\KymdanMM.Model.pdb

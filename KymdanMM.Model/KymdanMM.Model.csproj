@@ -40,8 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Material.cs" />
     <Compile Include="Models\MaterialProposal.cs" />
+    <Compile Include="Models\ProgressStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,6 +9,7 @@ using Autofac.Integration.Mvc;
 using KymdanMM.Data.Infrastructure;
 using KymdanMM.Data.Repository;
 using KymdanMM.Data.Service;
+using KymdanMM.Mappers;
 
 namespace KymdanMM.App_Start
 {
@@ -28,6 +29,7 @@ namespace KymdanMM.App_Start
             builder.RegisterFilterProvider();
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            AutoMapperConfiguration.Configure();
         }
     }
 }

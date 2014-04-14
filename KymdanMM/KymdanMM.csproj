@@ -212,6 +212,10 @@
     <Compile Include="Migrations\201404140454022_new.Designer.cs">
       <DependentUpon>201404140454022_new.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404140941081_update.cs" />
+    <Compile Include="Migrations\201404140941081_update.Designer.cs">
+      <DependentUpon>201404140941081_update.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\MaterialProposalViewModel.cs" />
@@ -226,7 +230,7 @@
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.custom.css" />
+    <Content Include="Content\bootstrap-custom.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Bootstrap\editor.png" />
     <Content Include="Content\Bootstrap\imagebrowser.png" />
@@ -389,6 +393,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201404140454022_new.resx">
       <DependentUpon>201404140454022_new.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404140941081_update.resx">
+      <DependentUpon>201404140941081_update.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

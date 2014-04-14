@@ -11,14 +11,4 @@ namespace KymdanMM.Model.Models
         public int Id { get; set; }
         public DateTime CreatedDate { get; set; }
     }
-
-    public enum Department
-    {
-        Material, Bussiness
-    }
-
-    public enum ProgressStatus
-    {
-        Progressing
-    }
 }
