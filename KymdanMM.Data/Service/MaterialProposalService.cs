@@ -2,6 +2,7 @@
 using KymdanMM.Data.Repository;
 using KymdanMM.Model.Models;
 using KymdanMM.Data.Infrastructure;
+using PagedList;
 
 namespace KymdanMM.Data.Service
 {
@@ -9,6 +10,7 @@ namespace KymdanMM.Data.Service
     {
         MaterialProposal GetMaterialProposal(int id);
         IEnumerable<MaterialProposal> GetMaterialProposals();
+        IPagedList<MaterialProposal> GetMaterialProposals(int page, int pageSize);
         bool AddOrUpdateMaterialProposal(MaterialProposal materialProposal);
         bool DeleteMaterialProposal(MaterialProposal materialProposal);
     }
@@ -27,9 +29,16 @@ namespace KymdanMM.Data.Service
         {
             return _materialProposalRepository.GetById(id);
         }
+
         public IEnumerable<MaterialProposal> GetMaterialProposals()
         {
             var materialProposals = _materialProposalRepository.GetAll();
+            return materialProposals;
+        }
+
+        public IPagedList<MaterialProposal> GetMaterialProposals(int pageNumber, int pageSize)
+        {
+            var materialProposals = _materialProposalRepository.GetPage(new Page{ PageNumber = pageNumber, PageSize = pageSize }, a => true, a => a.CreatedDate);
             return materialProposals;
         }
 

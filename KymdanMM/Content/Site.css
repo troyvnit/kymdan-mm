@@ -25,7 +25,7 @@ textarea {
     display: none;
 }
 
-input.input-validation-error {
+.input-validation-error {
     border: 1px solid #b94a48;
 }
 
@@ -41,6 +41,6 @@ input[type="checkbox"].input-validation-error {
     display: none;
 }
 
-.k-dropdown {
+.form-group > .k-dropdown {
     width: 100% !important;
 }

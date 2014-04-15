@@ -1,0 +1,34 @@
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.dll.config
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.pdb
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.SqlServer.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Model.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\PagedList.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Model.pdb
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.xml
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.SqlServer.xml
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\bin\Debug\PagedList.xml
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.csprojResolveAssemblyReference.cache
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations._new.resources
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.csproj.GenerateResource.Cache
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.dll
+c:\Users\trile\documents\visual studio 2013\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.pdb
+D:\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.dll.config
+D:\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.dll
+D:\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Data.pdb
+D:\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.dll
+D:\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.SqlServer.dll
+D:\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Model.dll
+D:\KymdanMM\KymdanMM.Data\bin\Debug\PagedList.dll
+D:\KymdanMM\KymdanMM.Data\bin\Debug\KymdanMM.Model.pdb
+D:\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.xml
+D:\KymdanMM\KymdanMM.Data\bin\Debug\EntityFramework.SqlServer.xml
+D:\KymdanMM\KymdanMM.Data\bin\Debug\PagedList.xml
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.csprojResolveAssemblyReference.cache
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations._new.resources
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.csproj.GenerateResource.Cache
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.dll
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.pdb
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.update.resources
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.uopdate.resources

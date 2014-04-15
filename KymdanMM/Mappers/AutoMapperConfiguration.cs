@@ -26,6 +26,7 @@ namespace KymdanMM.Mappers
         protected override void Configure()
         {
             Mapper.CreateMap<MaterialProposalViewModel, MaterialProposal>();
+            Mapper.CreateMap<MaterialViewModel, Material>();
         }
     }
 
@@ -39,6 +40,7 @@ namespace KymdanMM.Mappers
         protected override void Configure()
         {
             Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>();
+            Mapper.CreateMap<Material, MaterialViewModel>();
         }
     }
 }

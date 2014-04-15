@@ -14,6 +14,7 @@ namespace KymdanMM.Models
         [Required]
         [Display(Name = "Mã đề xuất")]
         public string ProposalCode { get; set; }
+        [Required]
         [Display(Name = "Người đề xuất")]
         public string ProposerUserName { get; set; }
         [Required]
@@ -21,8 +22,10 @@ namespace KymdanMM.Models
         public string ImplementerUserName { get; set; }
         [Required]
         [Display(Name = "Đơn vị đề xuất")]
-        public Department Department { get; set; }
-        public ProgressStatus ProgressStatus { get; set; }
+        public int DepartmentId { get; set; }
+        [Required]
+        [Display(Name = "Trạng thái tiến độ")]
+        public int ProgressStatusId { get; set; }
         public bool Finished { get; set; }
         public bool Approved { get; set; }
         [Display(Name = "Ghi chú")]
