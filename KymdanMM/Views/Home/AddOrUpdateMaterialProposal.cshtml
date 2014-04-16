@@ -8,6 +8,7 @@
     var departments = (IEnumerable<Department>)ViewBag.Departments;
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var progressStatuses = (IEnumerable<ProgressStatus>)ViewBag.ProgressStatuses;
+    var disabledAttribute = Model.Id != 0 ? (object)new {@class = "form-control", disabled = "disabled"} : (object)new {@class = "form-control"};
 }
 
 <div class="row">&nbsp;</div>
@@ -52,20 +53,20 @@
                         <div class="form-group">
                             @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
                             <div class="col-sm-8 col-md-6">
-                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", new { @class = "form-control" })
+                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", disabledAttribute)
                             </div>
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
                             <div class="col-sm-8 col-md-6">
-                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", new { @class = "form-control" })
+                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", disabledAttribute)
                             </div>
                         </div>
                     }
                     <div class="form-group">
                         @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control" })
+                            @Html.TextAreaFor(m => m.Description, disabledAttribute)
                         </div>
                     </div>
                 </div>
@@ -75,14 +76,14 @@
                         <div class="form-group">
                             @Html.LabelFor(m => m.ManagementCode, new {@class = "col-md-4 control-label"})
                             <div class="col-sm-8 col-md-6">
-                                @Html.TextBoxFor(m => m.ManagementCode, new {@class = "form-control"})
+                                @Html.TextBoxFor(m => m.ManagementCode, disabledAttribute)
                             </div>
                         </div>
                     }
                     <div class="form-group">
                         @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.TextBoxFor(m => m.ProposalCode, new { @class = "form-control" })
+                            @Html.TextBoxFor(m => m.ProposalCode, disabledAttribute)
                         </div>
                     </div>
                     <div class="form-group">
@@ -129,6 +130,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
         $(document).ready(function () {
+            var editable = '@(Model.Id == 0)' == 'True';
             var materialProposalDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -170,13 +172,13 @@
                         id: "Id",
                         fields: {
                             Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialName: { type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                            Description: { editable: editable, type: "string" },
+                            Quantity: { editable: editable, type: "number" },
+                            Unit: { editable: editable, type: "string", validation: { required: true } },
+                            Used: { editable: editable, type: "boolean" },
+                            UsingPurpose: { editable: editable, type: "string" },
+                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             Note: { type: "string" }
                         }
                     },
@@ -205,6 +207,13 @@
                     { field: "Note", title: "Ghi chú", editor: textareaEditor, width: 400 },
                     { command: [{ name: "destroy", title: "&nbsp;", width: 50, text: "Xóa" }] }
                 ],
+                dataBound: function() {
+                    if ($("#Id").val() != 0) {
+                        $("#MaterialGrid").find("table th:last").hide();
+                        $("#MaterialGrid").find("table td:last").hide();
+                        $("#MaterialGrid").find("div.k-toolbar").hide();
+                    }
+                },
                 editable: true
             });
 
