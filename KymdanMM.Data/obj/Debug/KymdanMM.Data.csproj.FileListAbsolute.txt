@@ -32,3 +32,5 @@ D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.dll
 D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.pdb
 D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.update.resources
 D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.uopdate.resources
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.up.resources
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.upup.resources

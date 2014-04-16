@@ -220,6 +220,18 @@
     <Compile Include="Migrations\201404140941081_update.Designer.cs">
       <DependentUpon>201404140941081_update.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404160148453_up.cs" />
+    <Compile Include="Migrations\201404160148453_up.Designer.cs">
+      <DependentUpon>201404160148453_up.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404160440018_upup.cs" />
+    <Compile Include="Migrations\201404160440018_upup.Designer.cs">
+      <DependentUpon>201404160440018_upup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404160444409_upupup.cs" />
+    <Compile Include="Migrations\201404160444409_upupup.Designer.cs">
+      <DependentUpon>201404160444409_upupup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\MaterialProposalViewModel.cs" />
@@ -401,6 +413,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404140941081_update.resx">
       <DependentUpon>201404140941081_update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404160148453_up.resx">
+      <DependentUpon>201404160148453_up.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404160440018_upup.resx">
+      <DependentUpon>201404160440018_upup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404160444409_upupup.resx">
+      <DependentUpon>201404160444409_upupup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

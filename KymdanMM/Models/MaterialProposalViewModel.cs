@@ -22,12 +22,15 @@ namespace KymdanMM.Models
         public string ImplementerUserName { get; set; }
         [Required]
         [Display(Name = "Đơn vị đề xuất")]
-        public int DepartmentId { get; set; }
+        public int ProposerDepartmentId { get; set; }
+        [Required]
+        [Display(Name = "Đơn vị thực hiện")]
+        public int ImplementerDepartmentId { get; set; }
         [Required]
         [Display(Name = "Trạng thái tiến độ")]
         public int ProgressStatusId { get; set; }
         public bool Finished { get; set; }
-        public bool Approved { get; set; }
+        public ApproveStatus ApproveStatus { get; set; }
         [Display(Name = "Ghi chú")]
         public string Note { get; set; }
     }

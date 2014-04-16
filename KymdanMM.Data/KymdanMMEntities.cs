@@ -13,6 +13,9 @@ namespace KymdanMM.Data
         }
 
         DbSet<MaterialProposal> MaterialProposals { get; set; }
+        DbSet<Material> Materials { get; set; }
+        DbSet<Department> Departments { get; set; }
+        DbSet<ProgressStatus> ProgressStatuses { get; set; }
 
         public virtual void Commit()
         {

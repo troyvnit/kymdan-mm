@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
+using KymdanMM.Data.Service;
 using Microsoft.Web.WebPages.OAuth;
 using Newtonsoft.Json;
 using WebMatrix.WebData;
@@ -20,6 +21,11 @@ namespace KymdanMM.Controllers
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
+        private IDepartmentService _departmentService { get; set; }
+        public AccountController(IDepartmentService _departmentService)
+        {
+            this._departmentService = _departmentService;
+        }
         public ActionResult Index()
         {
             return View();
@@ -37,7 +43,7 @@ namespace KymdanMM.Controllers
                     UserName = a.UserName,
                     FirstName = a.FirstName,
                     LastName = a.LastName,
-                    Department = a.Department,
+                    Department = _departmentService.GetDepartment(a.DepartmentId),
                     Roles = String.Join(", ", Roles.GetRolesForUser(a.UserName))
                 }),
                 total = users.Count
@@ -123,6 +129,7 @@ namespace KymdanMM.Controllers
         {
             var model = new RegisterModel();
             ViewBag.Roles = Roles.GetAllRoles();
+            ViewBag.Departments = _departmentService.GetDepartments();
             return View(model);
         }
 
@@ -139,7 +146,7 @@ namespace KymdanMM.Controllers
                 // Attempt to register the user
                 try
                 {
-                    WebSecurity.CreateUserAndAccount(model.UserName, model.Password, new { model.FirstName, model.LastName, model.Department });
+                    WebSecurity.CreateUserAndAccount(model.UserName, model.Password, new { model.FirstName, model.LastName, model.DepartmentId });
                     foreach (var role in model.Roles.Split(','))
                     {
                         if (!Roles.RoleExists(role))

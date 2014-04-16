@@ -9,7 +9,7 @@ namespace KymdanMM.Data.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(KymdanMM.Data.KymdanMMEntities context)

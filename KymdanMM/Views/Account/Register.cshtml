@@ -1,7 +1,9 @@
-﻿@model KymdanMM.Models.RegisterModel
+﻿@using KymdanMM.Model.Models
+@model KymdanMM.Models.RegisterModel
 @{
     ViewBag.Title = "Register";
     var roles = ViewBag.Roles;
+    var departments = (IEnumerable<Department>)ViewBag.Departments;
 }
 
 <h2>@ViewBag.Title.</h2>
@@ -42,6 +44,12 @@
             @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
         </div>
     </div>
+    <div class="form-group">
+                        @Html.LabelFor(m => m.DepartmentId, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(m => m.DepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", new { @class = "form-control" })
+                        </div>
+                    </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Roles, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">

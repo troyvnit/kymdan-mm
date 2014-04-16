@@ -53,37 +53,58 @@ namespace KymdanMM.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult AddOrUpdateMaterialProposal(int? id)
         {
             var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
             var materialProposalViewModel = materialProposal != null ? Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal) : new MaterialProposalViewModel();
             materialProposalViewModel.ProposerUserName = materialProposalViewModel.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
-            ViewBag.Departments = _departmentService.GetDepartments();
-            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuss();
-            ViewBag.Users = usersContext.UserProfiles.ToList();
+            var users = usersContext.UserProfiles.ToList();
+            var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user != null)
+            {
+                materialProposalViewModel.ProposerDepartmentId = user.DepartmentId;
+                ViewBag.Departments = _departmentService.GetDepartments();
+                ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuss();
+                ViewBag.Users = users;
+            }
             return View(materialProposalViewModel);
         }
 
         [HttpPost]
-        public ActionResult AddOrUpdateMaterialProposal(string materialProposalJson, string materials)
+        [Authorize]
+        public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
-            var materialProposalViewModel = JsonConvert.DeserializeObject<MaterialProposalViewModel>(materialProposalJson);
+            //var materialProposalViewModel = JsonConvert.DeserializeObject<MaterialProposalViewModel>(materialProposalJson);
             var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
-            materialProposal.Department = _departmentService.GetDepartment(materialProposalViewModel.DepartmentId);
             materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
             materialProposal.Finished = materialProposal.ProgressStatusId == 1;
             _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
 
+            //var materialViewModels = JsonConvert.DeserializeObject<List<MaterialViewModel>>(materials);
+            //foreach (var materialViewModel in materialViewModels)
+            //{
+            //    var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
+            //    material.MaterialProposal = materialProposal;
+            //    material.MaterialProposalId = materialProposal.Id;
+            //    _materialService.AddOrUpdateMaterial(material);
+            //}
+
+            return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult AddOrUpdateMaterial(string materials, int materialProposalId)
+        {
             var materialViewModels = JsonConvert.DeserializeObject<List<MaterialViewModel>>(materials);
             foreach (var materialViewModel in materialViewModels)
             {
                 var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
-                material.MaterialProposal = materialProposal;
-                material.MaterialProposalId = materialProposal.Id;
+                material.MaterialProposalId = materialProposalId;
                 _materialService.AddOrUpdateMaterial(material);
             }
-
-            return RedirectToAction("AddOrUpdateMaterialProposal", new { id = materialProposal.Id });
+            return Json(materialViewModels, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetMaterial(int id, int pageNumber, int pageSize)

@@ -30,7 +30,7 @@ namespace KymdanMM.Models
         {
             get { return String.Concat(FirstName, " ", LastName); }
         }
-        public Department Department { get; set; }
+        public int DepartmentId { get; set; }
     }
 
     public class RegisterExternalLoginModel
@@ -100,7 +100,7 @@ namespace KymdanMM.Models
         public string LastName { get; set; }
 
         [Display(Name = "Phòng ban")]
-        public Department Department { get; set; }
+        public int DepartmentId { get; set; }
 
         [Display(Name = "Quyền hạn")]
         public string Roles { get; set; }
@@ -112,7 +112,7 @@ namespace KymdanMM.Models
                 UserName = UserName,
                 FirstName = FirstName,
                 LastName = LastName,
-                Department = Department
+                DepartmentId = DepartmentId
             };
             return user;
         }

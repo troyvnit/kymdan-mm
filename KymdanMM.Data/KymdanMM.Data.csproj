@@ -70,6 +70,14 @@
     <Compile Include="Migrations\201404150334562_uopdate.Designer.cs">
       <DependentUpon>201404150334562_uopdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404160149031_up.cs" />
+    <Compile Include="Migrations\201404160149031_up.Designer.cs">
+      <DependentUpon>201404160149031_up.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201404160224064_upup.cs" />
+    <Compile Include="Migrations\201404160224064_upup.Designer.cs">
+      <DependentUpon>201404160224064_upup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ProgressStatusRepository.cs" />
@@ -100,6 +108,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404150334562_uopdate.resx">
       <DependentUpon>201404150334562_uopdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404160149031_up.resx">
+      <DependentUpon>201404160149031_up.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404160224064_upup.resx">
+      <DependentUpon>201404160224064_upup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

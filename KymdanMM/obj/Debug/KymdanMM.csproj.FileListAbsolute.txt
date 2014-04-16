@@ -213,3 +213,6 @@ D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.csproj.GenerateResource.Cache
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.dll
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.pdb
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.update.resources
+D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.up.resources
+D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.upup.resources
+D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.upupup.resources
