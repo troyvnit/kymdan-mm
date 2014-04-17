@@ -48,16 +48,19 @@
                             @Html.DropDownListFor(m => m.ProposerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", new { @class = "form-control", disabled = "disabled" })
                         </div>
                     </div>
-                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                    @if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
                     {
                         <div class="form-group">
                             @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
                             <div class="col-sm-8 col-md-6">
-                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", disabledAttribute)
+                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", new { @class = "form-control" })
                             </div>
                         </div>
+                    }
+                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
                         <div class="form-group">
-                            @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
+                            @Html.LabelFor(m => m.ImplementerDepartmentId, new {@class = "col-md-4 control-label"})
                             <div class="col-sm-8 col-md-6">
                                 @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", disabledAttribute)
                             </div>
@@ -129,160 +132,173 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
-        $(document).ready(function () {
-            var editable = '@(Model.Id == 0)' == 'True';
-            var materialProposalDataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterial",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models),
-                                materialProposalId: $("#Id").val()
-                            };
-                        } else {
-                            return {
-                                id: $("#Id").val(),
-                                pageNumber: options.page,
-                                pageSize: options.pageSize
-                            };
-                        }
+    $(document).ready(function () {
+        var editable = '@(Model.Id == 0)' == 'True';
+        var materialProposalDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetMaterial",
+                    type: "post"
+                },
+                update: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
+                },
+                destroy: {
+                    url: "/Home/DeleteMaterial",
+                    type: "post",
+                },
+                create: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return {
+                            materials: kendo.stringify(options.models),
+                            materialProposalId: $("#Id").val()
+                        };
+                    } else {
+                        return {
+                            id: $("#Id").val(),
+                            pageNumber: options.page,
+                            pageSize: options.pageSize
+                        };
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 10,
+            serverPaging: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, nullable: false, defaultValue: 0 },
+                        MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                        Description: { editable: editable, type: "string" },
+                        Quantity: { editable: editable, type: "number" },
+                        Unit: { editable: editable, type: "string", validation: { required: true } },
+                        Used: { editable: editable, type: "boolean" },
+                        UsingPurpose: { editable: editable, type: "string" },
+                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        Note: { type: "string" }
                     }
                 },
-                batch: true,
-                pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
-                            Description: { editable: editable, type: "string" },
-                            Quantity: { editable: editable, type: "number" },
-                            Unit: { editable: editable, type: "string", validation: { required: true } },
-                            Used: { editable: editable, type: "boolean" },
-                            UsingPurpose: { editable: editable, type: "string" },
-                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            Note: { type: "string" }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                }
-                , sync: function () {
+                total: "total",
+                data: "data"
+            }
+            @*,sync: function () {
                     window.location.replace('@Url.Action("AddOrUpdateMaterialProposal", "Home")' + '?id=' + $("#Id").val());
-                }
-            });
+                }*@
+        });
 
-            $("#MaterialGrid").kendoGrid({
-                dataSource: materialProposalDataSource,
-                navigatable: true,
-                pageable: true,
-                height: 400,
-                toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "MaterialName", title: "Tên vật tư" },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, hidden: true },
-                    { field: "Quantity", title: "Số lượng", width: 80 },
-                    { field: "Unit", title: "Đơn vị tính", hidden: true },
-                    { field: "Used", title: "Đã sử dụng?", hidden: true },
-                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót" },
-                    { field: "Note", title: "Ghi chú", editor: textareaEditor, width: 400 },
-                    { command: [{ name: "destroy", title: "&nbsp;", width: 50, text: "Xóa" }] }
-                ],
-                dataBound: function() {
-                    if ($("#Id").val() != 0) {
-                        $("#MaterialGrid").find("table th:last").hide();
-                        $("#MaterialGrid").find("table td:last").hide();
-                        $("#MaterialGrid").find("div.k-toolbar").hide();
+        $("#MaterialGrid").kendoGrid({
+            dataSource: materialProposalDataSource,
+            navigatable: true,
+            pageable: true,
+            height: 400,
+            toolbar: [{ name: "create", text: "Thêm" }],
+            columns: [
+                { field: "MaterialName", title: "Tên vật tư", width: "20%" },
+                { field: "Description", title: "Mô tả", editor: textareaEditor, width: "25%" },
+                { field: "Quantity", title: "Số lượng", width: "10%" },
+                { field: "Unit", title: "Đơn vị tính", hidden: true },
+                { field: "Used", title: "Đã sử dụng?", hidden: true },
+                { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
+                { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: "15%" },
+                { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "20%" },
+                { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
+            ],
+            dataBound: function () {
+                if ($("#Id").val() != 0) {
+                    $("#MaterialGrid").data("kendoGrid").hideColumn(8);
+                    $("#MaterialGrid").find("div.k-toolbar").hide();
+                }
+            },
+            editable: true
+        });
+
+        //$("#DepartmentId").kendoDropDownList({
+        //    dataTextField: "DepartmentName",
+        //    dataValueField: "Id",
+        //    autoBind: true,
+        //    optionLabel: "Chọn đơn vị",
+        //    dataSource: {
+        //        severFiltering: true,
+        //        transport: {
+        //            read: {
+        //                url: "/Home/GetDepartment",
+        //                type: "post"
+        //            }
+        //        }
+        //    }
+        //});
+
+        //$("#ProposerUserName").kendoDropDownList({
+        //    dataTextField: "DisplayName",
+        //    dataValueField: "UserName",
+        //    autoBind: true,
+        //    optionLabel: "Chọn người đề xuất",
+        //    dataSource: {
+        //        severFiltering: true,
+        //        transport: {
+        //            read: {
+        //                url: "/Home/GetUser",
+        //                type: "post"
+        //            }
+        //        }
+        //    }
+        //});
+
+        //$("#ImplementerUserName").kendoDropDownList({
+        //    dataTextField: "DisplayName",
+        //    dataValueField: "UserName",
+        //    autoBind: true,
+        //    optionLabel: "Chọn người thực hiện",
+        //    dataSource: {
+        //        severFiltering: true,
+        //        transport: {
+        //            read: {
+        //                url: "/Home/GetUser",
+        //                type: "post"
+        //            }
+        //        }
+        //    }
+        //});
+
+        $("#submitMaterialProposal").on("click", function () {
+            if (!$("#MaterialProposalForm").valid()) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+                type: "POST",
+                data: $("form").serialize(),
+                dataType: "json",
+                success: function (id) {
+                    $("#Id").val(id);
+                    var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                    if (data) {
+                        data.dirty = true;
+                        $("#MaterialGrid").data("kendoGrid").saveChanges();
+                    } else {
+                        $("#MaterialGrid").addClass("input-validation-error");
                     }
-                },
-                editable: true
-            });
-
-            //$("#DepartmentId").kendoDropDownList({
-            //    dataTextField: "DepartmentName",
-            //    dataValueField: "Id",
-            //    autoBind: true,
-            //    optionLabel: "Chọn đơn vị",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetDepartment",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-
-            //$("#ProposerUserName").kendoDropDownList({
-            //    dataTextField: "DisplayName",
-            //    dataValueField: "UserName",
-            //    autoBind: true,
-            //    optionLabel: "Chọn người đề xuất",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetUser",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-
-            //$("#ImplementerUserName").kendoDropDownList({
-            //    dataTextField: "DisplayName",
-            //    dataValueField: "UserName",
-            //    autoBind: true,
-            //    optionLabel: "Chọn người thực hiện",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetUser",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-            
-            $("#submitMaterialProposal").on("click", function () {
-                if (!$("#MaterialProposalForm").valid()) {
-                    return;
                 }
+            });
+        });
 
-                $.ajax({
-                    url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+        $("#approveMaterialProposal").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("ApproveMaterialProposal", "Home")',
                     type: "POST",
-                    data: $("form").serialize(),
+                    data: { idString : $("#Id").val()},
                     dataType: "json",
-                    success: function(id) {
-                        $("#Id").val(id);
-                        var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
-                        if (data) {
-                            data.dirty = true;
-                            $("#MaterialGrid").data("kendoGrid").saveChanges();
-                        } else {
-                            $("#MaterialGrid").addClass("input-validation-error");
+                    success: function (result) {
+                        if (result) {
+                            location.reload();
                         }
                     }
                 });

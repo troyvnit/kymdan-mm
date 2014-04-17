@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Threading
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -22,8 +23,14 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Quản lý đề xuất", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Thêm đề xuất vật tư", "AddOrUpdateMaterialProposal", "Home")</li>
-                    <li>@Html.ActionLink("Quản lý người dùng", "Index", "Account")</li>
+                    @if (Thread.CurrentPrincipal.IsInRole("Member"))
+                    {
+                        <li>@Html.ActionLink("Thêm đề xuất vật tư", "AddOrUpdateMaterialProposal", "Home")</li>
+                    }
+                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
+                        <li>@Html.ActionLink("Quản lý người dùng", "Index", "Account")</li>
+                    }
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

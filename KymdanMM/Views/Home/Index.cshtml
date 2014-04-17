@@ -1,4 +1,6 @@
-﻿@{
+﻿@using System.Threading
+@using KymdanMM.Model.Models
+@{
     ViewBag.Title = "Home Page";
 }
 <div class="row">&nbsp;</div>
@@ -8,8 +10,14 @@
         <div class="panel-body">
             <div class="pull-right">
                 <a href="#" class="btn btn-danger" role="button">Xóa mục đã chọn</a>
-                <a href="#" class="btn btn-success" role="button">Duyệt mục đã chọn</a>
-                <a href="@Url.Action("AddOrUpdateMaterialProposal")" class="btn btn-primary" role="button">Thêm đề xuất</a>
+                @if (Thread.CurrentPrincipal.IsInRole("Member"))
+                {
+                    <a href="@Url.Action("AddOrUpdateMaterialProposal")" class="btn btn-primary" role="button">Thêm đề xuất</a>
+                }
+                else
+                {
+                    <a href="#" class="btn btn-success" role="button">Duyệt mục đã chọn</a>
+                }
             </div>
             <div class="clearfix"></div>
             <div class="row">&nbsp;</div>
@@ -20,28 +28,56 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script id="proposalCodeTemplate" type="text/x-kendo-tmpl">
+        <a href="/Home/AddOrUpdateMaterialProposal/#= Id #">#= ProposalCode #</a>
+    </script>
+    <script id="approveStatusTemplate" type="text/x-kendo-tmpl">
+        # if (ApproveStatus == 2) { #
+        <span class="label label-success">
+            Admin duyệt
+        </span>
+        # } else if (ApproveStatus == 1){#
+        <span class="label label-info">            
+            Manager duyệt
+        </span>
+        # } else {#
+        <span class="label label-warning">            
+            Chưa duyệt
+        </span>
+        # } #
+    </script>
     <script type="text/x-kendo-template" id="materialProposalToolbarTemplate">
         <div class="toolbar">
             <div class="col-lg-8">
                 <label>Xem theo:</label>
-                <input id="Department" />
-                <input id="ProgressStatus" />
-                <div class="btn-group" data-toggle="buttons" id="Finished">
-                    <label class="btn btn-success">
-                        <input type="radio" name="finished" value="C300"> Đã duyệt
+                @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                {
+                    <input id="DepartmentId" />
+                }
+                <input id="ProgressStatusId" />
+                <div class="btn-group" data-toggle="buttons" id="ApproveStatus">
+                    @if (!Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
+                        <label class="btn btn-warning">
+                            <input type="radio" name="approveStatus" value="0"> Chưa duyệt
+                        </label>
+                    }
+                    <label class="btn btn-info">
+                        <input type="radio" name="approveStatus" value="1"> Manager duyệt
                     </label>
-                    <label class="btn btn-warning">
-                        <input type="radio" name="finished" value="C530"> Chờ duyệt
+                    <label class="btn btn-success">
+                        <input type="radio" name="approveStatus" value="2"> Admin duyệt
                     </label>
                     <label class="btn btn-primary">
-                        <input type="radio" name="finished" value="C700"> Tất cả
+                        <input type="radio" name="approveStatus" value=""> Tất cả
                     </label>
                 </div>
+
             </div>
             <div class="input-group col-lg-3">
                 <input type="text" class="form-control" id="keyWord" placeholder="Từ khóa" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button">Tìm</button>
+                    <button class="btn btn-default" id="search" type="button">Tìm</button>
                 </span>
             </div>
         </div>
@@ -75,7 +111,10 @@
                             return {
                                 keyWord: $("#keyWord").val(),
                                 pageNumber: options.page,
-                                pageSize: options.pageSize
+                                pageSize: options.pageSize,
+                                departmentId: $("#DepartmentId").val(),
+                                progressStatusId: $("#ProgressStatusId").val(),
+                                approveStatus: $("#ApproveStatus > label.active > input:radio[name='approveStatus']").val()
                             };
                         }
                     }
@@ -92,10 +131,11 @@
                             ManagementCode: { type: "string" },
                             ProposalCode: { type: "string" },
                             ProposerUserName: { type: "string" },
+                            ProposerDepartmentId: { type: "number" },
                             ImplementerUserName: { type: "string" },
-                            Department: { type: "string" },
+                            ImplementerDepartmentId: { type: "number" },
                             ProgressStatus: { type: "string" },
-                            Approved: { type: "boolean" },
+                            ApproveStatus: { type: "int" },
                             Finished: { type: "boolean" },
                             Note: { type: "string" }
                         }
@@ -117,54 +157,82 @@
                 height: 500,
                 toolbar: kendo.template($("#materialProposalToolbarTemplate").html()),
                 columns: [
-                    { field: "ImplementerUserName", title: "Người thực hiện" },
+                    {
+                        field: "ProposalCode", title: "Mã đề xuất",
+                        template: $("#proposalCodeTemplate").html()
+                    },
                     { field: "Description", title: "Mô tả" },
-                    { field: "ProposerUserName", title: "Người đề nghị" },
+                    { field: "ImplementerDisplayName", title: "Người thực hiện" },
+                    { field: "ProposerDisplayName", title: "Người đề nghị" },
                     {
-                        field: "Department",
-                        title: "Đơn vị đề nghị",
-                        template: $("#departmentTemplate").html()
+                        field: "Status",
+                        title: "Trạng thái tiến độ"
                     },
                     {
-                        field: "ProgressStatus",
-                        title: "Trạng thái tiến độ",
-                        template: $("#departmentTemplate").html()
+                        field: "ApproveStatus", title: "Duyệt",
+                        template: $("#approveStatusTemplate").html()
                     },
-                    { field: "Approved", title: "Duyệt" },
-                    { field: "Finished", title: "Hoàn thành" },
-                    { field: "Note", title: "Ghi chú" },
                     { command: [{ name: "destroy", title: "&nbsp;", width: 70, text: "Xóa" }] }
-                ],
-                editable: true
+                ]
             });
+            
+            $("#search").on('click', function (e) {
+                readGrid();
+            });
+            
+            $("#ApproveStatus > label").on('click', function (e) {
+                $("#ApproveStatus > label").removeClass("active");
+                $(this).addClass("active");
+                readGrid();
+            }); 
 
-            $("#Department").kendoDropDownList({
-                dataTextField: "CategoryName",
-                dataValueField: "CategoryID",
-                autoBind: false,
-                optionLabel: "All",
+            $("#DepartmentId").kendoDropDownList({
+                dataTextField: "DepartmentName",
+                dataValueField: "Id",
+                autoBind: true,
+                optionLabel: "Chọn đơn vị",
                 dataSource: {
-                    type: "odata",
                     severFiltering: true,
                     transport: {
-                        read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
+                        read: {
+                            url: "/Home/GetDepartment",
+                            type: "post"
+                        }
+                    }
+                }
+            });
+            
+            $("#DepartmentId").on('change', function () {
+                readGrid();
+            });
+            
+            $("#ProgressStatusId").kendoDropDownList({
+                dataTextField: "Status",
+                dataValueField: "Id",
+                autoBind: true,
+                optionLabel: "Chọn trạng thái",
+                dataSource: {
+                    severFiltering: true,
+                    transport: {
+                        read: {
+                            url: "/Home/GetProgressStatus",
+                            type: "post"
+                        }
                     }
                 }
             });
 
-            $("#ProgressStatus").kendoDropDownList({
-                dataTextField: "CategoryName",
-                dataValueField: "CategoryID",
-                autoBind: false,
-                optionLabel: "All",
-                dataSource: {
-                    type: "odata",
-                    severFiltering: true,
-                    transport: {
-                        read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
-                    }
-                }
+            $("#ProgressStatusId").on('change', function () {
+                readGrid();
             });
+
+            function readGrid() {
+                var grid = $("#MaterialProposalGrid").data("kendoGrid");
+                grid.dataSource.read();
+                if (grid.dataSource.page() != 1) {
+                    grid.dataSource.page(1);
+                }
+            }
         });
     </script>
 

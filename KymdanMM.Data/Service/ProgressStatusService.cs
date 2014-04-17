@@ -8,7 +8,7 @@ namespace KymdanMM.Data.Service
     public interface IProgressStatusService
     {
         ProgressStatus GetProgressStatus(int id);
-        IEnumerable<ProgressStatus> GetProgressStatuss();
+        IEnumerable<ProgressStatus> GetProgressStatuses();
         bool AddOrUpdateProgressStatus(ProgressStatus progressStatus);
         bool DeleteProgressStatus(ProgressStatus progressStatus);
     }
@@ -27,10 +27,10 @@ namespace KymdanMM.Data.Service
         {
             return _progressStatusRepository.GetById(id);
         }
-        public IEnumerable<ProgressStatus> GetProgressStatuss()
+        public IEnumerable<ProgressStatus> GetProgressStatuses()
         {
-            var progressStatuss = _progressStatusRepository.GetAll();
-            return progressStatuss;
+            var progressStatuses = _progressStatusRepository.GetAll();
+            return progressStatuses;
         }
 
         public bool AddOrUpdateProgressStatus(ProgressStatus progressStatus)

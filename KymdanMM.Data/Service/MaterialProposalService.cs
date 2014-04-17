@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using KymdanMM.Data.Repository;
 using KymdanMM.Model.Models;
 using KymdanMM.Data.Infrastructure;
@@ -10,7 +12,7 @@ namespace KymdanMM.Data.Service
     {
         MaterialProposal GetMaterialProposal(int id);
         IEnumerable<MaterialProposal> GetMaterialProposals();
-        IPagedList<MaterialProposal> GetMaterialProposals(int page, int pageSize);
+        IPagedList<MaterialProposal> GetMaterialProposals(int page, int pageSize, Expression<Func<MaterialProposal, bool>> where);
         bool AddOrUpdateMaterialProposal(MaterialProposal materialProposal);
         bool DeleteMaterialProposal(MaterialProposal materialProposal);
     }
@@ -36,9 +38,9 @@ namespace KymdanMM.Data.Service
             return materialProposals;
         }
 
-        public IPagedList<MaterialProposal> GetMaterialProposals(int pageNumber, int pageSize)
+        public IPagedList<MaterialProposal> GetMaterialProposals(int pageNumber, int pageSize, Expression<Func<MaterialProposal, bool>> where )
         {
-            var materialProposals = _materialProposalRepository.GetPage(new Page{ PageNumber = pageNumber, PageSize = pageSize }, a => true, a => a.CreatedDate);
+            var materialProposals = _materialProposalRepository.GetPage(new Page{ PageNumber = pageNumber, PageSize = pageSize }, where, a => a.CreatedDate);
             return materialProposals;
         }
 
