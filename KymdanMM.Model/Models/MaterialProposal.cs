@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KymdanMM.Model.Models
 {
     public class MaterialProposal : BaseModel
     {
+        public MaterialProposal()
+        {
+            Deadline = DateTime.Now;
+        }
         public string Description { get; set; }
         public string ManagementCode { get; set; }
         public string ProposalCode { get; set; }
@@ -16,6 +21,7 @@ namespace KymdanMM.Model.Models
         public bool Finished { get; set; }
         public ApproveStatus ApproveStatus { get; set; }
         public string Note { get; set; }
+        public DateTime Deadline { get; set; }
         public IList<Material> Materials { get; set; } 
     }
 

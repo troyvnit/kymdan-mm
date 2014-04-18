@@ -78,6 +78,10 @@
     <Compile Include="Migrations\201404160224064_upup.Designer.cs">
       <DependentUpon>201404160224064_upup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404180244069_uptodatye.cs" />
+    <Compile Include="Migrations\201404180244069_uptodatye.Designer.cs">
+      <DependentUpon>201404180244069_uptodatye.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ProgressStatusRepository.cs" />
@@ -114,6 +118,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404160224064_upup.resx">
       <DependentUpon>201404160224064_upup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404180244069_uptodatye.resx">
+      <DependentUpon>201404180244069_uptodatye.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using KymdanMM.Model.Models;
 
 namespace KymdanMM.Models
@@ -25,9 +26,11 @@ namespace KymdanMM.Models
         [Required]
         [Display(Name = "Đơn vị đề xuất")]
         public int ProposerDepartmentId { get; set; }
+        public string ProposerDepartmentName { get; set; }
         [Required]
         [Display(Name = "Đơn vị thực hiện")]
         public int ImplementerDepartmentId { get; set; }
+        public string ImplementerDepartmentName { get; set; }
         [Required]
         [Display(Name = "Trạng thái tiến độ")]
         public int ProgressStatusId { get; set; }
@@ -36,5 +39,8 @@ namespace KymdanMM.Models
         public ApproveStatus ApproveStatus { get; set; }
         [Display(Name = "Ghi chú")]
         public string Note { get; set; }
+        [Required]
+        [Display(Name = "Hạn chót")]
+        public string Deadline { get; set; }
     }
 }

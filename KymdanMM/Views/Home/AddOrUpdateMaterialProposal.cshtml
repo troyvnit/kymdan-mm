@@ -8,28 +8,37 @@
     var departments = (IEnumerable<Department>)ViewBag.Departments;
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var progressStatuses = (IEnumerable<ProgressStatus>)ViewBag.ProgressStatuses;
-    var disabledAttribute = Model.Id != 0 ? (object)new {@class = "form-control", disabled = "disabled"} : (object)new {@class = "form-control"};
+    var disabledAttribute = (object)new { @class = "form-control", disabled = "disabled" };
+    var enableAttribute = (object)new { @class = "form-control" };
+    var editable = Model.Id == 0;
+    var panelClass = "";
+    var headerString = "";
+    switch (Model.ApproveStatus)
+    {
+        case ApproveStatus.AdminApproved:
+            panelClass = "panel-success";
+            headerString = "Admin đã duyệt";
+            break;
+        case ApproveStatus.ManagerApproved:
+            panelClass = "panel-info";
+            headerString = "Manager đã duyệt";
+            break;
+        default:
+            panelClass = "panel-warning";
+            headerString = "Chưa duyệt";
+            break;
+    }
+
 }
 
+<span id="popupNotification"></span>
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="panel panel-default">
+    <div class="panel @panelClass">
         <div class="panel-heading">
-            Thêm đề xuất
+            Thông tin đề xuất (@headerString)
         </div>
         <div class="panel-body">
-            @switch (Model.ApproveStatus)
-            {
-                case ApproveStatus.AdminApproved:
-                    <div class="alert alert-success">Admin Đã duyệt</div>
-                    break;
-                case ApproveStatus.ManagerApproved:
-                    <div class="alert alert-info">Quản lý đã duyệt</div>
-                    break;
-                default:
-                    <div class="alert alert-warning">Chưa duyệt</div>
-                    break;
-            }
             @using (Html.BeginForm("AddOrUpdateMaterialProposal", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "MaterialProposalForm" }))
             {
                 @Html.AntiForgeryToken()
@@ -39,54 +48,107 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.DropDownListFor(m => m.ProposerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người đề xuất", new { @class = "form-control", disabled = "disabled" })
+                            @if (editable)
+                            {
+                                @Html.DropDownListFor(m => m.ProposerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người đề xuất", disabledAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                            }
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.DropDownListFor(m => m.ProposerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", new { @class = "form-control", disabled = "disabled" })
+                            @if (editable)
+                            {
+                                @Html.DropDownListFor(m => m.ProposerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", disabledAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
+                            }
                         </div>
                     </div>
-                    @if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
-                    {
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", new { @class = "form-control" })
-                            </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
+                        <div class="col-sm-8 col-md-6">
+                            @if (Model.ImplementerUserName == null && Thread.CurrentPrincipal.IsInRole("Department Manager"))
+                            {
+                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDisplayName)</span>
+                            }
                         </div>
-                    }
-                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
-                    {
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.ImplementerDepartmentId, new {@class = "col-md-4 control-label"})
-                            <div class="col-sm-8 col-md-6">
-                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", disabledAttribute)
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
+                        <div class="col-sm-8 col-md-6">
+                            @if (Model.ImplementerDepartmentId == 0 && Thread.CurrentPrincipal.IsInRole("Admin"))
+                            {
+                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>
+                            }
                         </div>
-                    }
+                    </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.TextAreaFor(m => m.Description, disabledAttribute)
+                            @if (editable)
+                            {
+                                @Html.TextAreaFor(m => m.Description, enableAttribute )
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
+                            }
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
-                    {
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.ManagementCode, new {@class = "col-md-4 control-label"})
-                            <div class="col-sm-8 col-md-6">
-                                @Html.TextBoxFor(m => m.ManagementCode, disabledAttribute)
-                            </div>
-                        </div>
-                    }
                     <div class="form-group">
                         @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @Html.TextBoxFor(m => m.ProposalCode, disabledAttribute)
+                            @if (editable)
+                            {
+                                @Html.TextBoxFor(m => m.ProposalCode, enableAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposalCode)</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
+                        <div class="col-sm-8 col-md-6">
+                            @if (string.IsNullOrEmpty(Model.ManagementCode) && Thread.CurrentPrincipal.IsInRole("Admin"))
+                            {
+                                @Html.TextBoxFor(m => m.ManagementCode, Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
+                        <div class="col-sm-8 col-md-6">
+                            @if (editable)
+                            {
+                                @Html.TextBoxFor(m => m.Deadline, Thread.CurrentPrincipal.IsInRole("Admin") ? null : new { disabled = "disabled" })
+                            }
+                            else
+                            {
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
+                            }
                         </div>
                     </div>
                     <div class="form-group">
@@ -106,6 +168,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Danh sách vật tư</div>
                         <div class="panel-body">
+                            <a class="k-button k-button-icontext k-grid-add" onclick="$('#MaterialGrid').data('kendoGrid').addRow(); return false;" href="#"><span class="k-icon k-add"></span>Thêm</a>
+                            <div class="clearfix"></div>
+                            <div class="row">&nbsp;</div>
                             <div id="MaterialGrid"></div>
                         </div>
                     </div>
@@ -123,178 +188,207 @@
             <button type="submit" class="btn btn-default">Bình luận</button>
         </form>
         <div class="pull-right">
-            <a href="/" class="btn btn-default navbar-btn" role="button">Hủy</a>
-            <input type="button" id="approveMaterialProposal" class="btn btn-success navbar-btn" value="Duyệt" />
+            <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
+            @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+            {
+                <input type="button" id="approveMaterialProposal" class="btn btn-success navbar-btn" value="Admin Duyệt" />
+            }
+            @if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
+            {
+                <input type="button" id="approveMaterialProposal" class="btn btn-info navbar-btn" value="Manager Duyệt" />
+            }
             <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu" />
         </div>
     </div>
 </nav>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="success">
+            <h3>#= message #</h3>
+        </div>
+    </script>
     <script type="text/javascript">
-    $(document).ready(function () {
-        var editable = '@(Model.Id == 0)' == 'True';
-        var materialProposalDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetMaterial",
-                    type: "post"
+        $(document).ready(function () {
+            $("#Deadline").kendoDatePicker({
+                format: "dd/MM/yyyy"
+            });
+            var popupNotification = $("#popupNotification").kendoNotification({
+                position: {
+                    top: 10,
+                    right: 10
                 },
-                update: {
-                    url: "/Home/AddOrUpdateMaterial",
-                    type: "post"
-                },
-                destroy: {
-                    url: "/Home/DeleteMaterial",
-                    type: "post",
-                },
-                create: {
-                    url: "/Home/AddOrUpdateMaterial",
-                    type: "post"
-                },
-                parameterMap: function (options, operation) {
-                    if (operation !== "read" && options.models) {
-                        return {
-                            materials: kendo.stringify(options.models),
-                            materialProposalId: $("#Id").val()
-                        };
-                    } else {
-                        return {
-                            id: $("#Id").val(),
-                            pageNumber: options.page,
-                            pageSize: options.pageSize
-                        };
-                    }
-                }
-            },
-            batch: true,
-            pageSize: 10,
-            serverPaging: true,
-            schema: {
-                model: {
-                    id: "Id",
-                    fields: {
-                        Id: { editable: false, nullable: false, defaultValue: 0 },
-                        MaterialName: { editable: editable, type: "string", validation: { required: true } },
-                        Description: { editable: editable, type: "string" },
-                        Quantity: { editable: editable, type: "number" },
-                        Unit: { editable: editable, type: "string", validation: { required: true } },
-                        Used: { editable: editable, type: "boolean" },
-                        UsingPurpose: { editable: editable, type: "string" },
-                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                        Note: { type: "string" }
+                autoHideAfter: 5000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }]
+            }).data("kendoNotification");
+            var editable = '@(Model.Id == 0)' == 'True';
+            var materialProposalDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterial",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models),
+                                materialProposalId: $("#Id").val()
+                            };
+                        } else {
+                            return {
+                                id: $("#Id").val(),
+                                pageNumber: options.page,
+                                pageSize: options.pageSize
+                            };
+                        }
                     }
                 },
-                total: "total",
-                data: "data"
-            }
-            @*,sync: function () {
-                    window.location.replace('@Url.Action("AddOrUpdateMaterialProposal", "Home")' + '?id=' + $("#Id").val());
-                }*@
-        });
-
-        $("#MaterialGrid").kendoGrid({
-            dataSource: materialProposalDataSource,
-            navigatable: true,
-            pageable: true,
-            height: 400,
-            toolbar: [{ name: "create", text: "Thêm" }],
-            columns: [
-                { field: "MaterialName", title: "Tên vật tư", width: "20%" },
-                { field: "Description", title: "Mô tả", editor: textareaEditor, width: "25%" },
-                { field: "Quantity", title: "Số lượng", width: "10%" },
-                { field: "Unit", title: "Đơn vị tính", hidden: true },
-                { field: "Used", title: "Đã sử dụng?", hidden: true },
-                { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
-                { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: "15%" },
-                { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "20%" },
-                { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
-            ],
-            dataBound: function () {
-                if ($("#Id").val() != 0) {
-                    $("#MaterialGrid").data("kendoGrid").hideColumn(8);
-                    $("#MaterialGrid").find("div.k-toolbar").hide();
-                }
-            },
-            editable: true
-        });
-
-        //$("#DepartmentId").kendoDropDownList({
-        //    dataTextField: "DepartmentName",
-        //    dataValueField: "Id",
-        //    autoBind: true,
-        //    optionLabel: "Chọn đơn vị",
-        //    dataSource: {
-        //        severFiltering: true,
-        //        transport: {
-        //            read: {
-        //                url: "/Home/GetDepartment",
-        //                type: "post"
-        //            }
-        //        }
-        //    }
-        //});
-
-        //$("#ProposerUserName").kendoDropDownList({
-        //    dataTextField: "DisplayName",
-        //    dataValueField: "UserName",
-        //    autoBind: true,
-        //    optionLabel: "Chọn người đề xuất",
-        //    dataSource: {
-        //        severFiltering: true,
-        //        transport: {
-        //            read: {
-        //                url: "/Home/GetUser",
-        //                type: "post"
-        //            }
-        //        }
-        //    }
-        //});
-
-        //$("#ImplementerUserName").kendoDropDownList({
-        //    dataTextField: "DisplayName",
-        //    dataValueField: "UserName",
-        //    autoBind: true,
-        //    optionLabel: "Chọn người thực hiện",
-        //    dataSource: {
-        //        severFiltering: true,
-        //        transport: {
-        //            read: {
-        //                url: "/Home/GetUser",
-        //                type: "post"
-        //            }
-        //        }
-        //    }
-        //});
-
-        $("#submitMaterialProposal").on("click", function () {
-            if (!$("#MaterialProposalForm").valid()) {
-                return;
-            }
-
-            $.ajax({
-                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
-                type: "POST",
-                data: $("form").serialize(),
-                dataType: "json",
-                success: function (id) {
-                    $("#Id").val(id);
-                    var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
-                    if (data) {
-                        data.dirty = true;
-                        $("#MaterialGrid").data("kendoGrid").saveChanges();
-                    } else {
-                        $("#MaterialGrid").addClass("input-validation-error");
-                    }
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                            Description: { editable: editable, type: "string" },
+                            Quantity: { editable: editable, type: "number" },
+                            Unit: { editable: editable, type: "string", validation: { required: true } },
+                            Used: { editable: editable, type: "boolean" },
+                            UsingPurpose: { editable: editable, type: "string" },
+                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            Note: { type: "string" }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                },
+                sync: function () {
+                    $("#MaterialGrid").removeClass("input-validation-error");
+                    popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
                 }
             });
-        });
 
-        $("#approveMaterialProposal").on("click", function () {
-            $.ajax({
-                url: '@Url.Action("ApproveMaterialProposal", "Home")',
+            $("#MaterialGrid").kendoGrid({
+                dataSource: materialProposalDataSource,
+                navigatable: true,
+                pageable: true,
+                height: 400,
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialName", title: "Tên vật tư", width: "20%" },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: "25%" },
+                    { field: "Quantity", title: "Số lượng", width: "10%" },
+                    { field: "Unit", title: "Đơn vị tính", hidden: true },
+                    { field: "Used", title: "Đã sử dụng?", hidden: true },
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: "15%" },
+                    { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "20%" },
+                    { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
+                ],
+                dataBound: function () {
+                    if ($("#Id").val() != 0) {
+                        $("#MaterialGrid").data("kendoGrid").hideColumn(8);
+                        $(".k-grid-add").remove();
+                    }
+                },
+                editable: true
+            });
+
+            //$("#DepartmentId").kendoDropDownList({
+            //    dataTextField: "DepartmentName",
+            //    dataValueField: "Id",
+            //    autoBind: true,
+            //    optionLabel: "Chọn đơn vị",
+            //    dataSource: {
+            //        severFiltering: true,
+            //        transport: {
+            //            read: {
+            //                url: "/Home/GetDepartment",
+            //                type: "post"
+            //            }
+            //        }
+            //    }
+            //});
+
+            //$("#ProposerUserName").kendoDropDownList({
+            //    dataTextField: "DisplayName",
+            //    dataValueField: "UserName",
+            //    autoBind: true,
+            //    optionLabel: "Chọn người đề xuất",
+            //    dataSource: {
+            //        severFiltering: true,
+            //        transport: {
+            //            read: {
+            //                url: "/Home/GetUser",
+            //                type: "post"
+            //            }
+            //        }
+            //    }
+            //});
+
+            //$("#ImplementerUserName").kendoDropDownList({
+            //    dataTextField: "DisplayName",
+            //    dataValueField: "UserName",
+            //    autoBind: true,
+            //    optionLabel: "Chọn người thực hiện",
+            //    dataSource: {
+            //        severFiltering: true,
+            //        transport: {
+            //            read: {
+            //                url: "/Home/GetUser",
+            //                type: "post"
+            //            }
+            //        }
+            //    }
+            //});
+
+            $("#submitMaterialProposal").on("click", function () {
+                if (!$("#MaterialProposalForm").valid()) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
                     type: "POST",
-                    data: { idString : $("#Id").val()},
+                    data: $("form").serialize(),
+                    dataType: "json",
+                    success: function (id) {
+                        popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
+                        $("#Id").val(id);
+                        var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                        if (data) {
+                            data.dirty = true;
+                            $("#MaterialGrid").data("kendoGrid").saveChanges();
+                        } else {
+                            $("#MaterialGrid").addClass("input-validation-error");
+                        }
+                    }
+                });
+            });
+
+            $("#approveMaterialProposal").on("click", function () {
+                $.ajax({
+                    url: '@Url.Action("ApproveMaterialProposal", "Home")',
+                    type: "POST",
+                    data: { idString: $("#Id").val() },
                     dataType: "json",
                     success: function (result) {
                         if (result) {
@@ -307,8 +401,7 @@
 
         var textareaEditor = function (container, options) {
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
-            .appendTo(container);
+                .appendTo(container);
         };
     </script>
-
 }

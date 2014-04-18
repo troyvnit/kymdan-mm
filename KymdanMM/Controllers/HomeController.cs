@@ -32,6 +32,8 @@ namespace KymdanMM.Controllers
             this._materialService = _materialService;
             usersContext = new UsersContext();
         }
+
+        [Authorize]
         public ActionResult Index()
         {
             ViewBag.Departments = _departmentService.GetDepartments();
@@ -135,14 +137,32 @@ namespace KymdanMM.Controllers
             var materialProposalViewModel = materialProposal != null ? Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal) : new MaterialProposalViewModel();
             materialProposalViewModel.ProposerUserName = materialProposalViewModel.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
             var users = usersContext.UserProfiles.ToList();
-            var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            if (user != null)
+            var proposerUser = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
+            if (proposerUser != null)
             {
-                materialProposalViewModel.ProposerDepartmentId = user.DepartmentId;
-                ViewBag.Departments = _departmentService.GetDepartments();
-                ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
-                ViewBag.Users = users;
+                materialProposalViewModel.ProposerDisplayName = proposerUser.DisplayName;
+                materialProposalViewModel.ProposerDepartmentId = proposerUser.DepartmentId;
             }
+            var proposerDepartment = _departmentService.GetDepartment(materialProposalViewModel.ProposerDepartmentId);
+            if (proposerDepartment != null)
+                materialProposalViewModel.ProposerDepartmentName = proposerDepartment.DepartmentName;
+            var implementerUser = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ImplementerUserName);
+            if (implementerUser != null)
+            {
+                materialProposalViewModel.ImplementerDisplayName = implementerUser.DisplayName;
+                materialProposalViewModel.ImplementerDepartmentId = implementerUser.DepartmentId;
+            }
+            var implementerDepartment = _departmentService.GetDepartment(materialProposalViewModel.ImplementerDepartmentId);
+            if (implementerDepartment != null)
+                materialProposalViewModel.ImplementerDepartmentName = implementerDepartment.DepartmentName;
+            var progressStatus = _progressStatusService.GetProgressStatus(materialProposalViewModel.ProgressStatusId);
+            if (progressStatus != null)
+            {
+                materialProposalViewModel.Status = progressStatus.Status;
+            }
+            ViewBag.Departments = _departmentService.GetDepartments();
+            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+            ViewBag.Users = users;
             return View(materialProposalViewModel);
         }
 
@@ -158,7 +178,15 @@ namespace KymdanMM.Controllers
             {
                 materialProposalViewModel.ImplementerUserName = null;
             }
+            materialProposalViewModel.Deadline = materialProposalViewModel.Deadline ?? DateTime.Now.ToString("dd/MM/yyyy");
             var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
+            if (!Thread.CurrentPrincipal.IsInRole("Admin"))
+            {
+                materialProposal.ImplementerDepartmentId = 0;
+                materialProposal.ImplementerUserName = null;
+                materialProposal.ManagementCode = null;
+                materialProposal.Deadline = DateTime.MinValue;
+            }
             materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
             if (user != null)

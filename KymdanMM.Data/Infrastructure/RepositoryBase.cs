@@ -34,7 +34,20 @@ namespace KymdanMM.Data.Infrastructure
         public virtual void Update(T entity)
         {
             _dbset.Attach(entity);
-            _dataContext.Entry(entity).State = EntityState.Modified;
+            var dbEntityEntry = _dataContext.Entry(entity);
+            foreach (var property in dbEntityEntry.OriginalValues.PropertyNames)
+            {
+                var original = dbEntityEntry.OriginalValues.GetValue<object>(property);
+                if (original == null || (original is int && (int) original == 0) ||
+                    (original is DateTime && (DateTime) original == DateTime.MinValue))
+                {
+                    dbEntityEntry.Property(property).IsModified = false;
+                }
+                else
+                {
+                    dbEntityEntry.Property(property).IsModified = true;
+                }
+            }
         }
         public virtual void Delete(T entity)
         {
