@@ -176,7 +176,19 @@
                         template: $("#approveStatusTemplate").html()
                     },
                     { command: [{ name: "destroy", title: "&nbsp;", width: 70, text: "Xóa" }] }
-                ]
+                ],
+                dataBound: function () {
+                    var dataView = this.dataSource.view();
+                    for (var i = 0; i < dataView.length; i++) {
+                        if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date()) {
+                            $("#MaterialProposalGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                        } else if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                            $("#MaterialProposalGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                        } else {
+                            
+                        }
+                    }
+                }
             });
             
             $("#search").on('click', function (e) {
@@ -237,6 +249,10 @@
                 }
             }
         });
+        Date.prototype.addDays = function (days) {
+            this.setDate(this.getDate() + days);
+            return this;
+        };
     </script>
 
 }

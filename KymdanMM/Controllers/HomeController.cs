@@ -207,6 +207,7 @@ namespace KymdanMM.Controllers
             materialProposal.ImplementerDepartmentId = materialProposalViewModel.ImplementerDepartmentId != 0
                 ? materialProposalViewModel.ImplementerDepartmentId
                 : materialProposal.ImplementerDepartmentId;
+
             _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
             return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
         }

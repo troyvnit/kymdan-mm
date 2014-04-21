@@ -212,10 +212,6 @@ D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations._new.resources
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.csproj.GenerateResource.Cache
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.dll
 D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.pdb
-D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.update.resources
-D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.up.resources
-D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.upup.resources
-D:\KymdanMM\KymdanMM\obj\Debug\KymdanMM.Migrations.upupup.resources
 F:\Working\Projects\KymdanMM\KymdanMM\bin\AutoMapper.Net4.dll
 F:\Working\Projects\KymdanMM\KymdanMM\bin\KymdanMM.dll.config
 F:\Working\Projects\KymdanMM\KymdanMM\bin\KymdanMM.dll

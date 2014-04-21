@@ -21,7 +21,7 @@ namespace KymdanMM.Migrations
             if (!WebSecurity.UserExists("kymdanadmin"))
             {
                 WebSecurity.CreateUserAndAccount("kymdanadmin", "Kymdan@123",
-                    new { FirstName = "Kymdan", LastName = "Admin", DepartmentId = 0 }, true);
+                    new { FirstName = "Kymdan", LastName = "Admin", DepartmentId = 0 });
             }
             if (!Roles.RoleExists("Admin"))
             {

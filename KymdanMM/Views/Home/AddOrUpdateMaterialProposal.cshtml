@@ -11,7 +11,19 @@
     var progressStatuses = (IEnumerable<ProgressStatus>)ViewBag.ProgressStatuses;
     var disabledAttribute = (object)new { @class = "form-control", disabled = "disabled" };
     var enableAttribute = (object)new { @class = "form-control" };
-    var editable = Model.Id == 0;
+    var editable = false;
+    if (Thread.CurrentPrincipal.IsInRole("Admin"))
+    {
+        editable = Model.ApproveStatus < ApproveStatus.AdminApproved;
+    }
+    else if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
+    {
+        editable = Model.ApproveStatus < ApproveStatus.ManagerApproved;
+    }
+    else
+    {
+        editable = Model.ApproveStatus == ApproveStatus.Unapproved;
+    }
     var panelClass = "";
     var headerString = "";
     switch (Model.ApproveStatus)
@@ -45,6 +57,8 @@
                 @Html.AntiForgeryToken()
                 //@Html.ValidationSummary()
                 @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.ApproveStatus)
+                @Html.HiddenFor(m => m.Finished)
                 <div class="col-sm-6">
                     <div class="form-group">
                         @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
@@ -63,7 +77,7 @@
                         <div class="col-sm-8 col-md-6">
                             @if (Model.ImplementerUserName == null && Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ImplementerDepartmentId == currentUser.DepartmentId)
                             {
-                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
+                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ImplementerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
                             }
                             else
                             {
@@ -100,7 +114,7 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
                         <div class="col-sm-8 col-md-6">
-                            @if (Model.ApproveStatus != ApproveStatus.AdminApproved)
+                            @if (editable)
                             {
                                 @Html.TextBoxFor(m => m.Deadline)
                             }
@@ -199,11 +213,11 @@
         </form>
         <div class="pull-right">
             <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
-            @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+            @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
             {
                 <input type="button" id="approveMaterialProposal" class="btn btn-success navbar-btn" value="Admin Duyệt" />
             }
-            @if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
+            @if (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ApproveStatus < ApproveStatus.ManagerApproved)
             {
                 <input type="button" id="approveMaterialProposal" class="btn btn-info navbar-btn" value="Manager Duyệt" />
             }
@@ -417,6 +431,7 @@
             });
 
             $("#approveMaterialProposal").on("click", function () {
+                $("#submitMaterialProposal").trigger("click");
                 $.ajax({
                     url: '@Url.Action("ApproveMaterialProposal", "Home")',
                     type: "POST",
