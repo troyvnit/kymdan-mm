@@ -46,3 +46,4 @@ F:\Working\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.dll
 F:\Working\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.pdb
 F:\Working\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations._new.resources
 F:\Working\Projects\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.csproj.GenerateResource.Cache
+D:\KymdanMM\KymdanMM.Data\obj\Debug\KymdanMM.Data.Migrations.update.resources

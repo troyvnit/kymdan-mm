@@ -13,6 +13,6 @@ namespace KymdanMM.Model.Models
         public DateTime Deadline { get; set; }
         public string Note { get; set; }
         public int MaterialProposalId { get; set; }
-        public MaterialProposal MaterialProposal { get; set; }
+        public virtual MaterialProposal MaterialProposal { get; set; }
     }
 }

@@ -268,6 +268,23 @@ namespace KymdanMM.Controllers
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult AddComment(string content, int id)
+        {
+            var comment = new Comment{ Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name};
+            var materialProposal = _materialProposalService.GetMaterialProposal(id);
+            var users = usersContext.UserProfiles.ToList();
+            var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user != null)
+            {
+                comment.Approved = materialProposal.ImplementerUserName != user.UserName || !Thread.CurrentPrincipal.IsInRole("Member");
+                comment.PosterDisplayName = user.DisplayName;
+            }
+            materialProposal.Comments.Add(comment);
+            _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
+            return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult AccessDenied()
         {
             ViewBag.Message = "Quyền hạn của bạn không phù hợp xem trang này!";

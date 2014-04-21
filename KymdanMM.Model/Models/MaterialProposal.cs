@@ -8,6 +8,8 @@ namespace KymdanMM.Model.Models
         public MaterialProposal()
         {
             Deadline = DateTime.Now;
+            Comments = new List<Comment>();
+            Materials = new List<Material>();
         }
         public string Description { get; set; }
         public string ManagementCode { get; set; }
@@ -22,8 +24,8 @@ namespace KymdanMM.Model.Models
         public ApproveStatus ApproveStatus { get; set; }
         public string Note { get; set; }
         public DateTime Deadline { get; set; }
-        public IList<Material> Materials { get; set; }
-        public IList<Comment> Comments { get; set; } 
+        public virtual IList<Material> Materials { get; set; }
+        public virtual IList<Comment> Comments { get; set; } 
     }
 
     public enum ApproveStatus

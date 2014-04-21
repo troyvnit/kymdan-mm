@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KymdanMM.Model.Models;
 
@@ -42,5 +43,6 @@ namespace KymdanMM.Models
         [Required]
         [Display(Name = "Hạn chót")]
         public string Deadline { get; set; }
+        public IList<CommentViewModel> Comments { get; set; } 
     }
 }
