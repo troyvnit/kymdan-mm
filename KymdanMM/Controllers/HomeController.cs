@@ -12,10 +12,12 @@ using KymdanMM.Model.Models;
 using KymdanMM.Models;
 using Newtonsoft.Json;
 using PagedList;
+using WebMatrix.WebData;
 
 namespace KymdanMM.Controllers
 {
     [InitializeSimpleMembership]
+    [CustomAuthorizeAttribute]
     public class HomeController : Controller
     {
         private IMaterialProposalService _materialProposalService { get; set; }
@@ -33,7 +35,6 @@ namespace KymdanMM.Controllers
             usersContext = new UsersContext();
         }
 
-        [Authorize]
         public ActionResult Index()
         {
             ViewBag.Departments = _departmentService.GetDepartments();
@@ -58,6 +59,14 @@ namespace KymdanMM.Controllers
         {
             var progressStatuses = _progressStatusService.GetProgressStatuses();
             return Json(progressStatuses, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult AddProgressStatus(string status)
+        {
+            var progressStatus = new ProgressStatus { Status = status };
+            _progressStatusService.AddOrUpdateProgressStatus(progressStatus);
+            return Json(progressStatus, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetUser()
@@ -163,6 +172,7 @@ namespace KymdanMM.Controllers
             ViewBag.Departments = _departmentService.GetDepartments();
             ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
             ViewBag.Users = users;
+            ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             return View(materialProposalViewModel);
         }
 
@@ -185,7 +195,6 @@ namespace KymdanMM.Controllers
                 materialProposal.ImplementerDepartmentId = 0;
                 materialProposal.ImplementerUserName = null;
                 materialProposal.ManagementCode = null;
-                materialProposal.Deadline = DateTime.MinValue;
             }
             materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);

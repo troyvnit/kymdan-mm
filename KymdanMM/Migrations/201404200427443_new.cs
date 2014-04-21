@@ -15,7 +15,7 @@ namespace KymdanMM.Migrations
                         UserName = c.String(),
                         FirstName = c.String(),
                         LastName = c.String(),
-                        Department = c.Int(nullable: false),
+                        DepartmentId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.UserId);
             

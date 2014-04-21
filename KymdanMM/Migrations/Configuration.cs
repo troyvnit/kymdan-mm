@@ -1,3 +1,6 @@
+using System.Web.Security;
+using WebMatrix.WebData;
+
 namespace KymdanMM.Migrations
 {
     using System;
@@ -9,23 +12,36 @@ namespace KymdanMM.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(KymdanMM.Models.UsersContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            WebSecurity.InitializeDatabaseConnection("KymdanMMEntities", "UserProfile", "UserId", "UserName", autoCreateTables: true);
+            if (!WebSecurity.UserExists("kymdanadmin"))
+            {
+                WebSecurity.CreateUserAndAccount("kymdanadmin", "Kymdan@123",
+                    new { FirstName = "Kymdan", LastName = "Admin", DepartmentId = 0 }, true);
+            }
+            if (!Roles.RoleExists("Admin"))
+            {
+                Roles.CreateRole("Admin");
+            }
+            if (!Roles.RoleExists("Department Manager"))
+            {
+                Roles.CreateRole("Department Manager");
+            }
+            if (!Roles.RoleExists("Member"))
+            {
+                Roles.CreateRole("Member");
+            }
+            if (Membership.GetUser("kymdanadmin") != null)
+            {
+                if (!Roles.IsUserInRole("kymdanadmin", "Admin"))
+                {
+                    Roles.AddUserToRole("kymdanadmin", "Admin");
+                }
+            }
         }
     }
 }

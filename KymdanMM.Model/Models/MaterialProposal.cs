@@ -22,7 +22,8 @@ namespace KymdanMM.Model.Models
         public ApproveStatus ApproveStatus { get; set; }
         public string Note { get; set; }
         public DateTime Deadline { get; set; }
-        public IList<Material> Materials { get; set; } 
+        public IList<Material> Materials { get; set; }
+        public IList<Comment> Comments { get; set; } 
     }
 
     public enum ApproveStatus

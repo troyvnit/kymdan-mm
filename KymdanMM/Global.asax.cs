@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using KymdanMM.App_Start;
+using WebMatrix.WebData;
 
 namespace KymdanMM
 {
@@ -21,6 +22,8 @@ namespace KymdanMM
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AuthConfig.RegisterAuth();
             StartupConfig.Register();
+            if(!WebSecurity.Initialized)
+            WebSecurity.InitializeDatabaseConnection("KymdanMMEntities", "UserProfile", "UserId", "UserName", autoCreateTables: true);
         }
     }
 }
