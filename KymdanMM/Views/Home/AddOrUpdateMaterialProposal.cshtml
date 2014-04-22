@@ -7,7 +7,7 @@
     ViewBag.Title = "AddOrUpdateMaterialProposal";
     var departments = (IEnumerable<Department>)ViewBag.Departments;
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
-    var currentUser = (UserProfile) ViewBag.CurrentUser;
+    var currentUser = (UserProfile)ViewBag.CurrentUser;
     var progressStatuses = (IEnumerable<ProgressStatus>)ViewBag.ProgressStatuses;
     var disabledAttribute = (object)new { @class = "form-control", disabled = "disabled" };
     var enableAttribute = (object)new { @class = "form-control" };
@@ -59,191 +59,224 @@
                 @Html.HiddenFor(m => m.Id)
                 @Html.HiddenFor(m => m.ApproveStatus)
                 @Html.HiddenFor(m => m.Finished)
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    Thông tin cơ bản
+                                </a>
+                            </p>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (Model.ImplementerUserName == null && Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ImplementerDepartmentId == currentUser.DepartmentId)
-                            {
-                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ImplementerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDisplayName)</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (Model.ImplementerDepartmentId == 0 && Thread.CurrentPrincipal.IsInRole("Admin"))
-                            {
-                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (string.IsNullOrEmpty(Model.ManagementCode) && Thread.CurrentPrincipal.IsInRole("Admin"))
-                            {
-                                @Html.TextBoxFor(m => m.ManagementCode, Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (editable)
-                            {
-                                @Html.TextBoxFor(m => m.Deadline)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (editable)
-                            {
-                                @Html.TextBoxFor(m => m.ProposalCode, enableAttribute)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposalCode)</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @if (editable)
-                            {
-                                @Html.TextAreaFor(m => m.Description, enableAttribute)
-                            }
-                            else
-                            {
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ProgressStatusId, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <div class="input-group">
-                                @Html.DropDownListFor(m => m.ProgressStatusId, new SelectList(progressStatuses, "Id", "Status"), "Chọn trạng thái", new { @class = "form-control" })
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" data-toggle="modal" data-target="#addProgressStatusModal" type="button"><span class="glyphicon glyphicon-plus"></span></button>
-                                </span>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (Model.ImplementerUserName == null && Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ImplementerDepartmentId == currentUser.DepartmentId)
+                                            {
+                                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ImplementerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDisplayName)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (Model.ImplementerDepartmentId == 0 && Thread.CurrentPrincipal.IsInRole("Admin"))
+                                            {
+                                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (string.IsNullOrEmpty(Model.ManagementCode) && Thread.CurrentPrincipal.IsInRole("Admin"))
+                                            {
+                                                @Html.TextBoxFor(m => m.ManagementCode, Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (editable)
+                                            {
+                                                @Html.TextBoxFor(m => m.Deadline)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (editable)
+                                            {
+                                                @Html.TextBoxFor(m => m.ProposalCode, enableAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposalCode)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (editable)
+                                            {
+                                                @Html.TextAreaFor(m => m.Description, enableAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ProgressStatusId, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            <div class="input-group">
+                                                @Html.DropDownListFor(m => m.ProgressStatusId, new SelectList(progressStatuses, "Id", "Status"), "Chọn trạng thái", new { @class = "form-control" })
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" data-toggle="modal" data-target="#addProgressStatusModal" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                Danh sách vật tư
+                            </a>
+                        </p>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            @*<a class="k-button k-button-icontext k-grid-add" onclick="$('#MaterialGrid').data('kendoGrid').addRow(); return false;" href="#"><span class="k-icon k-add"></span>Thêm</a>*@
+                            <div class="col-sm-12">
+                                Click đôi vào bảng để thêm mới vật tư và click lưu để lưu lại
+                            </div>
                         </div>
+                        <div id="MaterialGrid"></div>
                     </div>
                 </div>
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Danh sách vật tư</div>
-                        <div class="panel-body">
-                            <a class="k-button k-button-icontext k-grid-add" onclick="$('#MaterialGrid').data('kendoGrid').addRow(); return false;" href="#"><span class="k-icon k-add"></span>Thêm</a>
-                            <div class="clearfix"></div>
-                            <div class="row">&nbsp;</div>
-                            <div id="MaterialGrid"></div>
-                        </div>
+                if (Model.Id != 0)
+                 {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                Phản hồi
+                            </a>
+                        </p>
                     </div>
-                </div>
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Phản hồi</div>
+                    <div id="collapseThree" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <ul class="chat">
-                                @foreach (var comment in Model.Comments)
-                                {
-                                    var str = comment.PosterDisplayName;
-                                    string result = str;
-                                    if (!string.IsNullOrEmpty(str))
+                            <div class="col-sm-12">
+                                <ul class="chat">
+                                    @foreach (var comment in Model.Comments)
                                     {
-                                        var words = str.Split(' ');
-                                        for (int index = 0; index < words.Length; index++)
+                                        var str = comment.PosterDisplayName;
+                                        string result = str;
+                                        if (!string.IsNullOrEmpty(str))
                                         {
-                                            var s = words[index];
-                                            if (s.Length > 0)
+                                            var words = str.Split(' ');
+                                            for (int index = 0; index < words.Length; index++)
                                             {
-                                                words[index] = s[0].ToString().ToUpper();
+                                                var s = words[index];
+                                                if (s.Length > 0)
+                                                {
+                                                    words[index] = s[0].ToString().ToUpper();
+                                                }
                                             }
+                                            result = string.Join("", words);
                                         }
-                                        result = string.Join("", words);
-                                    }
-                                    if (comment.PosterUserName == currentUser.UserName)
-                                    {
-                                        <li class="right clearfix">
-                                            <span class="chat-img pull-right">
-                                                <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                            </span>
-                                            <div class="chat-body clearfix">
-                                                <div class="header">
-                                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                                    <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
+                                        if (comment.PosterUserName == currentUser.UserName)
+                                        {
+                                            <li class="right clearfix">
+                                                <span class="chat-img pull-right">
+                                                    <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                                </span>
+                                                <div class="chat-body clearfix">
+                                                    <div class="header">
+                                                        <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                                        <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
+                                                    </div>
+                                                    <p>
+                                                        @comment.Content
+                                                    </p>
                                                 </div>
-                                                <p>
-                                                    @comment.Content
-                                                </p>
-                                            </div>
-                                        </li>
-                                    }
-                                    else if(Thread.CurrentPrincipal.IsInRole("Department Manager") || comment.Approved)
-                                    {
-                                        <li class="left clearfix">
-                                            <span class="chat-img pull-left">
-                                                <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                            </span>
-                                            <div class="chat-body clearfix">
-                                                <div class="header">
-                                                    <strong class="primary-font">@comment.PosterDisplayName</strong> 
-                                                    <small class="pull-right text-muted">
-                                                                                                           <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                                                                                       </small>
+                                            </li>
+                                        }
+                                        else if (Thread.CurrentPrincipal.IsInRole("Department Manager") || comment.Approved)
+                                        {
+                                            <li class="left clearfix">
+                                                <span class="chat-img pull-left">
+                                                    <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                                </span>
+                                                <div class="chat-body clearfix">
+                                                    <div class="header">
+                                                        <strong class="primary-font">@comment.PosterDisplayName</strong>
+                                                        <small class="pull-right text-muted">
+                                                            <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                                        </small>
+                                                    </div>
+                                                    <p>
+                                                        @comment.Content
+                                                    </p>
                                                 </div>
-                                                <p>
-                                                    @comment.Content
-                                                </p>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        }
                                     }
-                                }
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
+                 }
             }
         </div>
     </div>
@@ -294,7 +327,7 @@
                 <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu" />
             </div>
         </div>
-        </div>
+    </div>
 </nav>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -304,14 +337,14 @@
         </div>
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#addProgressStatus").on("click", function() {
+        $(document).ready(function () {
+            $("#addProgressStatus").on("click", function () {
                 $.ajax({
                     url: '@Url.Action("AddProgressStatus", "Home")',
                     type: "POST",
                     data: { status: $("#Status").val() },
                     dataType: "json",
-                    success: function(result) {
+                    success: function (result) {
                         if (result) {
                             $("#Status").val('');
                             $("#addProgressStatusSuccess").show();
@@ -323,7 +356,7 @@
                 });
             });
 
-            $("#addProgressStatusModal").on('show.bs.modal', function(e) {
+            $("#addProgressStatusModal").on('show.bs.modal', function (e) {
                 $("#Status").val('');
                 $("#addProgressStatusSuccess").hide();
             });
@@ -361,7 +394,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function(options, operation) {
+                    parameterMap: function (options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models),
@@ -397,7 +430,7 @@
                     total: "total",
                     data: "data"
                 },
-                sync: function() {
+                sync: function () {
                     $("#MaterialGrid").removeClass("input-validation-error");
                     popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
                 }
@@ -420,64 +453,24 @@
                     { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "20%" },
                     { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
                 ],
-                dataBound: function() {
+                dataBound: function () {
                     if ($("#Id").val() != 0) {
                         $("#MaterialGrid").data("kendoGrid").hideColumn(8);
                         $(".k-grid-add").remove();
+                    } else {
+                        $("#MaterialGrid .k-grid-content").on("dblclick", function () {
+                            $('#MaterialGrid').data('kendoGrid').addRow();
+                        });
+
+                        $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
+                            return false;
+                        });
                     }
                 },
                 editable: true
             });
 
-            //$("#DepartmentId").kendoDropDownList({
-            //    dataTextField: "DepartmentName",
-            //    dataValueField: "Id",
-            //    autoBind: true,
-            //    optionLabel: "Chọn đơn vị",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetDepartment",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-
-            //$("#ProposerUserName").kendoDropDownList({
-            //    dataTextField: "DisplayName",
-            //    dataValueField: "UserName",
-            //    autoBind: true,
-            //    optionLabel: "Chọn người đề xuất",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetUser",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-
-            //$("#ImplementerUserName").kendoDropDownList({
-            //    dataTextField: "DisplayName",
-            //    dataValueField: "UserName",
-            //    autoBind: true,
-            //    optionLabel: "Chọn người thực hiện",
-            //    dataSource: {
-            //        severFiltering: true,
-            //        transport: {
-            //            read: {
-            //                url: "/Home/GetUser",
-            //                type: "post"
-            //            }
-            //        }
-            //    }
-            //});
-
-            $("#submitMaterialProposal").on("click", function() {
+            $("#submitMaterialProposal").on("click", function () {
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
@@ -487,7 +480,7 @@
                     type: "POST",
                     data: $("form").serialize(),
                     dataType: "json",
-                    success: function(id) {
+                    success: function (id) {
                         popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
                         $("#Id").val(id);
                         var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
@@ -501,14 +494,14 @@
                 });
             });
 
-            $("#approveMaterialProposal").on("click", function() {
+            $("#approveMaterialProposal").on("click", function () {
                 $("#submitMaterialProposal").trigger("click");
                 $.ajax({
                     url: '@Url.Action("ApproveMaterialProposal", "Home")',
                     type: "POST",
                     data: { idString: $("#Id").val() },
                     dataType: "json",
-                    success: function(result) {
+                    success: function (result) {
                         if (result) {
                             location.reload();
                         }
@@ -516,13 +509,13 @@
                 });
             });
 
-            $("#submitComment").on("click", function() {
+            $("#submitComment").on("click", function () {
                 $.ajax({
                     url: '@Url.Action("AddComment", "Home")',
                     type: "POST",
                     data: { id: $("#Id").val(), content: $("#comment").val() },
                     dataType: "json",
-                    success: function(result) {
+                    success: function (result) {
                         if (result) {
                             location.reload();
                         }
@@ -530,14 +523,14 @@
                 });
             });
 
-            $("#comment").on("keypress", function(e) {
+            $("#comment").on("keypress", function (e) {
                 if (e.keyCode == 13) {
                     $("#submitComment").trigger("click");
                 }
             });
         });
 
-        var textareaEditor = function(container, options) {
+        var textareaEditor = function (container, options) {
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
                 .appendTo(container);
         };

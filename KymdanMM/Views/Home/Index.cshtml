@@ -8,7 +8,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Danh sách công việc</div>
         <div class="panel-body">
-            <div class="pull-right">
+            @*<div class="pull-right">
                 <a href="#" class="btn btn-danger" role="button">Xóa mục đã chọn</a>
                 @if (Thread.CurrentPrincipal.IsInRole("Member"))
                 {
@@ -20,7 +20,7 @@
                 }
             </div>
             <div class="clearfix"></div>
-            <div class="row">&nbsp;</div>
+            <div class="row">&nbsp;</div>*@
             <div id="MaterialProposalGrid"></div>
         </div>
     </div>
@@ -29,7 +29,7 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script id="proposalCodeTemplate" type="text/x-kendo-tmpl">
-        <a href="/Home/AddOrUpdateMaterialProposal/#= Id #">#= ProposalCode #</a>
+        <a href="/Home/AddOrUpdateMaterialProposal/#= Id #" class="label label-primary">#= ProposalCode #</a>
     </script>
     <script id="approveStatusTemplate" type="text/x-kendo-tmpl">
         # if (ApproveStatus == 2) { #

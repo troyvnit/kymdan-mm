@@ -34,7 +34,7 @@ namespace KymdanMM.Controllers
         public ActionResult GetAccount()
         {
             var dbContext = new UsersContext();
-            var users = dbContext.UserProfiles.ToList();
+            var users = dbContext.UserProfiles.Where(a => a.UserName != "kymdanadmin").ToList();
             return Json(new
             {
                 data = users.Select(a => new AccountGridViewModel
@@ -62,6 +62,10 @@ namespace KymdanMM.Controllers
                 {
                     dbContext.UserProfiles.AddOrUpdate(user);
                     dbContext.SaveChanges();
+                    foreach (var role in Roles.GetRolesForUser(user.UserName))
+                        {
+                            Roles.RemoveUserFromRole(user.UserName, role);
+                        }
                         foreach (var role in account.Roles.Split(','))
                         {
                             if (!Roles.RoleExists(role))
@@ -77,7 +81,7 @@ namespace KymdanMM.Controllers
 
         public ActionResult GetRole()
         {
-            var roles = Roles.GetAllRoles().ToList();
+            var roles = Roles.GetAllRoles().ToList().Select(a => new { RoleName = a });
             return Json(roles, JsonRequestBehavior.AllowGet);
         }
 
