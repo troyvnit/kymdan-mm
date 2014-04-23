@@ -194,12 +194,6 @@
                         </p>
                     </div>
                     <div id="collapseTwo" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            @*<a class="k-button k-button-icontext k-grid-add" onclick="$('#MaterialGrid').data('kendoGrid').addRow(); return false;" href="#"><span class="k-icon k-add"></span>Thêm</a>*@
-                            <div class="col-sm-12">
-                                Click đôi vào bảng để thêm mới vật tư và click lưu để lưu lại
-                            </div>
-                        </div>
                         <div id="MaterialGrid"></div>
                     </div>
                 </div>
@@ -375,7 +369,7 @@
                     template: $("#successTemplate").html()
                 }]
             }).data("kendoNotification");
-            var editable = '@(Model.Id == 0)' == 'True';
+            var editable = ('@(Model.ApproveStatus == ApproveStatus.Unapproved)' == 'True' || ('@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' && '@(Model.ApproveStatus != ApproveStatus.AdminApproved)' == 'True'));
             var materialProposalDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -424,7 +418,9 @@
                             Used: { editable: editable, type: "boolean" },
                             UsingPurpose: { editable: editable, type: "string" },
                             Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            Note: { type: "string" }
+                            Note: { type: "string" },
+                            ImplementerDepartment: { editable: editable },
+                            ImplementerUser: { editable: editable }
                         }
                     },
                     total: "total",
@@ -440,22 +436,29 @@
                 dataSource: materialProposalDataSource,
                 navigatable: true,
                 pageable: true,
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư", width: "20%" },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: "25%" },
-                    { field: "Quantity", title: "Số lượng", width: "10%" },
+                    { field: "MaterialName", title: "Tên vật tư" },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor },
+                    { field: "Quantity", title: "Số lượng" },
                     { field: "Unit", title: "Đơn vị tính", hidden: true },
                     { field: "Used", title: "Đã sử dụng?", hidden: true },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: "15%" },
-                    { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "20%" },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót" },
+                    { field: "ImplementerDepartment", title: "Phòng ban thực hiện", editor: implementerDepartmentEditor, template: "#= (ImplementerDepartment != null) ? ImplementerDepartment.DepartmentName : '' #" },
+                    { field: "ImplementerUser", title: "Người thực hiện", editor: implementerUserEditor, template: "#= (ImplementerUser != null) ? ImplementerUser.DisplayName : '' #" },
+                    { field: "Note", title: "Ghi chú", editor: textareaEditor },
                     { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
                 ],
                 dataBound: function () {
                     if ($("#Id").val() != 0) {
-                        $("#MaterialGrid").data("kendoGrid").hideColumn(8);
+                        $("#MaterialGrid").data("kendoGrid").hideColumn(10);
                         $(".k-grid-add").remove();
                     } else {
                         $("#MaterialGrid .k-grid-content").on("dblclick", function () {
@@ -534,5 +537,35 @@
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
                 .appendTo(container);
         };
+        
+        function implementerDepartmentEditor(container, options) {
+            $('<input required data-text-field="DepartmentName" data-value-field="Id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "/Home/GetDepartment",
+                                type: "post"
+                            }
+                        }
+                    }
+                });
+        }
+        
+        function implementerUserEditor(container, options) {
+            $('<input required data-text-field="DisplayName" data-value-field="UserName" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "/Home/GetUser",
+                                type: "post"
+                            }
+                        }
+                    }
+                });
+        }
     </script>
 }

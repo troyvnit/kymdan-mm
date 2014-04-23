@@ -13,5 +13,7 @@ namespace KymdanMM.Models
         public string UsingPurpose { get; set; }
         public DateTime Deadline { get; set; }
         public string Note { get; set; }
+        public UserProfile ImplementerUser { get; set; }
+        public Department ImplementerDepartment { get; set; }
     }
 }

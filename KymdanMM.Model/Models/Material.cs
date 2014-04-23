@@ -12,6 +12,8 @@ namespace KymdanMM.Model.Models
         public string UsingPurpose { get; set; }
         public DateTime Deadline { get; set; }
         public string Note { get; set; }
+        public string ImplementerUserName { get; set; }
+        public int ImplementerDepartmentId { get; set; }
         public int MaterialProposalId { get; set; }
         public virtual MaterialProposal MaterialProposal { get; set; }
     }

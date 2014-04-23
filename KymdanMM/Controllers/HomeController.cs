@@ -238,7 +238,22 @@ namespace KymdanMM.Controllers
         public ActionResult GetMaterial(int id, int pageNumber, int pageSize)
         {
             var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
-            return Json(new { data = materials.Select(Mapper.Map<Material, MaterialViewModel>), total = materials.TotalItemCount }, JsonRequestBehavior.AllowGet);
+            var materialViewModels = materials.ToList().Select(a => new MaterialViewModel
+                                                           {
+                                                               Id = a.Id,
+                                                               CreatedDate = a.CreatedDate,
+                                                               Deadline = a.Deadline,
+                                                               Description = a.Description,
+                                                               MaterialName = a.MaterialName,
+                                                               Note = a.Note,
+                                                               Quantity = a.Quantity,
+                                                               Unit = a.Unit,
+                                                               Used = a.Used,
+                                                               UsingPurpose = a.UsingPurpose,
+                                                               ImplementerDepartment = _departmentService.GetDepartment(a.ImplementerDepartmentId),
+                                                               ImplementerUser = usersContext.UserProfiles.ToList().FirstOrDefault(b => b.UserName == a.ImplementerUserName)
+                                                           });
+            return Json(new { data = materialViewModels, total = materials.TotalItemCount }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -249,6 +264,7 @@ namespace KymdanMM.Controllers
             foreach (var materialViewModel in materialViewModels)
             {
                 var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
+                material.ImplementerUserName = materialViewModel.ImplementerUser.UserName;
                 material.MaterialProposalId = materialProposalId;
                 _materialService.AddOrUpdateMaterial(material);
             }
