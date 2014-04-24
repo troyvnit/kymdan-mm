@@ -25,7 +25,7 @@
                     <li>@Html.ActionLink("Quản lý đề xuất", "Index", "Home")</li>
                     @if (Thread.CurrentPrincipal.IsInRole("Member"))
                     {
-                        <li>@Html.ActionLink("Thêm đề xuất vật tư", "AddOrUpdateMaterialProposal", "Home")</li>
+                        <li><a href="/them-de-xuat">Thêm đề xuất vật tư</a></li>
                     }
                     @if (Thread.CurrentPrincipal.IsInRole("Admin"))
                     {

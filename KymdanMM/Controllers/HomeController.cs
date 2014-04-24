@@ -86,7 +86,7 @@ namespace KymdanMM.Controllers
                 {
                     materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
                         a => (a.ApproveStatus != ApproveStatus.Unapproved) &&
-                            (a.ImplementerDepartmentId == departmentId || a.ProposerDepartmentId == departmentId || departmentId == null) &&
+                            (a.ImplementerDepartmentId == departmentId || a.ProposerDepartmentId == departmentId || a.Materials.Count(m => m.ImplementerDepartmentId == departmentId) > 0 || departmentId == null) &&
                             (a.ProgressStatusId == progressStatusId || progressStatusId == null) &&
                             (a.ApproveStatus == approveStatus || approveStatus == null) &&
                             (a.ProposalCode.Contains(keyWord) || a.Description.Contains(keyWord) || a.Materials.Count(m => m.MaterialName.Contains(keyWord)) > 0 || string.IsNullOrEmpty(keyWord)));
@@ -94,7 +94,7 @@ namespace KymdanMM.Controllers
                 else if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
                 {
                     materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
-                        a => (a.ImplementerDepartmentId == user.DepartmentId || a.ProposerDepartmentId == user.DepartmentId) &&
+                        a => (a.ImplementerDepartmentId == user.DepartmentId || a.ProposerDepartmentId == user.DepartmentId || a.Materials.Count(b => b.ImplementerDepartmentId == user.DepartmentId) > 0) &&
                             (a.ProgressStatusId == progressStatusId || progressStatusId == null) &&
                             (a.ApproveStatus == approveStatus || approveStatus == null) &&
                             (a.ProposalCode.Contains(keyWord) || a.Description.Contains(keyWord) || a.Materials.Count(m => m.MaterialName.Contains(keyWord)) > 0 || string.IsNullOrEmpty(keyWord)));
@@ -102,7 +102,7 @@ namespace KymdanMM.Controllers
                 else
                 {
                     materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
-                        a => (a.ImplementerUserName == user.UserName || a.ProposerUserName == user.UserName) &&
+                        a => (a.ImplementerUserName == user.UserName || a.ProposerUserName == user.UserName || a.Materials.Count(m => m.ImplementerUserName == user.UserName) > 0) &&
                             (a.ProgressStatusId == progressStatusId || progressStatusId == null) &&
                             (a.ApproveStatus == approveStatus || approveStatus == null) &&
                             (a.ProposalCode.Contains(keyWord) || a.Description.Contains(keyWord) || a.Materials.Count(m => m.MaterialName.Contains(keyWord)) > 0 || string.IsNullOrEmpty(keyWord)));
@@ -238,21 +238,7 @@ namespace KymdanMM.Controllers
         public ActionResult GetMaterial(int id, int pageNumber, int pageSize)
         {
             var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
-            var materialViewModels = materials.ToList().Select(a => new MaterialViewModel
-                                                           {
-                                                               Id = a.Id,
-                                                               CreatedDate = a.CreatedDate,
-                                                               Deadline = a.Deadline,
-                                                               Description = a.Description,
-                                                               MaterialName = a.MaterialName,
-                                                               Note = a.Note,
-                                                               Quantity = a.Quantity,
-                                                               Unit = a.Unit,
-                                                               Used = a.Used,
-                                                               UsingPurpose = a.UsingPurpose,
-                                                               ImplementerDepartment = _departmentService.GetDepartment(a.ImplementerDepartmentId),
-                                                               ImplementerUser = usersContext.UserProfiles.ToList().FirstOrDefault(b => b.UserName == a.ImplementerUserName)
-                                                           });
+            var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
             return Json(new { data = materialViewModels, total = materials.TotalItemCount }, JsonRequestBehavior.AllowGet);
         }
 
@@ -264,7 +250,6 @@ namespace KymdanMM.Controllers
             foreach (var materialViewModel in materialViewModels)
             {
                 var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
-                material.ImplementerUserName = materialViewModel.ImplementerUser.UserName;
                 material.MaterialProposalId = materialProposalId;
                 _materialService.AddOrUpdateMaterial(material);
             }

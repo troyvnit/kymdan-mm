@@ -29,7 +29,7 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script id="proposalCodeTemplate" type="text/x-kendo-tmpl">
-        <a href="/Home/AddOrUpdateMaterialProposal/#= Id #" class="label label-primary">#= ProposalCode #</a>
+        <a href="/chinh-sua-de-xuat/#= Id #" class="label label-primary">#= ProposalCode #</a>
     </script>
     <script id="approveStatusTemplate" type="text/x-kendo-tmpl">
         # if (ApproveStatus == 2) { #
@@ -160,22 +160,20 @@
                 columns: [
                     {
                         field: "ProposalCode", title: "Mã đề xuất",
-                        template: $("#proposalCodeTemplate").html()
+                        template: $("#proposalCodeTemplate").html(), width: "10%"
                     },
-                    { field: "Description", title: "Mô tả" },
-                    { field: "ImplementerDisplayName", title: "Người thực hiện" },
-                    { field: "ProposerDisplayName", title: "Người đề nghị" },
-                    { field: "Deadline", title: "Hạn chót" },
+                    { field: "Description", title: "Mô tả", width: "30%" },
+                    { field: "Deadline", title: "Hạn chót", width: "15%" },
 
                     {
                         field: "Status",
-                        title: "Trạng thái tiến độ"
+                        title: "Trạng thái tiến độ", width: "20%"
                     },
                     {
                         field: "ApproveStatus", title: "Duyệt",
-                        template: $("#approveStatusTemplate").html()
+                        template: $("#approveStatusTemplate").html(), width: "15%"
                     },
-                    { command: [{ name: "destroy", title: "&nbsp;", width: 70, text: "Xóa" }] }
+                    { command: [{ name: "destroy", title: "&nbsp;", width: "10%", text: "Xóa" }] }
                 ],
                 dataBound: function () {
                     var dataView = this.dataSource.view();
