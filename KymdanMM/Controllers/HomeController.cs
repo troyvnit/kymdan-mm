@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using AutoMapper;
+using KymdanMM.Data;
 using KymdanMM.Data.Service;
 using KymdanMM.Filters;
 using KymdanMM.Model.Models;
@@ -37,7 +40,10 @@ namespace KymdanMM.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.Departments = _departmentService.GetDepartments();
+            if (Thread.CurrentPrincipal.IsInRole("ITAdmin"))
+            {
+                return RedirectToAction("Admin");
+            }
             return View();
         }
 
@@ -55,6 +61,14 @@ namespace KymdanMM.Controllers
             return Json(department, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult DeleteDepartment(int id)
+        {
+            var department = _departmentService.GetDepartment(id);
+            _departmentService.DeleteDepartment(department);
+            return Json(department, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult GetProgressStatus()
         {
             var progressStatuses = _progressStatusService.GetProgressStatuses();
@@ -66,6 +80,14 @@ namespace KymdanMM.Controllers
         {
             var progressStatus = new ProgressStatus { Status = status };
             _progressStatusService.AddOrUpdateProgressStatus(progressStatus);
+            return Json(progressStatus, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteProgressStatus(int id)
+        {
+            var progressStatus = _progressStatusService.GetProgressStatus(id);
+            _progressStatusService.DeleteProgressStatus(progressStatus);
             return Json(progressStatus, JsonRequestBehavior.AllowGet);
         }
 
@@ -135,7 +157,6 @@ namespace KymdanMM.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public ActionResult AddOrUpdateMaterialProposal(int? id)
         {
             if ((id == null || id == 0) && !Thread.CurrentPrincipal.IsInRole("Member"))
@@ -177,7 +198,6 @@ namespace KymdanMM.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             if (!Thread.CurrentPrincipal.IsInRole("Admin"))
@@ -213,7 +233,6 @@ namespace KymdanMM.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public ActionResult ApproveMaterialProposal(string idString)
         {
             var ids = idString.Split(',');
@@ -243,7 +262,6 @@ namespace KymdanMM.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public ActionResult AddOrUpdateMaterial(string materials, int materialProposalId)
         {
             var materialViewModels = JsonConvert.DeserializeObject<List<MaterialViewModel>>(materials);
@@ -257,7 +275,6 @@ namespace KymdanMM.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public ActionResult DeleteMaterial(string materials)
         {
             var materialViewModels = JsonConvert.DeserializeObject<List<MaterialViewModel>>(materials);
@@ -291,6 +308,29 @@ namespace KymdanMM.Controllers
             ViewBag.Message = "Quyền hạn của bạn không phù hợp xem trang này!";
 
             return View();
+        }
+
+        [Authorize(Roles = "ITAdmin")]
+        public ActionResult Admin()
+        {
+            ViewBag.Departments = _departmentService.GetDepartments();
+            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+            return View();
+        }
+
+        [Authorize(Roles = "ITAdmin")]
+        public ActionResult BackupDatabase()
+        {
+            var fileName = "KymdanMMBackup_" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss") + ".bak";
+            var dbPath = Server.MapPath("~/App_Data/" + fileName);
+            using (var db = new KymdanMMEntities())
+            {
+                var cmd = String.Format("BACKUP DATABASE {0} TO DISK='{1}' WITH FORMAT, MEDIANAME='DbBackups', MEDIADESCRIPTION='Media set for {0} database';"
+                    , "KymdanMM", dbPath);
+                db.Database.ExecuteSqlCommand(TransactionalBehavior.DoNotEnsureTransaction, cmd);
+            }
+
+            return File(new FileStream(dbPath, FileMode.Open), "application/octet-stream", fileName);
         }
 
         public ActionResult About()

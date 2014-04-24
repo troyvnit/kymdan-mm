@@ -27,6 +27,10 @@ namespace KymdanMM.Migrations
             {
                 Roles.CreateRole("Admin");
             }
+            if (!Roles.RoleExists("ITAdmin"))
+            {
+                Roles.CreateRole("ITAdmin");
+            }
             if (!Roles.RoleExists("Department Manager"))
             {
                 Roles.CreateRole("Department Manager");
@@ -37,9 +41,9 @@ namespace KymdanMM.Migrations
             }
             if (Membership.GetUser("kymdanadmin") != null)
             {
-                if (!Roles.IsUserInRole("kymdanadmin", "Admin"))
+                if (!Roles.IsUserInRole("kymdanadmin", "ITAdmin"))
                 {
-                    Roles.AddUserToRole("kymdanadmin", "Admin");
+                    Roles.AddUserToRole("kymdanadmin", "ITAdmin");
                 }
             }
         }

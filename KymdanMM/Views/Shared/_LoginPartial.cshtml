@@ -9,7 +9,7 @@
             <li>
                 @Html.ActionLink("Chào " + User.Identity.Name + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
             </li>
-            @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+            @if (Thread.CurrentPrincipal.IsInRole("ITAdmin"))
             {
                 <li>@Html.ActionLink("Tạo tài khoản", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
             }

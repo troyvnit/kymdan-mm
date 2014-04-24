@@ -1,0 +1,138 @@
+﻿@using KymdanMM.Model.Models
+@{
+    ViewBag.Title = "Admin";
+    var departments = (List<Department>)ViewBag.Departments;
+    var progressStatuses = (List<ProgressStatus>)ViewBag.ProgressStatuses;
+}
+
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Danh sách phòng ban</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group" id="Department">
+                    @foreach (var department in departments)
+                    {
+                        <li class="list-group-item">@department.DepartmentName
+                            <a href="javascript:void(0)" data-id="@department.Id" class="deleteDepartment">
+                                <span class="glyphicon glyphicon-minus pull-right red"></span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="DepartmentName" placeholder="Nhập tên phòng ban...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" id="addDepartment" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Danh sách trạng thái</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group" id="ProgressStatus">
+                    @foreach (var progressStatus in progressStatuses)
+                    {
+                        <li class="list-group-item">
+                            @progressStatus.Status
+                            <a href="javascript:void(0)" data-id="@progressStatus.Id" class="deleteProgressStatus">
+                                <span class="glyphicon glyphicon-minus pull-right red"></span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="Status" placeholder="Nhập trạng thái...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" id="addProgressStatus" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#addProgressStatus").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("AddProgressStatus", "Home")',
+                type: "POST",
+                data: { status: $("#Status").val() },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $("#Status").val('');
+                        $("#ProgressStatus").append('<li class="list-group-item">' + result.Status +
+                            '<a href="javascript:void(0)" data-id="' + result.Id + '" class="deleteProgressStatus">' +
+                            '<span class="glyphicon glyphicon-minus pull-right red"></span></a></li>');
+                        
+                    }
+                }
+            });
+        });
+
+        $("#addDepartment").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("AddDepartment", "Home")',
+                type: "POST",
+                data: { departmentName: $("#DepartmentName").val() },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        $("#DepartmentName").val('');
+                        $("#Department").append('<li class="list-group-item">' + result.DepartmentName +
+                            '<a href="javascript:void(0)" data-id="' + result.Id + '" class="deleteDepartment">' +
+                            '<span class="glyphicon glyphicon-minus pull-right red"></span></a></li>');
+                    }
+                }
+            });
+        });
+
+        $("#ProgressStatus").on("click", ".deleteProgressStatus", function () {
+            if (!confirm("Bạn có chắc muốn xóa trạng thái này?")) {
+                return;
+            }
+            var thisProgressStatus = $(this);
+            $.ajax({
+                url: '@Url.Action("DeleteProgressStatus", "Home")',
+                type: "POST",
+                data: { id: thisProgressStatus.data("id") },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        thisProgressStatus.closest('li.list-group-item').remove();
+                    }
+                }
+            });
+        });
+
+        $("#Department").on("click", ".deleteDepartment", function () {
+            if (!confirm("Bạn có chắc muốn xóa phòng ban này?")) {
+                return;
+            }
+            var thisProgressStatus = $(this);
+            $.ajax({
+                url: '@Url.Action("DeleteDepartment", "Home")',
+                type: "POST",
+                data: { id: thisProgressStatus.data("id") },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        thisProgressStatus.closest('li.list-group-item').remove();
+                    }
+                }
+            });
+        });
+    });
+    </script>
+}

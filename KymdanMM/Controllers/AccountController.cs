@@ -128,7 +128,7 @@ namespace KymdanMM.Controllers
         //
         // GET: /Account/Register
 
-        [AllowAnonymous]
+        [Authorize(Roles = "ITAdmin")]
         public ActionResult Register()
         {
             var model = new RegisterModel();
@@ -141,7 +141,7 @@ namespace KymdanMM.Controllers
         // POST: /Account/Register
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "ITAdmin")]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
