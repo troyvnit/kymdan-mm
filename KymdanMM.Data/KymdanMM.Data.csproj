@@ -70,6 +70,10 @@
     <Compile Include="Migrations\201404230150235_uptodate.Designer.cs">
       <DependentUpon>201404230150235_uptodate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201404241038132_uop.cs" />
+    <Compile Include="Migrations\201404241038132_uop.Designer.cs">
+      <DependentUpon>201404241038132_uop.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ProgressStatusRepository.cs" />
@@ -100,6 +104,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404230150235_uptodate.resx">
       <DependentUpon>201404230150235_uptodate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201404241038132_uop.resx">
+      <DependentUpon>201404241038132_uop.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

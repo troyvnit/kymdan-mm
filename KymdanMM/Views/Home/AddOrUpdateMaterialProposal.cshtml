@@ -86,7 +86,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
-                                            @if (Model.ImplementerUserName == null && Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ImplementerDepartmentId == currentUser.DepartmentId)
+                                            @if (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ApproveStatus < ApproveStatus.ManagerApproved && Model.ImplementerDepartmentId == currentUser.DepartmentId)
                                             {
                                                 @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ImplementerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
                                             }
@@ -99,7 +99,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
-                                            @if (Model.ImplementerDepartmentId == 0 && Thread.CurrentPrincipal.IsInRole("Admin"))
+                                            @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
                                             {
                                                 @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
                                             }
@@ -112,7 +112,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
-                                            @if (string.IsNullOrEmpty(Model.ManagementCode) && Thread.CurrentPrincipal.IsInRole("Admin"))
+                                            @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
                                             {
                                                 @Html.TextBoxFor(m => m.ManagementCode, Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
                                             }
@@ -166,12 +166,7 @@
                                     <div class="form-group">
                                         @Html.LabelFor(m => m.ProgressStatusId, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
-                                            <div class="input-group">
                                                 @Html.DropDownListFor(m => m.ProgressStatusId, new SelectList(progressStatuses, "Id", "Status"), "Chọn trạng thái", new { @class = "form-control" })
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" data-toggle="modal" data-target="#addProgressStatusModal" type="button"><span class="glyphicon glyphicon-plus"></span></button>
-                                                </span>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -275,24 +270,6 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="addProgressStatusModal" tabindex="-1" role="dialog" aria-labelledby="addProgressStatusModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="addProgressStatusModalLabel">Thêm phòng ban</h4>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-success" id="addProgressStatusSuccess">Tạo thành công</div>
-                <input type="text" class="form-control" id="Status" placeholder="Tên phòng ban" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="addProgressStatus">Tạo</button>
-            </div>
-        </div>
-    </div>
-</div>
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
     <div class="container">
         <div class="col-sm-8">
@@ -332,28 +309,6 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#addProgressStatus").on("click", function () {
-                $.ajax({
-                    url: '@Url.Action("AddProgressStatus", "Home")',
-                    type: "POST",
-                    data: { status: $("#Status").val() },
-                    dataType: "json",
-                    success: function (result) {
-                        if (result) {
-                            $("#Status").val('');
-                            $("#addProgressStatusSuccess").show();
-                            $("#ProgressStatusId").append('<option value="' + result.Id + '">' + result.Status + '</option>');
-                            $("#ProgressStatusId").val(result.Id);
-                            $("#addProgressStatusModal").modal("hide");
-                        }
-                    }
-                });
-            });
-
-            $("#addProgressStatusModal").on('show.bs.modal', function (e) {
-                $("#Status").val('');
-                $("#addProgressStatusSuccess").hide();
-            });
             $("#Deadline").kendoDatePicker({
                 format: "dd/MM/yyyy"
             });
@@ -471,6 +426,11 @@
                         });
                     }
                 },
+                edit: function(e) {
+                    if (e.model.isNew()) {
+                        e.model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
+                    }
+                },
                 editable: true
             });
 
@@ -578,6 +538,7 @@
                 .kendoDropDownList({
                     dataTextField: "DepartmentName",
                     dataValueField: "Id",
+                    optionLabel: "-Chọn-",
                     dataSource: implementerDepartmentDataSource
                 });
         }
@@ -607,6 +568,7 @@
                 .kendoDropDownList({
                     dataTextField: "DisplayName",
                     dataValueField: "UserName",
+                    optionLabel: "-Chọn-",
                     dataSource: implementerUserDataSource
                 });
         }

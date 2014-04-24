@@ -19,7 +19,6 @@ namespace KymdanMM.Model.Models
         public string ImplementerUserName { get; set; }
         public int ImplementerDepartmentId { get; set; }
         public int ProgressStatusId { get; set; }
-        public ProgressStatus ProgressStatus { get; set; }
         public bool Finished { get; set; }
         public ApproveStatus ApproveStatus { get; set; }
         public string Note { get; set; }
