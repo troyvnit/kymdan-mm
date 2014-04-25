@@ -75,6 +75,12 @@
     <script type="text/javascript">
     $(document).ready(function () {
         $("#addProgressStatus").on("click", function () {
+            if ($("#Status").val() == "") {
+                $("#Status").addClass("input-validation-error");
+                return false;
+            } else {
+                $("#Status").removeClass("input-validation-error");
+            }
             $.ajax({
                 url: '@Url.Action("AddProgressStatus", "Home")',
                 type: "POST",
@@ -93,6 +99,12 @@
         });
 
         $("#addDepartment").on("click", function () {
+            if ($("#DepartmentName").val() == "") {
+                $("#DepartmentName").addClass("input-validation-error");
+                return false;
+            } else {
+                $("#DepartmentName").removeClass("input-validation-error");
+            }
             $.ajax({
                 url: '@Url.Action("AddDepartment", "Home")',
                 type: "POST",
