@@ -33,7 +33,7 @@
                     @if (Thread.CurrentPrincipal.IsInRole("ITAdmin"))
                     {
                         <li>@Html.ActionLink("Quản lý người dùng", "Index", "Account")</li>
-                        <li>@Html.ActionLink("Backup", "BackupDatabase", "Home", null, new { @class = "btn btn-danger" })</li>
+                        <li>@Html.ActionLink("Quản trị", "Admin", "Home")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")

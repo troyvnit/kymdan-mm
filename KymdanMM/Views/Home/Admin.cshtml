@@ -7,7 +7,7 @@
 
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-5">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Danh sách phòng ban</h3>
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-5">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Danh sách trạng thái</h3>
@@ -55,6 +55,17 @@
                         <button class="btn btn-default" id="addProgressStatus" type="button"><span class="glyphicon glyphicon-plus"></span></button>
                     </span>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Sao lưu dữ liệu</h3>
+            </div>
+            <div class="panel-body">
+                <p>Backup toàn bộ database hiện tại thành file .bak và lưu trữ ở nơi bạn cảm thấy an toàn!</p>
+                <p><a class="btn btn-success pull-right" href="@Url.Action("BackupDatabase", "Home")" role="button">Sao lưu</a></p>
             </div>
         </div>
     </div>
