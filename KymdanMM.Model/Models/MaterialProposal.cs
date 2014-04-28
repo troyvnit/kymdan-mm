@@ -7,7 +7,6 @@ namespace KymdanMM.Model.Models
     {
         public MaterialProposal()
         {
-            Deadline = DateTime.Now;
             Comments = new List<Comment>();
             Materials = new List<Material>();
         }
@@ -16,19 +15,14 @@ namespace KymdanMM.Model.Models
         public string ProposalCode { get; set; }
         public string ProposerUserName { get; set; }
         public int ProposerDepartmentId { get; set; }
-        public string ImplementerUserName { get; set; }
-        public int ImplementerDepartmentId { get; set; }
-        public int ProgressStatusId { get; set; }
-        public bool Finished { get; set; }
-        public ApproveStatus ApproveStatus { get; set; }
         public string Note { get; set; }
-        public DateTime Deadline { get; set; }
+        public bool FromHardProposal { get; set; }
         public virtual IList<Material> Materials { get; set; }
         public virtual IList<Comment> Comments { get; set; } 
     }
 
     public enum ApproveStatus
     {
-        Unapproved, ManagerApproved, AdminApproved
+        Unapproved, ManagerApproved, GeneralManagerApproved
     }
 }

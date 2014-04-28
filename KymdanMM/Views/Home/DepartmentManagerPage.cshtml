@@ -1,0 +1,238 @@
+﻿@using System.Threading
+@{
+    ViewBag.Title = "DepartmentManagerPage";
+}
+
+<div class="row">&nbsp;</div>
+<div class="row">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Propose" data-toggle="tab">Đề xuất</a></li>
+        <li><a href="#Implement" data-toggle="tab">Thực thi</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="Propose">
+            <div class="row">&nbsp;</div>
+            <div id="ProposeMaterialGrid"></div>
+        </div>
+        <div class="tab-pane" id="Implement"><div id="ImplementMaterialGrid"></div></div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script id="proposalCodeTemplate" type="text/x-kendo-tmpl">
+        <a href="/chinh-sua-de-xuat/#= Id #" class="label label-primary">#= ProposalCode #</a>
+    </script>
+    <script id="approveStatusTemplate" type="text/x-kendo-tmpl">
+        # if (ApproveStatus == 2) { #
+        <span class="label label-success">
+            Admin duyệt
+        </span>
+        # } else if (ApproveStatus == 1){#
+        <span class="label label-info">
+            Manager duyệt
+        </span>
+        # } else {#
+        <span class="label label-warning">
+            Chưa duyệt
+        </span>
+        # } #
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var editable = true;
+            var hidden = false;
+            var proposeMaterialDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Home/GetProposeMaterialForDepartmentManagerPage",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models),
+                                materialProposalId: $("#Id").val()
+                            };
+                        } else {
+                            return {
+                                id: $("#Id").val(),
+                                pageNumber: options.page,
+                                pageSize: options.pageSize
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                            Description: { editable: editable, type: "string" },
+                            Quantity: { editable: editable, type: "number" },
+                            Unit: { editable: editable, type: "string", validation: { required: true } },
+                            Used: { editable: editable, type: "boolean" },
+                            UsingPurpose: { editable: editable, type: "string" },
+                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
+                            Note: { type: "string" },
+                            ImplementerDepartmentId: { editable: editable, type: "number" },
+                            ImplementerUserName: { editable: editable, type: "string" }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#ProposeMaterialGrid").kendoGrid({
+                dataSource: proposeMaterialDataSource,
+                navigatable: true,
+                pageable: true,
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                height: 400,
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialName", title: "Tên vật tư" },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor },
+                    { field: "Quantity", title: "SL" },
+                    { field: "Unit", title: "Đơn vị tính" },
+                    { field: "Used", title: "Đã sử dụng?", hidden: true },
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", hidden: true },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", hidden: true },
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", hidden: true },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", hidden: true },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", hidden: true },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #" },
+                    { field: "Note", title: "Ghi chú", editor: textareaEditor },
+                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa" }] }
+                ],
+                editable: true
+            });
+        });
+        Date.prototype.addDays = function (days) {
+            this.setDate(this.getDate() + days);
+            return this;
+        };
+        var textareaEditor = function (container, options) {
+            $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
+                .appendTo(container);
+        };
+
+        function getImplementerDepartmentName(id) {
+            var departmentName = "";
+            $.each(implementerDepartmentDataSource._data, function () {
+                if (this.Id == id) {
+                    departmentName = this.DepartmentName;
+                }
+            });
+            return departmentName;
+        }
+
+        var implementerDepartmentDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetDepartment",
+                    type: "post"
+                }
+            }
+        });
+
+        function implementerDepartmentEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "DepartmentName",
+                    dataValueField: "Id",
+                    optionLabel: "-Chọn-",
+                    dataSource: implementerDepartmentDataSource
+                });
+        }
+
+        function getImplementerDisplayName(userName) {
+            var displayName = "";
+            $.each(implementerUserDataSource._data, function () {
+                if (this.UserName == userName) {
+                    displayName = this.DisplayName;
+                }
+            });
+            return displayName;
+        }
+
+        var implementerUserDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetUser",
+                    type: "post"
+                }
+            }
+        });
+
+        function implementerUserEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "DisplayName",
+                    dataValueField: "UserName",
+                    optionLabel: "-Chọn-",
+                    dataSource: implementerUserDataSource
+                });
+        }
+
+        function getProgressStatus(id) {
+            var status = "";
+            $.each(progressStatusDataSource._data, function () {
+                if (this.Id == id) {
+                    status = this.Status;
+                }
+            });
+            return status;
+        }
+
+        var progressStatusDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetProgressStatus",
+                    type: "post"
+                }
+            }
+        });
+
+        function progressStatusEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "Status",
+                    dataValueField: "Id",
+                    optionLabel: "-Chọn-",
+                    dataSource: progressStatusDataSource
+                });
+        }
+    </script>
+
+}

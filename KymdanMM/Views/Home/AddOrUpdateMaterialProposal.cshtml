@@ -8,48 +8,19 @@
     var departments = (IEnumerable<Department>)ViewBag.Departments;
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var currentUser = (UserProfile)ViewBag.CurrentUser;
-    var progressStatuses = (IEnumerable<ProgressStatus>)ViewBag.ProgressStatuses;
-    var disabledAttribute = (object)new { @class = "form-control", disabled = "disabled" };
     var enableAttribute = (object)new { @class = "form-control" };
-    var editable = false;
-    if (Thread.CurrentPrincipal.IsInRole("Admin"))
-    {
-        editable = Model.ApproveStatus < ApproveStatus.AdminApproved;
-    }
-    else if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
-    {
-        editable = Model.ApproveStatus < ApproveStatus.ManagerApproved;
-    }
-    else
-    {
-        editable = Model.ApproveStatus == ApproveStatus.Unapproved;
-    }
-    var panelClass = "";
-    var headerString = "";
-    switch (Model.ApproveStatus)
-    {
-        case ApproveStatus.AdminApproved:
-            panelClass = "panel-success";
-            headerString = "Admin đã duyệt";
-            break;
-        case ApproveStatus.ManagerApproved:
-            panelClass = "panel-info";
-            headerString = "Manager đã duyệt";
-            break;
-        default:
-            panelClass = "panel-warning";
-            headerString = "Chưa duyệt";
-            break;
-    }
+    var isNew = Model.Id == 0;
+    var hidden = Thread.CurrentPrincipal.IsInRole("Member");
+    var editable = !Thread.CurrentPrincipal.IsInRole("Member") || isNew;
 
 }
 
 <span id="popupNotification"></span>
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="panel @panelClass">
+    <div class="panel panel-default">
         <div class="panel-heading">
-            Thông tin đề xuất (@headerString)
+            Thông tin đề xuất
         </div>
         <div class="panel-body">
             @using (Html.BeginForm("AddOrUpdateMaterialProposal", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "MaterialProposalForm" }))
@@ -57,8 +28,6 @@
                 @Html.AntiForgeryToken()
                 //@Html.ValidationSummary()
                 @Html.HiddenFor(m => m.Id)
-                @Html.HiddenFor(m => m.ApproveStatus)
-                @Html.HiddenFor(m => m.Finished)
                 <div class="panel-group" id="accordion">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -70,72 +39,6 @@
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse in">
                             <div class="panel-body">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ApproveStatus < ApproveStatus.ManagerApproved && Model.ImplementerDepartmentId == currentUser.DepartmentId)
-                                            {
-                                                @Html.DropDownListFor(m => m.ImplementerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ImplementerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", Thread.CurrentPrincipal.IsInRole("Department Manager") ? enableAttribute : disabledAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDisplayName)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ImplementerDepartmentId, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
-                                            {
-                                                @Html.DropDownListFor(m => m.ImplementerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
-                                            {
-                                                @Html.TextBoxFor(m => m.ManagementCode, Thread.CurrentPrincipal.IsInRole("Admin") ? enableAttribute : disabledAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.TextBoxFor(m => m.Deadline)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
@@ -151,6 +54,34 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (editable)
+                                            {
+                                                @Html.DropDownListFor(m => m.ProposerUserName, new SelectList(users.Where(a => a.DepartmentId == Model.ProposerDepartmentId), "UserName", "DisplayName"), "Chọn người thực hiện", enableAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
+                                        <div class="col-sm-8 col-md-6">
+                                            @if (editable)
+                                            {
+                                                @Html.DropDownListFor(m => m.ProposerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", enableAttribute)
+                                            }
+                                            else
+                                            {
+                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
                                         @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
                                             @if (editable)
@@ -161,12 +92,6 @@
                                             {
                                                 <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
                                             }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ProgressStatusId, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                                @Html.DropDownListFor(m => m.ProgressStatusId, new SelectList(progressStatuses, "Id", "Status"), "Chọn trạng thái", new { @class = "form-control" })
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -287,14 +212,6 @@
         <div class="col-sm-4">
             <div class="pull-right">
                 <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
-                @if (Thread.CurrentPrincipal.IsInRole("Admin") && Model.ApproveStatus < ApproveStatus.AdminApproved)
-                {
-                    <input type="button" id="approveMaterialProposal" class="btn btn-success navbar-btn" value="Admin Duyệt" />
-                }
-                @if (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ApproveStatus < ApproveStatus.ManagerApproved)
-                {
-                    <input type="button" id="approveMaterialProposal" class="btn btn-info navbar-btn" value="Manager Duyệt" />
-                }
                 <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu" />
             </div>
         </div>
@@ -324,8 +241,8 @@
                     template: $("#successTemplate").html()
                 }]
             }).data("kendoNotification");
-            var editable = '@(Model.ApproveStatus == ApproveStatus.Unapproved)' == 'True';
-            var adminEditable = editable || ('@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' && '@(Model.ApproveStatus != ApproveStatus.AdminApproved)' == 'True');
+            var editable = '@editable' == 'True';
+            var hidden = '@hidden' == 'True';
             var materialProposalDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -367,16 +284,19 @@
                         id: "Id",
                         fields: {
                             Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialName: { editable: adminEditable, type: "string", validation: { required: true } },
-                            Description: { editable: adminEditable, type: "string" },
-                            Quantity: { editable: adminEditable, type: "number" },
-                            Unit: { editable: adminEditable, type: "string", validation: { required: true } },
-                            Used: { editable: adminEditable, type: "boolean" },
-                            UsingPurpose: { editable: adminEditable, type: "string" },
-                            Deadline: { editable: adminEditable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                            Description: { editable: editable, type: "string" },
+                            Quantity: { editable: editable, type: "number" },
+                            Unit: { editable: editable, type: "string", validation: { required: true } },
+                            Used: { editable: editable, type: "boolean" },
+                            UsingPurpose: { editable: editable, type: "string" },
+                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
                             Note: { type: "string" },
-                            ImplementerDepartmentId: { editable: adminEditable, type: "number" },
-                            ImplementerUserName: { editable: adminEditable, type: "string" }
+                            ImplementerDepartmentId: { editable: editable, type: "number" },
+                            ImplementerUserName: { editable: editable, type: "string" }
                         }
                     },
                     total: "total",
@@ -400,17 +320,20 @@
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư", width: "18%" },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: "20%" },
-                    { field: "Quantity", title: "SL", width: "7%" },
-                    { field: "Unit", title: "Đơn vị tính", hidden: true },
+                    { field: "MaterialName", title: "Tên vật tư" },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor },
+                    { field: "Quantity", title: "SL" },
+                    { field: "Unit", title: "Đơn vị tính" },
                     { field: "Used", title: "Đã sử dụng?", hidden: true },
-                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, hidden: true },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: "12%" },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: "10%" },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: "11%" },
-                    { field: "Note", title: "Ghi chú", editor: textareaEditor, width: "15%" },
-                    { command: [{ name: "destroy", title: "&nbsp;", width: "7%", text: "Xóa" }] }
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", hidden: hidden },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", hidden: hidden },
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", hidden: hidden },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", hidden: hidden },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", hidden: hidden },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #" },
+                    { field: "Note", title: "Ghi chú", editor: textareaEditor },
+                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa" }] }
                 ],
                 dataBound: function () {
                     if ($("#Id").val() != 0) {
@@ -506,6 +429,7 @@
 
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
+            progressStatusDataSource.read();
         });
 
         var textareaEditor = function (container, options) {
@@ -570,6 +494,36 @@
                     dataValueField: "UserName",
                     optionLabel: "-Chọn-",
                     dataSource: implementerUserDataSource
+                });
+        }
+        
+        function getProgressStatus(id) {
+            var status = "";
+            $.each(progressStatusDataSource._data, function () {
+                if (this.Id == id) {
+                    status = this.Status;
+                }
+            });
+            return status;
+        }
+
+        var progressStatusDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetProgressStatus",
+                    type: "post"
+                }
+            }
+        });
+
+        function progressStatusEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "Status",
+                    dataValueField: "Id",
+                    optionLabel: "-Chọn-",
+                    dataSource: progressStatusDataSource
                 });
         }
     </script>

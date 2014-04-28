@@ -11,6 +11,11 @@ namespace KymdanMM.Model.Models
         public bool Used { get; set; }
         public string UsingPurpose { get; set; }
         public DateTime Deadline { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime ApproveDate { get; set; }
+        public bool Finished { get; set; }
+        public ApproveStatus ApproveStatus { get; set; }
+        public int ProgressStatusId { get; set; }
         public string Note { get; set; }
         public string ImplementerUserName { get; set; }
         public int ImplementerDepartmentId { get; set; }

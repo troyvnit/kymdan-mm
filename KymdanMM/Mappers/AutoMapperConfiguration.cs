@@ -27,7 +27,7 @@ namespace KymdanMM.Mappers
 
         protected override void Configure()
         {
-            Mapper.CreateMap<MaterialProposalViewModel, MaterialProposal>().ForMember(a => a.Deadline, o => o.MapFrom(a => DateTime.ParseExact(a.Deadline, "dd/MM/yyyy", CultureInfo.CurrentCulture)));
+            Mapper.CreateMap<MaterialProposalViewModel, MaterialProposal>();
             Mapper.CreateMap<MaterialViewModel, Material>();
             Mapper.CreateMap<CommentViewModel, Comment>();
         }
@@ -42,7 +42,7 @@ namespace KymdanMM.Mappers
 
         protected override void Configure()
         {
-            Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>().ForMember(a => a.Deadline, o => o.MapFrom(a => a.Deadline.ToString("dd/MM/yyyy")));
+            Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>();
             Mapper.CreateMap<Material, MaterialViewModel>();
             Mapper.CreateMap<Comment, CommentViewModel>();
         }

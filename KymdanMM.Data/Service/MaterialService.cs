@@ -12,7 +12,7 @@ namespace KymdanMM.Data.Service
     {
         Material GetMaterial(int id);
         IEnumerable<Material> GetMaterials();
-        IPagedList<Material> GetMaterials(int pageNumber, int pageSize, int id);
+        IPagedList<Material> GetMaterials(int pageNumber, int pageSize, Expression<Func<Material, bool>> where);
         bool AddOrUpdateMaterial(Material material);
         bool DeleteMaterial(Material material);
     }
@@ -38,9 +38,9 @@ namespace KymdanMM.Data.Service
             return materials;
         }
 
-        public IPagedList<Material> GetMaterials(int pageNumber, int pageSize, int id)
+        public IPagedList<Material> GetMaterials(int pageNumber, int pageSize, Expression<Func<Material, bool>> where)
         {
-            var materials = _materialRepository.GetPage(new Page { PageNumber = pageNumber, PageSize = pageSize }, a => a.MaterialProposalId == id, a => a.CreatedDate);
+            var materials = _materialRepository.GetPage(new Page { PageNumber = pageNumber, PageSize = pageSize }, where, a => a.CreatedDate);
             return materials;
         }
 

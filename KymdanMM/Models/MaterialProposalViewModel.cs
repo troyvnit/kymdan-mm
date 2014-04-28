@@ -21,28 +21,13 @@ namespace KymdanMM.Models
         public string ProposerUserName { get; set; }
         public string ProposerDisplayName { get; set; }
         [Required]
-        [Display(Name = "Người thực hiện")]
-        public string ImplementerUserName { get; set; }
-        public string ImplementerDisplayName { get; set; }
-        [Required]
         [Display(Name = "Đơn vị đề xuất")]
         public int ProposerDepartmentId { get; set; }
         public string ProposerDepartmentName { get; set; }
-        [Required]
-        [Display(Name = "Đơn vị thực hiện")]
-        public int ImplementerDepartmentId { get; set; }
-        public string ImplementerDepartmentName { get; set; }
-        [Required]
-        [Display(Name = "Trạng thái tiến độ")]
-        public int ProgressStatusId { get; set; }
-        public string Status { get; set; }
-        public bool Finished { get; set; }
-        public ApproveStatus ApproveStatus { get; set; }
         [Display(Name = "Ghi chú")]
         public string Note { get; set; }
-        [Required]
-        [Display(Name = "Hạn chót")]
-        public string Deadline { get; set; }
+        [Display(Name = "Từ đề xuất giấy")]
+        public bool FromHardProposal { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 
     }
 }
