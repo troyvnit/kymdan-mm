@@ -252,7 +252,7 @@ namespace KymdanMM.Controllers
                 else
                 {
                     materials = _materialService.GetMaterials(pageNumber, pageSize,
-                        a =>
+                        a => (a.MaterialProposal.Id == id) &&
                             (a.ImplementerUserName == user.UserName ||
                              a.MaterialProposal.ProposerUserName == user.UserName ||
                              a.ImplementerUserName == user.UserName) &&

@@ -26,6 +26,7 @@ namespace KymdanMM
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/bootstrap-multiselect.js",
+                      "~/Scripts/bootstrap-checkbox.js",
                       "~/Scripts/kendo-all-min.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/main.js"));
@@ -34,6 +35,7 @@ namespace KymdanMM
                       "~/Content/bootstrap.css",
                       "~/Content/bootstrap-custom.css",
                       "~/Content/bootstrap-multiselect.css",
+                      "~/Content/bootstrap-checkbox.css",
                       "~/Content/kendo-common-bootstrap-min.css",
                       "~/Content/kendo-bootstrap-min.css",
                       "~/Content/site.css"));
