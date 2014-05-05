@@ -162,6 +162,26 @@ namespace KymdanMM.Controllers
             return Json(false, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetMaterialProposals()
+        {
+            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user != null)
+            {
+                var materialProposals =
+                    _materialProposalService.GetMaterialProposals()
+                        .Select(
+                            a =>
+                                new
+                                {
+                                    MaterialProposalId = a.Id,
+                                    MaterialProposalCode = a.ProposalCode,
+                                    Type = a.ProposerDepartmentId == user.DepartmentId ? "Đề xuất" : "Thực hiện"
+                                });
+                return Json(materialProposals, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public ActionResult AddOrUpdateMaterialProposal(int? id)
         {
@@ -177,7 +197,7 @@ namespace KymdanMM.Controllers
             if (proposerUser != null)
             {
                 materialProposalViewModel.ProposerDisplayName = proposerUser.DisplayName;
-                materialProposalViewModel.ProposerDepartmentId = proposerUser.DepartmentId;
+                materialProposalViewModel.ProposerDepartmentId = materialProposalViewModel.ProposerDepartmentId != 0 ? materialProposalViewModel.ProposerDepartmentId : proposerUser.DepartmentId;
             }
             var proposerDepartment = _departmentService.GetDepartment(materialProposalViewModel.ProposerDepartmentId);
             if (proposerDepartment != null)
@@ -193,12 +213,6 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
-            materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
-            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
-            if (user != null)
-            {
-                materialProposal.ProposerDepartmentId = user.DepartmentId;
-            }
             _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
             return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
         }
@@ -215,7 +229,7 @@ namespace KymdanMM.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMaterial(int id, int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, ApproveStatus? approveStatus)
+        public ActionResult GetMaterial(int? id, int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, ApproveStatus? approveStatus, bool? finished)
         {
             //var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
@@ -225,11 +239,12 @@ namespace KymdanMM.Controllers
                 if (Thread.CurrentPrincipal.IsInRole("Admin"))
                 {
                     materials = _materialService.GetMaterials(pageNumber, pageSize,
-                        a => (a.MaterialProposal.Id == id) && (a.ApproveStatus != ApproveStatus.Unapproved) &&
+                        a => (a.MaterialProposal.Id == id || id == null) && (a.ApproveStatus != ApproveStatus.Unapproved) &&
                              (a.MaterialProposal.ProposerDepartmentId == departmentId ||
                               a.ImplementerDepartmentId == departmentId || departmentId == null) &&
                              (a.ProgressStatusId == progressStatusId || progressStatusId == null) &&
                              (a.ApproveStatus == approveStatus || approveStatus == null) &&
+                             (a.Finished != true || finished == null) &&
                              (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
                               a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
                               a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
@@ -238,13 +253,13 @@ namespace KymdanMM.Controllers
                 {
                     materials = _materialService.GetMaterials(pageNumber, pageSize,
                         a =>
-                            (a.MaterialProposal.Id == id) &&
-                            (a.ImplementerDepartmentId == departmentId ||
-                             a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
-                             a.ImplementerDepartmentId == user.DepartmentId) &&
+                            (a.MaterialProposal.Id == id || id == null) &&
+                            (a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
+                             (a.ImplementerDepartmentId == user.DepartmentId && a.ApproveStatus == ApproveStatus.GeneralManagerApproved)) &&
                             (a.ProgressStatusId == progressStatusId ||
                              progressStatusId == null) &&
                             (a.ApproveStatus == approveStatus || approveStatus == null) &&
+                             (a.Finished != true || finished == null) &&
                             (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
                              a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
                              a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
@@ -252,18 +267,24 @@ namespace KymdanMM.Controllers
                 else
                 {
                     materials = _materialService.GetMaterials(pageNumber, pageSize,
-                        a => (a.MaterialProposal.Id == id) &&
-                            (a.ImplementerUserName == user.UserName ||
-                             a.MaterialProposal.ProposerUserName == user.UserName ||
-                             a.ImplementerUserName == user.UserName) &&
+                        a => (a.MaterialProposal.Id == id || id == null) &&
+                            (a.MaterialProposal.ProposerUserName == user.UserName || (a.ImplementerUserName == user.UserName && a.ApproveStatus == ApproveStatus.GeneralManagerApproved)) &&
                             (a.ProgressStatusId == progressStatusId ||
                              progressStatusId == null) &&
                             (a.ApproveStatus == approveStatus || approveStatus == null) &&
+                             (a.Finished != true || finished == null) &&
                             (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
                              a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
                              a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
                 }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
+                foreach (var materialProposalViewModel in materialViewModels)
+                {
+                    materialProposalViewModel.Type = materialProposalViewModel.ImplementerDepartmentId ==
+                                                     user.DepartmentId
+                        ? "Phải thực hiện"
+                        : "Đã đề xuất";
+                }
                 return Json(new {data = materialViewModels, total = materials.TotalItemCount},
                     JsonRequestBehavior.AllowGet);
             }
@@ -293,6 +314,51 @@ namespace KymdanMM.Controllers
                 _materialService.DeleteMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult ApproveMaterial(string idString)
+        {
+            var ids = idString.Split(',');
+            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user == null) return Json(false, JsonRequestBehavior.AllowGet);
+            foreach (var material in ids.Select(id => _materialService.GetMaterial(Convert.ToInt32(id))))
+            {
+                if (Thread.CurrentPrincipal.IsInRole("Department Manager") &&
+                    material.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                    material.ApproveStatus < ApproveStatus.ManagerApproved)
+                {
+                    material.ApproveStatus = ApproveStatus.ManagerApproved;
+
+                }
+                if (Thread.CurrentPrincipal.IsInRole("Admin") &&
+                    material.ApproveStatus < ApproveStatus.GeneralManagerApproved)
+                {
+                    material.ApproveStatus = ApproveStatus.GeneralManagerApproved;
+                    material.ApproveDate = DateTime.Now;
+                }
+                _materialService.AddOrUpdateMaterial(material);
+            }
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult FinishMaterial(string idString)
+        {
+            var ids = idString.Split(',');
+            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user == null) return Json(false, JsonRequestBehavior.AllowGet);
+            foreach (var material in ids.Select(id => _materialService.GetMaterial(Convert.ToInt32(id))))
+            {
+                if (Thread.CurrentPrincipal.IsInRole("Department Manager") &&
+                    material.ImplementerDepartmentId == user.DepartmentId)
+                {
+                    material.Finished = true;
+
+                }
+                _materialService.AddOrUpdateMaterial(material);
+            }
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

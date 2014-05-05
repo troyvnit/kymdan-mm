@@ -21,6 +21,7 @@ namespace KymdanMM.Models
         public string ImplementerUserName { get; set; }
         public int ImplementerDepartmentId { get; set; }
         public int MaterialProposalId { get; set; }
-        public virtual MaterialProposalViewModel MaterialProposal { get; set; }
+        public string MaterialProposalCode { get; set; }
+        public string Type { get; set; }
     }
 }

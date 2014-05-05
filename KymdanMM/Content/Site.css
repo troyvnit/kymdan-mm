@@ -128,3 +128,7 @@ input[type="checkbox"].input-validation-error {
 .red {
     color: red;
 }
+
+.label-medium {
+    font-size: 14px;
+}
