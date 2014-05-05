@@ -45,6 +45,16 @@ input[type="checkbox"].input-validation-error {
     width: 100% !important;
 }
 
+.file-section {
+    margin: 0 auto 15px auto;
+    border: 1px solid rgba(0,0,0,0.05);
+    background-color: rgba(0,0,0,0.01);
+}
+
+.k-filename {
+    max-width: 9.667em;
+}
+
 /* Success template */
 .k-notification-success.k-group {
     background: rgba(0%,60%,0%,.7);

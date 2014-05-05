@@ -26,6 +26,8 @@ namespace KymdanMM.Models
         public string ProposerDepartmentName { get; set; }
         [Display(Name = "Ghi chú")]
         public string Note { get; set; }
+        [Display(Name = "Đính kèm")]
+        public string File { get; set; }
         [Display(Name = "Từ đề xuất giấy")]
         public bool FromHardProposal { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 

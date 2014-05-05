@@ -185,12 +185,16 @@ namespace KymdanMM.Controllers
         [HttpGet]
         public ActionResult AddOrUpdateMaterialProposal(int? id)
         {
-            if ((id == null || id == 0) && !Thread.CurrentPrincipal.IsInRole("Member"))
+            if ((id == null || id == 0) && !(Thread.CurrentPrincipal.IsInRole("Member") || Thread.CurrentPrincipal.IsInRole("Department Manager")))
             {
                 return RedirectToAction("AccessDenied");
             }
             var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
             var materialProposalViewModel = materialProposal != null ? Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal) : new MaterialProposalViewModel();
+            if (id == null && Thread.CurrentPrincipal.IsInRole("Department Manager"))
+            {
+                materialProposalViewModel.FromHardProposal = true;
+            }
             materialProposalViewModel.ProposerUserName = materialProposalViewModel.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
             var users = usersContext.UserProfiles.ToList();
             var proposerUser = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
@@ -213,6 +217,11 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
+            if (materialProposal.Id != 0)
+            {
+                materialProposal.CreatedDate = DateTime.MinValue;
+                materialProposal.CreatedUserName = null;
+            }
             _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
             return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
         }
@@ -254,7 +263,7 @@ namespace KymdanMM.Controllers
                     materials = _materialService.GetMaterials(pageNumber, pageSize,
                         a =>
                             (a.MaterialProposal.Id == id || id == null) &&
-                            (a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
+                            (a.MaterialProposal.ProposerDepartmentId == user.DepartmentId || a.MaterialProposal.CreatedUserName == user.UserName ||
                              (a.ImplementerDepartmentId == user.DepartmentId && a.ApproveStatus == ApproveStatus.GeneralManagerApproved)) &&
                             (a.ProgressStatusId == progressStatusId ||
                              progressStatusId == null) &&
@@ -280,7 +289,9 @@ namespace KymdanMM.Controllers
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
                 foreach (var materialProposalViewModel in materialViewModels)
                 {
-                    materialProposalViewModel.Type = materialProposalViewModel.ImplementerDepartmentId ==
+                    var materialProposal =
+                        _materialProposalService.GetMaterialProposal(materialProposalViewModel.MaterialProposalId);
+                    materialProposalViewModel.Type = materialProposal.CreatedUserName == user.UserName && materialProposal.FromHardProposal ? "Tạo từ giấy" : materialProposalViewModel.ImplementerDepartmentId ==
                                                      user.DepartmentId
                         ? "Phải thực hiện"
                         : "Đã đề xuất";
@@ -329,6 +340,7 @@ namespace KymdanMM.Controllers
                     material.ApproveStatus < ApproveStatus.ManagerApproved)
                 {
                     material.ApproveStatus = ApproveStatus.ManagerApproved;
+                    material.StartDate = DateTime.Now;
 
                 }
                 if (Thread.CurrentPrincipal.IsInRole("Admin") &&
@@ -405,6 +417,41 @@ namespace KymdanMM.Controllers
             }
 
             return File(new FileStream(dbPath, FileMode.Open), "application/octet-stream", fileName);
+        }
+
+        public ActionResult SaveFile(IEnumerable<HttpPostedFileBase> files)
+        {
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                    file.SaveAs(physicalPath);
+                }
+                return Json(files.Select(a => new { name = a.FileName, size = a.ContentLength, extension = a.ContentType }), "text/plain");
+            }
+            return Content("");
+        }
+
+        public ActionResult RemoveFile(string[] fileNames)
+        {
+            if (fileNames != null)
+            {
+                foreach (var fullName in fileNames)
+                {
+                    var fileName = Path.GetFileName(fullName);
+                    var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+
+                    // TODO: Verify user permissions
+
+                    if (System.IO.File.Exists(physicalPath))
+                    {
+                        System.IO.File.Delete(physicalPath);
+                    }
+                }
+            }
+            return Content("");
         }
 
         public ActionResult About()

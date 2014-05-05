@@ -28,6 +28,7 @@ namespace KymdanMM
                       "~/Scripts/bootstrap-multiselect.js",
                       "~/Scripts/bootstrap-checkbox.js",
                       "~/Scripts/kendo-all-min.js",
+                      "~/Scripts/jquery-serializeJSON-min.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/main.js"));
 

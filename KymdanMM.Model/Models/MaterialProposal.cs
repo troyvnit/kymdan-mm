@@ -16,6 +16,7 @@ namespace KymdanMM.Model.Models
         public string ProposerUserName { get; set; }
         public int ProposerDepartmentId { get; set; }
         public string Note { get; set; }
+        public string File { get; set; }
         public bool FromHardProposal { get; set; }
         public virtual IList<Material> Materials { get; set; }
         public virtual IList<Comment> Comments { get; set; } 
