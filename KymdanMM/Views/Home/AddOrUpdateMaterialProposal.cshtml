@@ -443,7 +443,7 @@
                     }
                     var isMemberNew = '@isNew' == 'True' && '@isMember' == 'True';
                     var isManagerNew = '@isNew' == 'True' && '@isManager' == 'True';
-                    var isProposeManagerHardProposal = '@Model.FromHardProposal' == 'True' && '@isMember' == 'True' && '@isCreatedUser' == 'True';
+                    var isProposeManagerHardProposal = '@Model.FromHardProposal' == 'True' && '@isManager' == 'True' && '@isCreatedUser' == 'True';
                     var isProposeManagerNotHardProposalNotAdminApproved = !('@Model.FromHardProposal' == 'True') && '@isProposeManage' == 'True' && !(e.model.ApproveStatus == 2);
                     var isProposerUnapproved = '@isProposer' == 'True' && (e.model.ApproveStatus == 0);
                     var isImplementManager = e.model.ImplementerDepartmentId == '@currentUser.DepartmentId' && '@isManager' == 'True';
