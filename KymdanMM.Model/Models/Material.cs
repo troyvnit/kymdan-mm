@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KymdanMM.Model.Models
 {
     public class Material : BaseModel
     {
+        public Material()
+        {
+            Comments = new List<Comment>();
+        }
         public string MaterialName { get; set; }
         public string Description { get; set; }
         public int Quantity { get; set; }
@@ -21,5 +26,6 @@ namespace KymdanMM.Model.Models
         public int ImplementerDepartmentId { get; set; }
         public int MaterialProposalId { get; set; }
         public virtual MaterialProposal MaterialProposal { get; set; }
+        public virtual IList<Comment> Comments { get; set; } 
     }
 }

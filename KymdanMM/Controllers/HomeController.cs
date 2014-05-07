@@ -52,6 +52,17 @@ namespace KymdanMM.Controllers
             return View();
         }
 
+        public ActionResult Material(int id)
+        {
+            var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
+            var users = usersContext.UserProfiles.ToList();
+            ViewBag.Departments = _departmentService.GetDepartments();
+            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+            ViewBag.Users = users;
+            ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            return View(material);
+        }
+
         public ActionResult GetProposeMaterialForDepartmentManagerPage(int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, ApproveStatus? approveStatus)
         {
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);

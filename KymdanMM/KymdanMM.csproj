@@ -386,6 +386,7 @@
     <Content Include="Scripts\kendo.all.min.js.map" />
     <Content Include="Views\Home\Admin.cshtml" />
     <Content Include="Views\Home\DepartmentManagerPage.cshtml" />
+    <Content Include="Views\Home\Material.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
