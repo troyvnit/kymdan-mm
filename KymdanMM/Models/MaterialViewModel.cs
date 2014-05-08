@@ -43,6 +43,7 @@ namespace KymdanMM.Models
         public string ImplementerUserName { get; set; }
         [Display(Name = "Đơn vị thực hiện")]
         public int ImplementerDepartmentId { get; set; }
+        public int ProposerDepartmentId { get; set; }
         public int MaterialProposalId { get; set; }
         public string MaterialProposalCode { get; set; }
         public string Type { get; set; }

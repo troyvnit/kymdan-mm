@@ -111,7 +111,7 @@
             });
 
             //----------Tab 2-----------//
-            var approvedAwaitingReceiveDataSource = new kendo.data.DataSource({
+            var approvedAssignedDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -138,7 +138,7 @@
                             return {
                                 pageNumber: options.page,
                                 pageSize: options.pageSize,
-                                command: "ApprovedAwaitingReceive"
+                                command: "ApprovedAssigned"
                             };
                         }
                     }
@@ -162,6 +162,8 @@
                             Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { type: "number" },
                             Note: { type: "string" },
                             ImplementerDepartmentId: { type: "number" },
@@ -175,8 +177,8 @@
                 }
             });
 
-            $("#ApprovedAwaitingReceiveGrid").kendoGrid({
-                dataSource: approvedAwaitingReceiveDataSource,
+            $("#ApprovedAssignedGrid").kendoGrid({
+                dataSource: approvedAssignedDataSource,
                 navigatable: true,
                 pageable: true,
                 groupable: {
@@ -188,10 +190,13 @@
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", title: "Tên vật tư", width: 200 },
-                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 150 },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", width: 150 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày kết thúc", width: 150 }
+                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
+                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
                 ],
                 editable: false
             });

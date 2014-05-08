@@ -326,6 +326,12 @@ namespace KymdanMM.Controllers
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Approved);
                         break;
+                    case "ApprovedAssigned":
+                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                            a =>
+                                a.ImplementerDepartmentId != 0 &&
+                                a.Approved);
+                        break;
                     default:
                         materials = _materialService.GetMaterials(pageNumber, pageSize, a => true);
                         break;
