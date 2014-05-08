@@ -13,6 +13,8 @@ namespace KymdanMM.Models
         public string Description { get; set; }
         [Display(Name = "Số lượng")]
         public int Quantity { get; set; }
+        [Display(Name = "Số lượng tồn kho")]
+        public int InventoryQuantity { get; set; }
         [Display(Name = "Đơn vị")]
         public string Unit { get; set; }
         [Display(Name = "Đã sử dụng")]
@@ -25,10 +27,14 @@ namespace KymdanMM.Models
         public DateTime StartDate { get; set; }
         [Display(Name = "Ngày duyệt")]
         public DateTime ApproveDate { get; set; }
+        [Display(Name = "Ngày hoàn thành")]
+        public DateTime FinishDate { get; set; }
+        [Display(Name = "Ngày giao")]
+        public DateTime DeliveryDate { get; set; }
         [Display(Name = "Hoàn tất")]
         public bool Finished { get; set; }
         [Display(Name = "Duyệt")]
-        public ApproveStatus ApproveStatus { get; set; }
+        public bool Approved { get; set; }
         [Display(Name = "Trạng thái")]
         public int ProgressStatusId { get; set; }
         [Display(Name = "Ghi chú")]

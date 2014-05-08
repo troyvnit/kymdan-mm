@@ -5,30 +5,17 @@
 @model KymdanMM.Models.MaterialProposalViewModel
 @{
     ViewBag.Title = "AddOrUpdateMaterialProposal";
-    var departments = (IEnumerable<Department>)ViewBag.Departments;
-    var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var currentUser = (UserProfile)ViewBag.CurrentUser;
     var enableAttribute = (object)new { @class = "form-control" };
     var isNew = Model.Id == 0;
     var isMember = Thread.CurrentPrincipal.IsInRole("Member");
-    var isProposer = isMember && currentUser.UserName == Model.ProposerUserName;
-    var isImplementer = isMember && currentUser.UserName != Model.ProposerUserName;
-    var isManager = Thread.CurrentPrincipal.IsInRole("Department Manager");
-    var isProposeManage = Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser.DepartmentId == Model.ProposerDepartmentId;
-    var isAdmin = Thread.CurrentPrincipal.IsInRole("Admin");
-    var isCreatedUser = currentUser.UserName == Model.CreatedUserName;
-    var editable = !Thread.CurrentPrincipal.IsInRole("Member") || isNew;
+    var editable = !Model.Sent;
 
 }
 
 <span id="popupNotification"></span>
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            Thông tin đề xuất
-        </div>
-        <div class="panel-body">
             @using (Html.BeginForm("AddOrUpdateMaterialProposal", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "MaterialProposalForm" }))
             {
                 @Html.AntiForgeryToken()
@@ -36,6 +23,7 @@
                 @Html.HiddenFor(m => m.Id)
                 @Html.HiddenFor(m => m.FromHardProposal)
                 @Html.HiddenFor(m => m.File)
+                @Html.HiddenFor(m => m.Sent)
                 <div class="panel-group" id="accordion">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -75,29 +63,11 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        @Html.LabelFor(m => m.ProposerUserName, new { @class = "col-md-4 control-label" })
+                                        @Html.LabelFor(m => m.File, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.DropDownListFor(m => m.ProposerUserName, new SelectList(users, "UserName", "DisplayName"), "Chọn người thực hiện", enableAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ProposerDepartmentId, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.DropDownListFor(m => m.ProposerDepartmentId, new SelectList(departments, "Id", "DepartmentName"), "Chọn phòng ban", enableAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
-                                            }
+                                            <div class="file-section">
+                                                <input name="files" id="files" type="file" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -119,14 +89,6 @@
                                         @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
                                         <div class="col-sm-8 col-md-6">
                                             @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.File, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            <div class="file-section">
-                                                <input name="files" id="files" type="file" />
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -221,8 +183,6 @@
                 </div>
                  }
             }
-        </div>
-    </div>
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
     <div class="container">
@@ -241,22 +201,15 @@
         <div class="col-sm-4">
             <div class="pull-right">
                 <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
-                @if (Thread.CurrentPrincipal.IsInRole("Admin") && !isNew)
+                @if (!Model.Sent)
                 {
-                    <input type="button" id="approveMaterialProposal" class="btn btn-success navbar-btn" value="Tổng giám đốc duyệt" />
+                    <input type="button" id="saveDraftMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu tạm" />
+                    <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Gửi" />
                 }
-                @if (Thread.CurrentPrincipal.IsInRole("Department Manager") && !isNew)
+                else
                 {
-                    if (Model.ProposerDepartmentId == currentUser.DepartmentId)
-                    {
-                        <input type="button" id="approveMaterialProposal" class="btn btn-info navbar-btn" value="Quản lý duyệt" />
-                    }
-                    else
-                    {
-                        <input type="button" id="finishMaterialProposal" class="btn btn-success navbar-btn" value="Hoàn thành" />
-                    }
+                    <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Cập nhật" />
                 }
-                <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu" />
             </div>
         </div>
     </div>
@@ -370,6 +323,7 @@
                             MaterialName: { type: "string", validation: { required: true } },
                             Description: { type: "string" },
                             Quantity: { type: "number" },
+                            InventoryQuantity: { type: "number" },
                             Unit: { type: "string", validation: { required: true } },
                             Used: { type: "boolean" },
                             UsingPurpose: { type: "string" },
@@ -399,32 +353,19 @@
                 pageable: true,
                 sortable: true,
                 resizable: true,
-                selectable: "multiple",
-                groupable: {
-                    messages: {
-                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
-                    }
-                },
                 columnMenu: true,
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư", locked: true, width: 200 },
+                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "Quantity", title: "SL", width: 70 },
+                    { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
                     { field: "Unit", title: "ĐVT", width: 100 },
-                    { field: "Used", title: "Đã sử dụng?", hidden: true },
+                    { field: "Used", title: "Đã sử dụng?" },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", width: 150 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: 150 },
-                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
-                    { field: "ApproveStatus", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 150 },
-                    { field: "Finished", title: "Hoàn tất", template: $("#finishStatusTemplate").html(), width: 130 },
-                    { field: "Note", title: "Ghi chú", editor: textareaEditor, width: 150 },
-                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", locked: true, width: 200 }] }
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
+                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", width: 200 }] }
                 ],
                 dataBound: function() {
                     if ('@isNew' == 'True') {
@@ -438,76 +379,6 @@
                     }
                 },
                 edit: function(e) {
-                    if (e.model.isNew()) {
-                        //e.model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
-                    }
-                    var isMemberNew = '@isNew' == 'True' && '@isMember' == 'True';
-                    var isManagerNew = '@isNew' == 'True' && '@isManager' == 'True';
-                    var isProposeManagerHardProposal = '@Model.FromHardProposal' == 'True' && '@isManager' == 'True' && '@isCreatedUser' == 'True';
-                    var isProposeManagerNotHardProposalNotAdminApproved = !('@Model.FromHardProposal' == 'True') && '@isProposeManage' == 'True' && !(e.model.ApproveStatus == 2);
-                    var isProposerUnapproved = '@isProposer' == 'True' && (e.model.ApproveStatus == 0);
-                    var isImplementManager = e.model.ImplementerDepartmentId == '@currentUser.DepartmentId' && '@isManager' == 'True';
-
-                    var fieldName = e.container.find("[data-bind]").attr("data-bind").split(':')[1];
-                    switch (fieldName) {
-                    case "MaterialName":
-                        if (!(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved))
-                            this.closeCell();
-                        break;
-                    case "Description":
-                        if (!(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved))
-                            this.closeCell();
-                        break;
-                    case "Quantity":
-                        if (!(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved))
-                            this.closeCell();
-                        break;
-                    case "Unit":
-                        if (!(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved))
-                            this.closeCell();
-                        break;
-                    case "UsingPurpose":
-                        if (!(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved))
-                            this.closeCell();
-                        break;
-                    case "StartDate":
-                        if (!(isManagerNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || isImplementManager || '@isAdmin' == 'True'))
-                            this.closeCell();
-                        break;
-                    case "Deadline":
-                        if (!(isManagerNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || isImplementManager || '@isAdmin' == 'True'))
-                            this.closeCell();
-                        break;
-                    case "ApproveDate":
-                        if (!(isManagerNew || isProposeManagerHardProposal || '@isAdmin' == 'True'))
-                            this.closeCell();
-                        break;
-                    case "ImplementerDepartmentId":
-                        if (!(isManagerNew || isProposeManagerHardProposal || '@isAdmin' == 'True'))
-                            this.closeCell();
-                        break;
-                    case "ImplementerUserName":
-                        if (!(isManagerNew || isProposeManagerHardProposal || '@isAdmin' == 'True' || isImplementManager))
-                            this.closeCell();
-                        break;
-                    case "ProgressStatusId":
-                        if (!('@isImplementer' == 'True' || isImplementManager))
-                            this.closeCell();
-                        break;
-                    case "ApproveStatus":
-                        if (!('@isAdmin' == 'True' || isProposeManagerNotHardProposalNotAdminApproved))
-                            this.closeCell();
-                        break;
-                    case "Finished":
-                        if (!('@isAdmin' == 'True' || isImplementManager))
-                            this.closeCell();
-                        break;
-                    default:
-                        break;
-                    }
-                                    @*if (fieldName === "MaterialName" && !(isMemberNew || isProposeManagerNotHardProposalNotAdminApproved || isProposeManagerHardProposal || '@isAdmin' == 'True' || isProposerUnapproved)) {
-                        this.closeCell();
-                    }*@
                 },
                 editable: true
             });
@@ -517,10 +388,18 @@
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
-                submitMaterialProposal();
+                submitMaterialProposal(true);
+            });
+            
+            $("#saveDraftMaterialProposal").on("click", function () {
+                if (!$("#MaterialProposalForm").valid()) {
+                    return;
+                }
+                submitMaterialProposal(false);
             });
 
-            function submitMaterialProposal() {
+            function submitMaterialProposal(isSend) {
+                $("#Sent").val(isSend);
                 $.ajax({
                     url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
                     type: "POST",

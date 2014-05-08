@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using AutoMapper;
 using KymdanMM.Model.Models;
 using KymdanMM.Models;
@@ -42,7 +43,7 @@ namespace KymdanMM.Mappers
 
         protected override void Configure()
         {
-            Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>();
+            Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>().ForMember(a => a.Approved, o => o.MapFrom(a => a.Materials.Count(m => m.Approved) > 0));
             Mapper.CreateMap<Material, MaterialViewModel>().ForMember(a => a.MaterialProposalCode, o => o.MapFrom(a => a.MaterialProposal.ProposalCode));
             Mapper.CreateMap<Comment, CommentViewModel>();
         }

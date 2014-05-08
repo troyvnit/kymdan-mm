@@ -1,35 +1,23 @@
-﻿@using System.Threading
-@{
-    ViewBag.Title = "DepartmentManagerPage";
+﻿@{
+    ViewBag.Title = "GeneralManagerPage";
 }
-
 <div class="row">&nbsp;</div>
 <div class="row">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#SentAndAwaitingApprove" data-toggle="tab">Đã trình và chờ duyệt</a></li>
-        <li><a href="#ApprovedAwaitingReceive" data-toggle="tab">Đã duyệt và chờ nhận</a></li>
-        <li><a href="#ApprovedAwaitingImplement" data-toggle="tab">Đã duyệt và chờ triển khai</a></li>
-        <li><a href="#ApprovedImplemented" data-toggle="tab">Đã duyệt và đã triển khai</a></li>
+        <li class="active"><a href="#ReceiveAndAwaitingApprove" data-toggle="tab">Duyệt đề nghị cấp</a></li>
+        <li><a href="#ApprovedAssigned" data-toggle="tab">Đã duyệt và phân công</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane active" id="SentAndAwaitingApprove">
+        <div class="tab-pane active" id="ReceiveAndAwaitingApprove">
             <div class="row">&nbsp;</div>
-            <div id="SentAndAwaitingApproveGrid"></div>
+            <div id="ReceiveAndAwaitingApproveGrid"></div>
         </div>
-        <div class="tab-pane" id="ApprovedAwaitingReceive">
+        <div class="tab-pane" id="ApprovedAssigned">
             <div class="row">&nbsp;</div>
-            <div id="ApprovedAwaitingReceiveGrid"></div>
-        </div>
-        <div class="tab-pane" id="ApprovedAwaitingImplement">
-            <div class="row">&nbsp;</div>
-            <div id="ApprovedAwaitingImplementGrid"></div>
-        </div>
-        <div class="tab-pane" id="ApprovedImplemented">
-            <div class="row">&nbsp;</div>
-            <div id="ApprovedImplementedGrid"></div>
+            <div id="ApprovedAssignedGrid"></div>
         </div>
     </div>
 </div>
@@ -52,7 +40,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             //----------Tab 1-----------//
-            var sentAndAwaitingApproveDataSource = new kendo.data.DataSource({
+            var receiveAndAwaitingApproveDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
                         url: "/Home/GetMaterialProposals",
@@ -70,7 +58,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function(options, operation) {
+                    parameterMap: function (options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models),
@@ -80,7 +68,7 @@
                             return {
                                 pageNumber: options.page,
                                 pageSize: options.pageSize,
-                                command: "SentAndAwaitingApprove"
+                                command: "ReceiveAndAwaitingApprove"
                             };
                         }
                     }
@@ -103,8 +91,8 @@
                 }
             });
 
-            $("#SentAndAwaitingApproveGrid").kendoGrid({
-                dataSource: sentAndAwaitingApproveDataSource,
+            $("#ReceiveAndAwaitingApproveGrid").kendoGrid({
+                dataSource: receiveAndAwaitingApproveDataSource,
                 navigatable: true,
                 pageable: true,
                 groupable: {
@@ -115,12 +103,13 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a>" },
-                    { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng"},
+                    { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
+                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
                 ],
                 editable: false
             });
-            
+
             //----------Tab 2-----------//
             var approvedAwaitingReceiveDataSource = new kendo.data.DataSource({
                 transport: {
@@ -205,186 +194,6 @@
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày kết thúc", width: 150 }
                 ],
                 editable: false
-            });
-            
-            //----------Tab 3-----------//
-            var approvedAwaitingImplementDataSource = new kendo.data.DataSource({
-                autoSync: true,
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterials",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models)
-                            };
-                        } else {
-                            return {
-                                pageNumber: options.page,
-                                pageSize: options.pageSize,
-                                command: "ApprovedAwaitingImplement"
-                            };
-                        }
-                    }
-                },
-                batch: true,
-                pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
-                            MaterialName: { editable: false, type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            InventoryQuantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            DeliveryDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
-                            Note: { type: "string" },
-                            ImplementerDepartmentId: { editable: false, type: "number" },
-                            ImplementerUserName: { type: "string" },
-                            ApproveStatus: { type: "number", editable: false },
-                            Finished: { type: "boolean", editable: false }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                }
-            });
-
-            $("#ApprovedAwaitingImplementGrid").kendoGrid({
-                dataSource: approvedAwaitingImplementDataSource,
-                navigatable: true,
-                pageable: true,
-                groupable: {
-                    messages: {
-                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
-                    }
-                },
-                //toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
-                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 150 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày kết thúc", width: 150 },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 }
-                ],
-                editable: true
-            });
-            
-            //----------Tab 4-----------//
-            var approvedImplementedDataSource = new kendo.data.DataSource({
-                autoSync: true,
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterials",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models)
-                            };
-                        } else {
-                            return {
-                                pageNumber: options.page,
-                                pageSize: options.pageSize,
-                                command: "ApprovedImplemented"
-                            };
-                        }
-                    }
-                },
-                batch: true,
-                pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
-                            MaterialName: { editable: false, type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            InventoryQuantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
-                            Note: { type: "string" },
-                            ImplementerDepartmentId: { editable: false, type: "number" },
-                            ImplementerUserName: { editable: false, type: "string" },
-                            ApproveStatus: { type: "number", editable: false },
-                            Finished: { type: "boolean", editable: false }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                }
-            });
-
-            $("#ApprovedImplementedGrid").kendoGrid({
-                dataSource: approvedImplementedDataSource,
-                navigatable: true,
-                pageable: true,
-                groupable: {
-                    messages: {
-                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
-                    }
-                },
-                //toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
-                ],
-                editable: true
             });
 
             implementerDepartmentDataSource.read();
@@ -489,7 +298,7 @@
                     dataSource: progressStatusDataSource
                 });
         }
-        
+
         var materialProposalCodeDataSource = new kendo.data.DataSource({
             transport: {
                 read: {

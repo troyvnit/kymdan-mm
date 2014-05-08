@@ -30,6 +30,8 @@ namespace KymdanMM.Models
         public string File { get; set; }
         [Display(Name = "Từ đề xuất giấy")]
         public bool FromHardProposal { get; set; }
+        public bool Sent { get; set; }
+        public bool Approved { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 
     }
 }

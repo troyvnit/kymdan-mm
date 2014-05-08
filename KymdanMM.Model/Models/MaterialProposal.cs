@@ -18,6 +18,7 @@ namespace KymdanMM.Model.Models
         public string Note { get; set; }
         public string File { get; set; }
         public bool FromHardProposal { get; set; }
+        public bool Sent { get; set; }
         public virtual IList<Material> Materials { get; set; }
         public virtual IList<Comment> Comments { get; set; } 
     }
