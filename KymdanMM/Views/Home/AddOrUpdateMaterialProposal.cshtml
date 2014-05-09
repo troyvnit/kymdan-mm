@@ -16,187 +16,101 @@
 <span id="popupNotification"></span>
 <div class="row">&nbsp;</div>
 <div class="row">
-            @using (Html.BeginForm("AddOrUpdateMaterialProposal", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "MaterialProposalForm" }))
-            {
-                @Html.AntiForgeryToken()
-                //@Html.ValidationSummary()
-                @Html.HiddenFor(m => m.Id)
-                @Html.HiddenFor(m => m.FromHardProposal)
-                @Html.HiddenFor(m => m.File)
-                @Html.HiddenFor(m => m.Sent)
-                <div class="panel-group" id="accordion">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    Thông tin cơ bản
-                                </a>
-                            </p>
+    @using (Html.BeginForm("AddOrUpdateMaterialProposal", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "MaterialProposalForm" }))
+    {
+        @Html.AntiForgeryToken()
+        //@Html.ValidationSummary()
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.FromHardProposal)
+        @Html.HiddenFor(m => m.File)
+        @Html.HiddenFor(m => m.Sent)
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                        Thông tin cơ bản
+                    </a>
+                </p>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse @open">
+                <div class="panel-body">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                @if (editable)
+                                {
+                                    @Html.TextBoxFor(m => m.ProposalCode, enableAttribute)
+                                }
+                                else
+                                {
+                                    <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposalCode)</span>
+                                }
+                            </div>
                         </div>
-                        <div id="collapseOne" class="panel-collapse collapse @open">
-                            <div class="panel-body">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ProposalCode, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.TextBoxFor(m => m.ProposalCode, enableAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposalCode)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.TextBoxFor(m => m.ManagementCode, enableAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.File, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            <div class="file-section">
-                                                <input name="files" id="files" type="file" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @if (editable)
-                                            {
-                                                @Html.TextAreaFor(m => m.Description, enableAttribute)
-                                            }
-                                            else
-                                            {
-                                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
-                                        <div class="col-sm-8 col-md-6">
-                                            @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
-                                        </div>
-                                    </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                @if (editable)
+                                {
+                                    @Html.TextBoxFor(m => m.ManagementCode, enableAttribute)
+                                }
+                                else
+                                {
+                                    <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.File, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <div class="file-section">
+                                    <input name="files" id="files" type="file" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <p class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                                Danh sách vật tư
-                            </a>
-                        </p>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse in">
-                        <div id="MaterialGrid"></div>
-                    </div>
-                </div>
-                if (Model.Id != 0)
-                 {
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <p class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                                Phản hồi
-                            </a>
-                        </p>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div class="col-sm-12">
-                                <ul class="chat">
-                                    @foreach (var comment in Model.Comments)
-                                    {
-                                        var str = comment.PosterDisplayName;
-                                        string result = str;
-                                        if (!string.IsNullOrEmpty(str))
-                                        {
-                                            var words = str.Split(' ');
-                                            for (int index = 0; index < words.Length; index++)
-                                            {
-                                                var s = words[index];
-                                                if (s.Length > 0)
-                                                {
-                                                    words[index] = s[0].ToString().ToUpper();
-                                                }
-                                            }
-                                            result = string.Join("", words);
-                                        }
-                                        if (comment.PosterUserName == currentUser.UserName)
-                                        {
-                                            <li class="right clearfix">
-                                                <span class="chat-img pull-right">
-                                                    <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                                </span>
-                                                <div class="chat-body clearfix">
-                                                    <div class="header">
-                                                        <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                                        <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
-                                                    </div>
-                                                    <p>
-                                                        @comment.Content
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        }
-                                        else if (Thread.CurrentPrincipal.IsInRole("Department Manager") || comment.Approved)
-                                        {
-                                            <li class="left clearfix">
-                                                <span class="chat-img pull-left">
-                                                    <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                                </span>
-                                                <div class="chat-body clearfix">
-                                                    <div class="header">
-                                                        <strong class="primary-font">@comment.PosterDisplayName</strong>
-                                                        <small class="pull-right text-muted">
-                                                            <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                                        </small>
-                                                    </div>
-                                                    <p>
-                                                        @comment.Content
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        }
-                                    }
-                                </ul>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                @if (editable)
+                                {
+                                    @Html.TextAreaFor(m => m.Description, enableAttribute)
+                                }
+                                else
+                                {
+                                    <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
                             </div>
                         </div>
                     </div>
                 </div>
-                 }
-            }
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                        Danh sách vật tư
+                    </a>
+                </p>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse in">
+                <div id="MaterialGrid"></div>
+            </div>
+        </div>
+    }
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
     <div class="container">
         <div class="col-sm-8">
-            <div class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input id="comment" type="text" class="form-control" placeholder="Nhập phản hồi...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-success" id="submitComment">
-                            Gửi
-                        </button>
-                    </span>
-                </div>
-            </div>
         </div>
         <div class="col-sm-4">
             <div class="pull-right">
@@ -208,10 +122,10 @@
                 }
                 else
                 {
-                     if (Thread.CurrentPrincipal.IsInRole("Admin"))
-                     {
-                         <input type="button" id="approveMaterial" class="btn btn-success navbar-btn" value="Duyệt" />
-                     }
+                    if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
+                        <input type="button" id="approveMaterial" class="btn btn-success navbar-btn" value="Duyệt" />
+                    }
                     <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Cập nhật" />
                 }
             </div>
@@ -237,186 +151,186 @@
         # } #
     </script>
     <script id="finishStatusTemplate" type="text/x-kendo-tmpl">
-    # if (Finished) { #
-    <span class="label label-success">
-        Đã hoàn thành
-    </span>
-    # } else {#
-    <span class="label label-warning">
-        Chưa hoàn thành
-    </span>
-    # } #
-</script>
+        # if (Finished) { #
+        <span class="label label-success">
+            Đã hoàn thành
+        </span>
+        # } else {#
+        <span class="label label-warning">
+            Chưa hoàn thành
+        </span>
+        # } #
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
-        $("#Deadline").kendoDatePicker({
-            format: "dd/MM/yyyy"
-        });
-        var files = $("#File").val() != "" ? $("#File").val() : "[]";
-        $("#files").kendoUpload({
-            async: {
-                saveUrl: '@Url.Action("SaveFile", "Home")',
-                removeUrl: '@Url.Action("RemoveFile", "Home")',
-                autoUpload: true
-            },
-            localization: {
-                select: "Chọn tập tin",
-            },
-            success: function (e) {
-                $("#File").val(e.XMLHttpRequest.responseText);
-            },
-            files: JSON.parse(files)
-        });
-        var popupNotification = $("#popupNotification").kendoNotification({
-            position: {
-                top: 10,
-                right: 10
-            },
-            autoHideAfter: 5000,
-            stacking: "down",
-            templates: [{
-                type: "success",
-                template: $("#successTemplate").html()
-            }]
-        }).data("kendoNotification");
-        var editable = '@isNew' == 'True';
-        var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True';
-        var materialProposalDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetMaterials",
-                    type: "post"
+            $("#Deadline").kendoDatePicker({
+                format: "dd/MM/yyyy"
+            });
+            var files = $("#File").val() != "" ? $("#File").val() : "[]";
+            $("#files").kendoUpload({
+                async: {
+                    saveUrl: '@Url.Action("SaveFile", "Home")',
+                    removeUrl: '@Url.Action("RemoveFile", "Home")',
+                    autoUpload: true
                 },
-                update: {
-                    url: "/Home/AddOrUpdateMaterial",
-                    type: "post"
+                localization: {
+                    select: "Chọn tập tin",
                 },
-                destroy: {
-                    url: "/Home/DeleteMaterial",
-                    type: "post",
+                success: function (e) {
+                    $("#File").val(e.XMLHttpRequest.responseText);
                 },
-                create: {
-                    url: "/Home/AddOrUpdateMaterial",
-                    type: "post"
+                files: JSON.parse(files)
+            });
+            var popupNotification = $("#popupNotification").kendoNotification({
+                position: {
+                    top: 10,
+                    right: 10
                 },
-                parameterMap: function (options, operation) {
-                    if (operation !== "read" && options.models) {
-                        return {
-                            materials: kendo.stringify(options.models),
-                            materialProposalId: $("#Id").val()
-                        };
-                    } else {
-                        return {
-                            id: $("#Id").val(),
-                            pageNumber: options.page,
-                            pageSize: options.pageSize,
-                            approved: '@ViewBag.Approved'
-                        };
-                    }
-                }
-            },
-            batch: true,
-            pageSize: 10,
-            serverPaging: true,
-            schema: {
-                model: {
-                    id: "Id",
-                    fields: {
-                        Id: { editable: false, nullable: false, defaultValue: 0 },
-                        MaterialName: { editable: editable, type: "string", validation: { required: true } },
-                        Description: { editable: editable, type: "string" },
-                        Quantity: { editable: editable, type: "number" },
-                        InventoryQuantity: { editable: editable, type: "number" },
-                        Unit: { editable: editable, type: "string", validation: { required: true } },
-                        Used: { editable: editable, type: "boolean" },
-                        UsingPurpose: { editable: editable, type: "string" },
-                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                        StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                        ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                        ProgressStatusId: { editable: editable, type: "number" },
-                        Note: { editable: editable, type: "string" },
-                        ImplementerDepartmentId: { type: "number", validation: { required: true } },
-                        ImplementerUserName: { type: "string" },
-                        Approved: { type: "boolean", editable: false },
-                        Finished: { type: "boolean", editable: false }
+                autoHideAfter: 5000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }]
+            }).data("kendoNotification");
+            var editable = '@isNew' == 'True';
+            var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True';
+            var materialProposalDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterials",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models),
+                                materialProposalId: $("#Id").val()
+                            };
+                        } else {
+                            return {
+                                id: $("#Id").val(),
+                                pageNumber: options.page,
+                                pageSize: options.pageSize,
+                                approved: '@ViewBag.Approved'
+                            };
+                        }
                     }
                 },
-                total: "total",
-                data: "data"
-            },
-            sync: function () {
-                $("#MaterialGrid").removeClass("input-validation-error");
-                popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
-            }
-        });
-
-        $("#MaterialGrid").kendoGrid({
-            dataSource: materialProposalDataSource,
-            navigatable: true,
-            pageable: true,
-            sortable: true,
-            resizable: true,
-            columnMenu: true,
-            selectable: "multiple",
-            height: 400,
-            //toolbar: [{ name: "create", text: "Thêm" }],
-            columns: [
-                { field: "MaterialName", title: "Tên vật tư" },
-                { field: "Description", title: "Mô tả", editor: textareaEditor },
-                { field: "Quantity", title: "SL", width: 70 },
-                { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
-                { field: "Unit", title: "ĐVT", width: 70 },
-                { field: "Used", title: "Đã sử dụng?", width: 70 },
-                { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
-                { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
-                { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
-                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden }
-            ],
-            dataBound: function () {
-                if (editable) {
-                    $("#MaterialGrid .k-grid-content").on("dblclick", function () {
-                        $('#MaterialGrid').data('kendoGrid').addRow();
-                    });
-
-                    $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
-                        return false;
-                    });
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                            Description: { editable: editable, type: "string" },
+                            Quantity: { editable: editable, type: "number" },
+                            InventoryQuantity: { editable: editable, type: "number" },
+                            Unit: { editable: editable, type: "string", validation: { required: true } },
+                            Used: { editable: editable, type: "boolean" },
+                            UsingPurpose: { editable: editable, type: "string" },
+                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { editable: editable, type: "number" },
+                            Note: { editable: editable, type: "string" },
+                            ImplementerDepartmentId: { type: "number", validation: { required: true } },
+                            ImplementerUserName: { type: "string" },
+                            Approved: { type: "boolean", editable: false },
+                            Finished: { type: "boolean", editable: false }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                },
+                sync: function () {
+                    $("#MaterialGrid").removeClass("input-validation-error");
+                    popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
                 }
-            },
-            edit: function (e) {
-            },
-            editable: true
-        });
+            });
+
+            $("#MaterialGrid").kendoGrid({
+                dataSource: materialProposalDataSource,
+                navigatable: true,
+                pageable: true,
+                sortable: true,
+                resizable: true,
+                columnMenu: true,
+                selectable: "multiple",
+                height: 400,
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialName", title: "Tên vật tư" },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor },
+                    { field: "Quantity", title: "SL", width: 70 },
+                    { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
+                    { field: "Unit", title: "ĐVT", width: 70 },
+                    { field: "Used", title: "Đã sử dụng?", width: 70 },
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
+                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden }
+                ],
+                dataBound: function () {
+                    if (editable) {
+                        $("#MaterialGrid .k-grid-content").on("dblclick", function () {
+                            $('#MaterialGrid').data('kendoGrid').addRow();
+                        });
+
+                        $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
+                            return false;
+                        });
+                    }
+                },
+                edit: function (e) {
+                },
+                editable: true
+            });
 
 
-        $("#submitMaterialProposal").on("click", function () {
-            if (!$("#MaterialProposalForm").valid()) {
-                return;
-            }
-            submitMaterialProposal(true);
-        });
+            $("#submitMaterialProposal").on("click", function () {
+                if (!$("#MaterialProposalForm").valid()) {
+                    return;
+                }
+                submitMaterialProposal(true);
+            });
 
-        $("#saveDraftMaterialProposal").on("click", function () {
-            if (!$("#MaterialProposalForm").valid()) {
-                return;
-            }
-            submitMaterialProposal(false);
-        });
+            $("#saveDraftMaterialProposal").on("click", function () {
+                if (!$("#MaterialProposalForm").valid()) {
+                    return;
+                }
+                submitMaterialProposal(false);
+            });
 
-        function submitMaterialProposal(isSend) {
-            if (isSend) {
-                $("#Sent").val(isSend);
-            }
-            $.ajax({
-                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+            function submitMaterialProposal(isSend) {
+                if (isSend) {
+                    $("#Sent").val(isSend);
+                }
+                $.ajax({
+                    url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
                     type: "POST",
                     data: $("form").serialize(),
                     dataType: "json",
                     async: false,
-                    success: function(id) {
+                    success: function (id) {
                         popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
                         $("#Id").val(id);
                         var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
@@ -430,8 +344,8 @@
                 });
             }
 
-        $("#approveMaterial").on("click", function () {
-            if ($("#MaterialProposalForm").valid()) {
+            $("#approveMaterial").on("click", function () {
+                if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true);
                     approveMaterial();
                 }
@@ -440,7 +354,7 @@
             function approveMaterial() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function() {
+                grid.select().each(function () {
                     var dataItem = grid.dataItem($(this));
                     ids.push(dataItem.Id);
                 });
@@ -460,7 +374,7 @@
                 }
             }
 
-            $("#finishMaterialProposal").on("click", function() {
+            $("#finishMaterialProposal").on("click", function () {
                 if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true);
                     finishMaterialProposal();
@@ -470,138 +384,138 @@
             function finishMaterialProposal() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function() {
+                grid.select().each(function () {
                     var dataItem = grid.dataItem($(this));
                     ids.push(dataItem.Id);
                 });
                 $.ajax({
                     url: '@Url.Action("FinishMaterial", "Home")',
-                type: "POST",
-                data: { idString: ids.join(',') },
-                dataType: "json",
-                async: false,
-                success: function (result) {
-                    if (result) {
-                        $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                    type: "POST",
+                    data: { idString: ids.join(',') },
+                    dataType: "json",
+                    async: false,
+                    success: function (result) {
+                        if (result) {
+                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                        }
                     }
+                });
+            }
+
+            $("#submitComment").on("click", function () {
+                $.ajax({
+                    url: '@Url.Action("AddComment", "Home")',
+                    type: "POST",
+                    data: { id: $("#Id").val(), content: $("#comment").val() },
+                    dataType: "json",
+                    success: function (result) {
+                        if (result) {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+
+            $("#comment").on("keypress", function (e) {
+                if (e.keyCode == 13) {
+                    $("#submitComment").trigger("click");
                 }
             });
-        }
+        });
 
-        $("#submitComment").on("click", function () {
-            $.ajax({
-                url: '@Url.Action("AddComment", "Home")',
-                type: "POST",
-                data: { id: $("#Id").val(), content: $("#comment").val() },
-                dataType: "json",
-                success: function (result) {
-                    if (result) {
-                        location.reload();
-                    }
+        var textareaEditor = function (container, options) {
+            $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
+                .appendTo(container);
+        };
+
+        function getImplementerDepartmentName(id) {
+            var departmentName = "";
+            $.each(implementerDepartmentDataSource._data, function () {
+                if (this.Id == id) {
+                    departmentName = this.DepartmentName;
                 }
             });
-        });
-
-        $("#comment").on("keypress", function (e) {
-            if (e.keyCode == 13) {
-                $("#submitComment").trigger("click");
-            }
-        });
-    });
-
-    var textareaEditor = function (container, options) {
-        $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
-            .appendTo(container);
-    };
-
-    function getImplementerDepartmentName(id) {
-        var departmentName = "";
-        $.each(implementerDepartmentDataSource._data, function () {
-            if (this.Id == id) {
-                departmentName = this.DepartmentName;
-            }
-        });
-        return departmentName;
-    }
-
-    var implementerDepartmentDataSource = new kendo.data.DataSource({
-        transport: {
-            read: {
-                url: "/Home/GetDepartment",
-                type: "post"
-            }
+            return departmentName;
         }
-    });
 
-    function implementerDepartmentEditor(container, options) {
-        $('<input required data-bind="value:' + options.field + '"/>')
-            .appendTo(container)
-            .kendoDropDownList({
-                dataTextField: "DepartmentName",
-                dataValueField: "Id",
-                optionLabel: "-Chọn-",
-                dataSource: implementerDepartmentDataSource
-            });
-    }
-
-    function getImplementerDisplayName(userName) {
-        var displayName = "";
-        $.each(implementerUserDataSource._data, function () {
-            if (this.UserName == userName) {
-                displayName = this.DisplayName;
+        var implementerDepartmentDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetDepartment",
+                    type: "post"
+                }
             }
         });
-        return displayName;
-    }
 
-    var implementerUserDataSource = new kendo.data.DataSource({
-        transport: {
-            read: {
-                url: "/Home/GetUser",
-                type: "post"
-            }
+        function implementerDepartmentEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "DepartmentName",
+                    dataValueField: "Id",
+                    optionLabel: "-Chọn-",
+                    dataSource: implementerDepartmentDataSource
+                });
         }
-    });
 
-    function implementerUserEditor(container, options) {
-        $('<input required data-bind="value:' + options.field + '"/>')
-            .appendTo(container)
-            .kendoDropDownList({
-                dataTextField: "DisplayName",
-                dataValueField: "UserName",
-                optionLabel: "-Chọn-",
-                dataSource: implementerUserDataSource
+        function getImplementerDisplayName(userName) {
+            var displayName = "";
+            $.each(implementerUserDataSource._data, function () {
+                if (this.UserName == userName) {
+                    displayName = this.DisplayName;
+                }
             });
-    }
+            return displayName;
+        }
 
-    function getProgressStatus(id) {
-        var status = "";
-        $.each(progressStatusDataSource._data, function () {
-            if (this.Id == id) {
-                status = this.Status;
+        var implementerUserDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetUser",
+                    type: "post"
+                }
             }
         });
-        return status;
-    }
 
-    var progressStatusDataSource = new kendo.data.DataSource({
-        transport: {
-            read: {
-                url: "/Home/GetProgressStatus",
-                type: "post"
-            }
+        function implementerUserEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "DisplayName",
+                    dataValueField: "UserName",
+                    optionLabel: "-Chọn-",
+                    dataSource: implementerUserDataSource
+                });
         }
-    });
 
-    function progressStatusEditor(container, options) {
-        $('<input required data-bind="value:' + options.field + '"/>')
-            .appendTo(container)
-            .kendoDropDownList({
-                dataTextField: "Status",
-                dataValueField: "Id",
-                optionLabel: "-Chọn-",
-                dataSource: progressStatusDataSource
+        function getProgressStatus(id) {
+            var status = "";
+            $.each(progressStatusDataSource._data, function () {
+                if (this.Id == id) {
+                    status = this.Status;
+                }
             });
-    }
+            return status;
+        }
+
+        var progressStatusDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetProgressStatus",
+                    type: "post"
+                }
+            }
+        });
+
+        function progressStatusEditor(container, options) {
+            $('<input required data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    dataTextField: "Status",
+                    dataValueField: "Id",
+                    optionLabel: "-Chọn-",
+                    dataSource: progressStatusDataSource
+                });
+        }
     </script>
 }

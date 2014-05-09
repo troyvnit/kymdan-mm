@@ -122,7 +122,7 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: 150 },
@@ -223,7 +223,7 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: 150 },

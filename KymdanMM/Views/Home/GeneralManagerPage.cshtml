@@ -192,7 +192,7 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
                     { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
