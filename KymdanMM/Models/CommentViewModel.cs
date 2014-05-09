@@ -12,6 +12,7 @@ namespace KymdanMM.Models
         public bool Approved { get; set; }
         public string PosterUserName { get; set; }
         public string PosterDisplayName { get; set; }
-        public int MaterialProposalId { get; set; }
+        public string ReadUserNames { get; set; }
+        public int MaterialId { get; set; }
     }
 }

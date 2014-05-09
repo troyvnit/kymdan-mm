@@ -22,15 +22,15 @@ namespace KymdanMM.Models
         [Display(Name = "Mục đích sử dụng")]
         public string UsingPurpose { get; set; }
         [Display(Name = "Hạn chót")]
-        public DateTime Deadline { get; set; }
+        public DateTime? Deadline { get; set; }
         [Display(Name = "Ngày bắt đầu")]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         [Display(Name = "Ngày duyệt")]
-        public DateTime ApproveDate { get; set; }
+        public DateTime? ApproveDate { get; set; }
         [Display(Name = "Ngày hoàn thành")]
-        public DateTime FinishDate { get; set; }
+        public DateTime? FinishDate { get; set; }
         [Display(Name = "Ngày giao")]
-        public DateTime DeliveryDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         [Display(Name = "Hoàn tất")]
         public bool Finished { get; set; }
         [Display(Name = "Duyệt")]

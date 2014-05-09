@@ -44,7 +44,19 @@ namespace KymdanMM.Controllers
             {
                 return RedirectToAction("Admin");
             }
-            return View();
+            if (Thread.CurrentPrincipal.IsInRole("Admin"))
+            {
+                return RedirectToAction("GeneralManagerPage");
+            }
+            if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
+            {
+                return RedirectToAction("DepartmentManagerPage");
+            }
+            if (Thread.CurrentPrincipal.IsInRole("Member"))
+            {
+                return RedirectToAction("MemberPage");
+            }
+            return RedirectToAction("AccessDenied");
         }
 
         public ActionResult DepartmentManagerPage()
@@ -53,6 +65,11 @@ namespace KymdanMM.Controllers
         }
 
         public ActionResult GeneralManagerPage()
+        {
+            return View();
+        }
+
+        public ActionResult MemberPage()
         {
             return View();
         }
@@ -137,7 +154,8 @@ namespace KymdanMM.Controllers
         public ActionResult GetUser()
         {
             var users = usersContext.UserProfiles.ToList();
-            return Json(users, JsonRequestBehavior.AllowGet);
+            var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            return Json(users.Where(a => currentUser != null && a.DepartmentId == currentUser.DepartmentId && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetMaterialProposal(int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus)
@@ -210,21 +228,22 @@ namespace KymdanMM.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddOrUpdateMaterialProposal(int? id)
+        public ActionResult AddOrUpdateMaterialProposal(int? id, bool? approved)
         {
             var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
             var materialProposalViewModel = materialProposal != null ? Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal) : new MaterialProposalViewModel();
             var users = usersContext.UserProfiles.ToList();
             var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            if (currentUser == null || !((Thread.CurrentPrincipal.IsInRole("Department Manager") && materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId) || materialProposalViewModel.ProposerDepartmentId == 0))
+            if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposalViewModel.ProposerDepartmentId == 0))))
             {
-                return RedirectToAction("AccessDenied");
+                ViewBag.Departments = _departmentService.GetDepartments();
+                ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+                ViewBag.Users = users;
+                ViewBag.CurrentUser = currentUser;
+                ViewBag.Approved = approved;
+                return View(materialProposalViewModel);
             }
-            ViewBag.Departments = _departmentService.GetDepartments();
-            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
-            ViewBag.Users = users;
-            ViewBag.CurrentUser = currentUser;
-            return View(materialProposalViewModel);
+            return RedirectToAction("AccessDenied");
         }
 
         [HttpPost]
@@ -256,7 +275,7 @@ namespace KymdanMM.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMaterials(string command, int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus, bool? finished)
+        public ActionResult GetMaterials(string command, int pageNumber, int pageSize, int? id, bool? approved, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus, bool? finished)
         {
             //var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
@@ -308,32 +327,47 @@ namespace KymdanMM.Controllers
                 {
                     case "ApprovedAwaitingReceive":
                         materials = _materialService.GetMaterials(pageNumber, pageSize,
-                            a =>
+                            a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 a.Approved);
                         break;
                     case "ApprovedAwaitingImplement":
                         materials = _materialService.GetMaterials(pageNumber, pageSize,
-                            a =>
+                            a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Approved);
                         break;
                     case "ApprovedImplemented":
                         materials = _materialService.GetMaterials(pageNumber, pageSize,
-                            a =>
+                            a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                !a.Finished &&
                                 a.Approved);
                         break;
                     case "ApprovedAssigned":
                         materials = _materialService.GetMaterials(pageNumber, pageSize,
-                            a =>
+                            a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId != 0 &&
                                 a.Approved);
                         break;
+                    case "BeAssignedUnfinished":
+                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name && 
+                                !a.Finished &&
+                                a.Approved);
+                        break;
+                    case "BeAssignedFinished":
+                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
+                                a.Finished &&
+                                a.Approved);
+                        break;
                     default:
-                        materials = _materialService.GetMaterials(pageNumber, pageSize, a => true);
+                        materials = _materialService.GetMaterials(pageNumber, pageSize, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
                         break;
                 }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
@@ -418,15 +452,18 @@ namespace KymdanMM.Controllers
         public ActionResult AddComment(string content, int id)
         {
             var comment = new Comment{ Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name};
-            var materialProposal = _materialProposalService.GetMaterialProposal(id);
+            var material = _materialService.GetMaterial(id);
+            var readUserNames = new List<string>();
             var users = usersContext.UserProfiles.ToList();
             var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             if (user != null)
             {
                 comment.PosterDisplayName = user.DisplayName;
+                readUserNames.Add(comment.PosterUserName);
+                comment.ReadUserNames = string.Join(",", readUserNames);
             }
-            materialProposal.Comments.Add(comment);
-            _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
+            material.Comments.Add(comment);
+            _materialService.AddOrUpdateMaterial(material);
             return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
         }
 

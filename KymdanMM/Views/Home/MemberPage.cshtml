@@ -1,23 +1,23 @@
 ﻿@{
-    ViewBag.Title = "GeneralManagerPage";
+    ViewBag.Title = "MemberPage";
 }
 <div class="row">&nbsp;</div>
 <div class="row">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#ReceiveAndAwaitingApprove" data-toggle="tab">Duyệt đề nghị cấp</a></li>
-        <li><a href="#ApprovedAssigned" data-toggle="tab">Đã duyệt và phân công</a></li>
+        <li class="active"><a href="#BeAssignedUnfinished" data-toggle="tab">Chưa hoàn thành</a></li>
+        <li><a href="#BeAssignedFinished" data-toggle="tab">Đã hoàn thành</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane active" id="ReceiveAndAwaitingApprove">
+        <div class="tab-pane active" id="BeAssignedUnfinished">
             <div class="row">&nbsp;</div>
-            <div id="ReceiveAndAwaitingApproveGrid"></div>
+            <div id="BeAssignedUnfinishedGrid"></div>
         </div>
-        <div class="tab-pane" id="ApprovedAssigned">
+        <div class="tab-pane" id="BeAssignedFinished">
             <div class="row">&nbsp;</div>
-            <div id="ApprovedAssignedGrid"></div>
+            <div id="BeAssignedFinishedGrid"></div>
         </div>
     </div>
 </div>
@@ -43,78 +43,8 @@
             implementerUserDataSource.read();
             progressStatusDataSource.read();
             //----------Tab 1-----------//
-            var receiveAndAwaitingApproveDataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterialProposals",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models),
-                                materialProposalId: $("#Id").val()
-                            };
-                        } else {
-                            return {
-                                pageNumber: options.page,
-                                pageSize: options.pageSize,
-                                command: "ReceiveAndAwaitingApprove"
-                            };
-                        }
-                    }
-                },
-                batch: true,
-                pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            ProposalCode: { type: "string", validation: { required: true } },
-                            CreatedDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            Approved: { type: "boolean" }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                }
-            });
-
-            $("#ReceiveAndAwaitingApproveGrid").kendoGrid({
-                dataSource: receiveAndAwaitingApproveDataSource,
-                navigatable: true,
-                pageable: true,
-                groupable: {
-                    messages: {
-                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
-                    }
-                },
-                //toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #?approved=false' class='label label-primary'>#= ProposalCode #</a>" },
-                    { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
-                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
-                ],
-                editable: false
-            });
-
-            //----------Tab 2-----------//
-            var approvedAssignedDataSource = new kendo.data.DataSource({
+            var beAssignedUnfinishedDataSource = new kendo.data.DataSource({
+                autoSync: true,
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -141,7 +71,7 @@
                             return {
                                 pageNumber: options.page,
                                 pageSize: options.pageSize,
-                                command: "ApprovedAssigned"
+                                command: "BeAssignedUnfinished"
                             };
                         }
                     }
@@ -155,16 +85,16 @@
                         fields: {
                             Id: { editable: false, nullable: false, defaultValue: 0 },
                             MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
-                            MaterialName: { type: "string", validation: { required: true } },
+                            MaterialName: { editable: false, type: "string", validation: { required: true } },
                             Description: { type: "string" },
                             Quantity: { type: "number" },
                             InventoryQuantity: { type: "number" },
                             Unit: { type: "string", validation: { required: true } },
                             Used: { type: "boolean" },
                             UsingPurpose: { type: "string" },
-                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { type: "number" },
@@ -180,8 +110,8 @@
                 }
             });
 
-            $("#ApprovedAssignedGrid").kendoGrid({
-                dataSource: approvedAssignedDataSource,
+            $("#BeAssignedUnfinishedGrid").kendoGrid({
+                dataSource: beAssignedUnfinishedDataSource,
                 navigatable: true,
                 pageable: true,
                 groupable: {
@@ -193,27 +123,113 @@
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", title: "Tên vật tư", width: 200 },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: 150 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
                 ],
-                editable: false,
+                editable: true,
                 dataBound: function () {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date()) {
-                            $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                            $("#BeAssignedUnfinishedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
                         } else if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date().addDays(1)) {
-                            $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                            $("#BeAssignedUnfinishedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else {
 
                         }
                     }
                 }
+            });
+            
+            //----------Tab 2-----------//
+            var beAssignedFinishedDataSource = new kendo.data.DataSource({
+                autoSync: true,
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterials",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models)
+                            };
+                        } else {
+                            return {
+                                pageNumber: options.page,
+                                pageSize: options.pageSize,
+                                command: "BeAssignedFinished"
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
+                            MaterialName: { editable: false, type: "string", validation: { required: true } },
+                            Description: { type: "string" },
+                            Quantity: { type: "number" },
+                            InventoryQuantity: { type: "number" },
+                            Unit: { type: "string", validation: { required: true } },
+                            Used: { type: "boolean" },
+                            UsingPurpose: { type: "string" },
+                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
+                            Note: { type: "string" },
+                            ImplementerDepartmentId: { type: "number" },
+                            ImplementerUserName: { type: "string" },
+                            ApproveStatus: { type: "number", editable: false },
+                            Finished: { type: "boolean", editable: false }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#BeAssignedFinishedGrid").kendoGrid({
+                dataSource: beAssignedFinishedDataSource,
+                navigatable: true,
+                pageable: true,
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
+                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Hạn chót", width: 150 },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
+                ],
+                editable: true
             });
         });
         Date.prototype.addDays = function (days) {

@@ -8,8 +8,8 @@
     var currentUser = (UserProfile)ViewBag.CurrentUser;
     var enableAttribute = (object)new { @class = "form-control" };
     var isNew = Model.Id == 0;
-    var isMember = Thread.CurrentPrincipal.IsInRole("Member");
     var editable = !Model.Sent;
+    var open = isNew ? "in" : "";
 
 }
 
@@ -33,7 +33,7 @@
                                 </a>
                             </p>
                         </div>
-                        <div id="collapseOne" class="panel-collapse collapse in">
+                        <div id="collapseOne" class="panel-collapse collapse @open">
                             <div class="panel-body">
                                 <div class="col-sm-6">
                                     <div class="form-group">
@@ -208,6 +208,10 @@
                 }
                 else
                 {
+                     if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                     {
+                         <input type="button" id="approveMaterial" class="btn btn-success navbar-btn" value="Duyệt" />
+                     }
                     <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Cập nhật" />
                 }
             </div>
@@ -222,13 +226,9 @@
         </div>
     </script>
     <script id="approveStatusTemplate" type="text/x-kendo-tmpl">
-        # if (ApproveStatus == 2) { #
+        # if (Approved) { #
         <span class="label label-success">
-            Tổng giám đốc duyệt
-        </span>
-        # } else if (ApproveStatus == 1){#
-        <span class="label label-info">
-            Quản lý duyệt
+            Đã duyệt
         </span>
         # } else {#
         <span class="label label-warning">
@@ -248,160 +248,170 @@
     # } #
 </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#Deadline").kendoDatePicker({
-                format: "dd/MM/yyyy"
-            });
-            var files = $("#File").val() != "" ? $("#File").val() : "[]";
-            $("#files").kendoUpload({
-                async: {
-                    saveUrl: '@Url.Action("SaveFile", "Home")',
-                    removeUrl: '@Url.Action("RemoveFile", "Home")',
-                    autoUpload: true            
+        $(document).ready(function () {
+            implementerDepartmentDataSource.read();
+            implementerUserDataSource.read();
+            progressStatusDataSource.read();
+        $("#Deadline").kendoDatePicker({
+            format: "dd/MM/yyyy"
+        });
+        var files = $("#File").val() != "" ? $("#File").val() : "[]";
+        $("#files").kendoUpload({
+            async: {
+                saveUrl: '@Url.Action("SaveFile", "Home")',
+                removeUrl: '@Url.Action("RemoveFile", "Home")',
+                autoUpload: true
+            },
+            localization: {
+                select: "Chọn tập tin",
+            },
+            success: function (e) {
+                $("#File").val(e.XMLHttpRequest.responseText);
+            },
+            files: JSON.parse(files)
+        });
+        var popupNotification = $("#popupNotification").kendoNotification({
+            position: {
+                top: 10,
+                right: 10
+            },
+            autoHideAfter: 5000,
+            stacking: "down",
+            templates: [{
+                type: "success",
+                template: $("#successTemplate").html()
+            }]
+        }).data("kendoNotification");
+        var editable = '@isNew' == 'True';
+        var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True';
+        var materialProposalDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetMaterials",
+                    type: "post"
                 },
-                localization: {
-                    select: "Chọn tập tin",
+                update: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
                 },
-                success: function(e) {
-                    $("#File").val(e.XMLHttpRequest.responseText);
-                }, 
-                files: JSON.parse(files)
-            });
-            var popupNotification = $("#popupNotification").kendoNotification({
-                position: {
-                    top: 10,
-                    right: 10
+                destroy: {
+                    url: "/Home/DeleteMaterial",
+                    type: "post",
                 },
-                autoHideAfter: 5000,
-                stacking: "down",
-                templates: [{
-                    type: "success",
-                    template: $("#successTemplate").html()
-                }]
-            }).data("kendoNotification");
-            var materialProposalDataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterial",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function(options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models),
-                                materialProposalId: $("#Id").val()
-                            };
-                        } else {
-                            return {
-                                id: $("#Id").val(),
-                                pageNumber: options.page,
-                                pageSize: options.pageSize
-                            };
-                        }
+                create: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return {
+                            materials: kendo.stringify(options.models),
+                            materialProposalId: $("#Id").val()
+                        };
+                    } else {
+                        return {
+                            id: $("#Id").val(),
+                            pageNumber: options.page,
+                            pageSize: options.pageSize,
+                            approved: '@ViewBag.Approved'
+                        };
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 10,
+            serverPaging: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, nullable: false, defaultValue: 0 },
+                        MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                        Description: { editable: editable, type: "string" },
+                        Quantity: { editable: editable, type: "number" },
+                        InventoryQuantity: { editable: editable, type: "number" },
+                        Unit: { editable: editable, type: "string", validation: { required: true } },
+                        Used: { editable: editable, type: "boolean" },
+                        UsingPurpose: { editable: editable, type: "string" },
+                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        ProgressStatusId: { editable: editable, type: "number" },
+                        Note: { editable: editable, type: "string" },
+                        ImplementerDepartmentId: { type: "number", validation: { required: true } },
+                        ImplementerUserName: { type: "string" },
+                        Approved: { type: "boolean", editable: false },
+                        Finished: { type: "boolean", editable: false }
                     }
                 },
-                batch: true,
-                pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialName: { type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            InventoryQuantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
-                            Note: { type: "string" },
-                            ImplementerDepartmentId: { type: "number" },
-                            ImplementerUserName: { type: "string" },
-                            ApproveStatus: { type: "number", editable: false },
-                            Finished: { type: "boolean", editable: false }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                },
-                sync: function() {
-                    $("#MaterialGrid").removeClass("input-validation-error");
-                    popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
+                total: "total",
+                data: "data"
+            },
+            sync: function () {
+                $("#MaterialGrid").removeClass("input-validation-error");
+                popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
+            }
+        });
+
+        $("#MaterialGrid").kendoGrid({
+            dataSource: materialProposalDataSource,
+            navigatable: true,
+            pageable: true,
+            sortable: true,
+            resizable: true,
+            columnMenu: true,
+            selectable: "multiple",
+            height: 400,
+            //toolbar: [{ name: "create", text: "Thêm" }],
+            columns: [
+                { field: "MaterialName", title: "Tên vật tư" },
+                { field: "Description", title: "Mô tả", editor: textareaEditor },
+                { field: "Quantity", title: "SL", width: 70 },
+                { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
+                { field: "Unit", title: "ĐVT", width: 70 },
+                { field: "Used", title: "Đã sử dụng?", width: 70 },
+                { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
+                { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
+                { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
+                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden }
+            ],
+            dataBound: function () {
+                if (editable) {
+                    $("#MaterialGrid .k-grid-content").on("dblclick", function () {
+                        $('#MaterialGrid').data('kendoGrid').addRow();
+                    });
+
+                    $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
+                        return false;
+                    });
                 }
-            });
-
-            $("#MaterialGrid").kendoGrid({
-                dataSource: materialProposalDataSource,
-                navigatable: true,
-                pageable: true,
-                sortable: true,
-                resizable: true,
-                columnMenu: true,
-                height: 400,
-                //toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "MaterialName", title: "Tên vật tư", width: 200 },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
-                    { field: "Quantity", title: "SL", width: 70 },
-                    { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
-                    { field: "Unit", title: "ĐVT", width: 100 },
-                    { field: "Used", title: "Đã sử dụng?" },
-                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
-                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", width: 200 }] }
-                ],
-                dataBound: function() {
-                    if ('@isNew' == 'True') {
-                        $("#MaterialGrid .k-grid-content").on("dblclick", function() {
-                            $('#MaterialGrid').data('kendoGrid').addRow();
-                        });
-
-                        $("#MaterialGrid .k-grid-content table").on("dblclick", function() {
-                            return false;
-                        });
-                    }
-                },
-                edit: function(e) {
-                },
-                editable: true
-            });
+            },
+            edit: function (e) {
+            },
+            editable: true
+        });
 
 
-            $("#submitMaterialProposal").on("click", function() {
-                if (!$("#MaterialProposalForm").valid()) {
-                    return;
-                }
-                submitMaterialProposal(true);
-            });
-            
-            $("#saveDraftMaterialProposal").on("click", function () {
-                if (!$("#MaterialProposalForm").valid()) {
-                    return;
-                }
-                submitMaterialProposal(false);
-            });
+        $("#submitMaterialProposal").on("click", function () {
+            if (!$("#MaterialProposalForm").valid()) {
+                return;
+            }
+            submitMaterialProposal(true);
+        });
 
-            function submitMaterialProposal(isSend) {
+        $("#saveDraftMaterialProposal").on("click", function () {
+            if (!$("#MaterialProposalForm").valid()) {
+                return;
+            }
+            submitMaterialProposal(false);
+        });
+
+        function submitMaterialProposal(isSend) {
+            if (isSend) {
                 $("#Sent").val(isSend);
-                $.ajax({
-                    url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+            }
+            $.ajax({
+                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
                     type: "POST",
                     data: $("form").serialize(),
                     dataType: "json",
@@ -420,37 +430,39 @@
                 });
             }
 
-            $("#approveMaterialProposal").on("click", function() {
-                if ($("#MaterialProposalForm").valid()) {
-                    submitMaterialProposal();
-                    approveMaterialProposal();
+        $("#approveMaterial").on("click", function () {
+            if ($("#MaterialProposalForm").valid()) {
+                    submitMaterialProposal(true);
+                    approveMaterial();
                 }
             });
 
-            function approveMaterialProposal() {
+            function approveMaterial() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
                 grid.select().each(function() {
                     var dataItem = grid.dataItem($(this));
                     ids.push(dataItem.Id);
                 });
-                $.ajax({
-                    url: '@Url.Action("ApproveMaterial", "Home")',
-                    type: "POST",
-                    data: { idString: ids.join(',') },
-                    dataType: "json",
-                    async: false,
-                    success: function(result) {
-                        if (result) {
-                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                if (ids.length > 0) {
+                    $.ajax({
+                        url: '@Url.Action("ApproveMaterial", "Home")',
+                        type: "POST",
+                        data: { idString: ids.join(',') },
+                        dataType: "json",
+                        async: false,
+                        success: function (result) {
+                            if (result) {
+                                $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             $("#finishMaterialProposal").on("click", function() {
                 if ($("#MaterialProposalForm").valid()) {
-                    submitMaterialProposal();
+                    submitMaterialProposal(true);
                     finishMaterialProposal();
                 }
             });
@@ -464,136 +476,132 @@
                 });
                 $.ajax({
                     url: '@Url.Action("FinishMaterial", "Home")',
-                    type: "POST",
-                    data: { idString: ids.join(',') },
-                    dataType: "json",
-                    async: false,
-                    success: function(result) {
-                        if (result) {
-                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
-                        }
+                type: "POST",
+                data: { idString: ids.join(',') },
+                dataType: "json",
+                async: false,
+                success: function (result) {
+                    if (result) {
+                        $("#MaterialGrid").data("kendoGrid").dataSource.read();
                     }
-                });
-            }
+                }
+            });
+        }
 
-            $("#submitComment").on("click", function() {
-                $.ajax({
-                    url: '@Url.Action("AddComment", "Home")',
-                    type: "POST",
-                    data: { id: $("#Id").val(), content: $("#comment").val() },
-                    dataType: "json",
-                    success: function(result) {
-                        if (result) {
-                            location.reload();
-                        }
+        $("#submitComment").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("AddComment", "Home")',
+                type: "POST",
+                data: { id: $("#Id").val(), content: $("#comment").val() },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        location.reload();
                     }
-                });
-            });
-
-            $("#comment").on("keypress", function(e) {
-                if (e.keyCode == 13) {
-                    $("#submitComment").trigger("click");
                 }
             });
-
-            implementerDepartmentDataSource.read();
-            implementerUserDataSource.read();
-            progressStatusDataSource.read();
         });
 
-        var textareaEditor = function(container, options) {
-            $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
-                .appendTo(container);
-        };
-
-        function getImplementerDepartmentName(id) {
-            var departmentName = "";
-            $.each(implementerDepartmentDataSource._data, function() {
-                if (this.Id == id) {
-                    departmentName = this.DepartmentName;
-                }
-            });
-            return departmentName;
-        }
-
-        var implementerDepartmentDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetDepartment",
-                    type: "post"
-                }
+        $("#comment").on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                $("#submitComment").trigger("click");
             }
         });
+    });
 
-        function implementerDepartmentEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "DepartmentName",
-                    dataValueField: "Id",
-                    optionLabel: "-Chọn-",
-                    dataSource: implementerDepartmentDataSource
-                });
-        }
+    var textareaEditor = function (container, options) {
+        $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
+            .appendTo(container);
+    };
 
-        function getImplementerDisplayName(userName) {
-            var displayName = "";
-            $.each(implementerUserDataSource._data, function() {
-                if (this.UserName == userName) {
-                    displayName = this.DisplayName;
-                }
-            });
-            return displayName;
-        }
-
-        var implementerUserDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetUser",
-                    type: "post"
-                }
+    function getImplementerDepartmentName(id) {
+        var departmentName = "";
+        $.each(implementerDepartmentDataSource._data, function () {
+            if (this.Id == id) {
+                departmentName = this.DepartmentName;
             }
         });
+        return departmentName;
+    }
 
-        function implementerUserEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "DisplayName",
-                    dataValueField: "UserName",
-                    optionLabel: "-Chọn-",
-                    dataSource: implementerUserDataSource
-                });
+    var implementerDepartmentDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetDepartment",
+                type: "post"
+            }
         }
+    });
 
-        function getProgressStatus(id) {
-            var status = "";
-            $.each(progressStatusDataSource._data, function() {
-                if (this.Id == id) {
-                    status = this.Status;
-                }
+    function implementerDepartmentEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "DepartmentName",
+                dataValueField: "Id",
+                optionLabel: "-Chọn-",
+                dataSource: implementerDepartmentDataSource
             });
-            return status;
-        }
+    }
 
-        var progressStatusDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetProgressStatus",
-                    type: "post"
-                }
+    function getImplementerDisplayName(userName) {
+        var displayName = "";
+        $.each(implementerUserDataSource._data, function () {
+            if (this.UserName == userName) {
+                displayName = this.DisplayName;
             }
         });
+        return displayName;
+    }
 
-        function progressStatusEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "Status",
-                    dataValueField: "Id",
-                    optionLabel: "-Chọn-",
-                    dataSource: progressStatusDataSource
-                });
+    var implementerUserDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetUser",
+                type: "post"
+            }
         }
+    });
+
+    function implementerUserEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "DisplayName",
+                dataValueField: "UserName",
+                optionLabel: "-Chọn-",
+                dataSource: implementerUserDataSource
+            });
+    }
+
+    function getProgressStatus(id) {
+        var status = "";
+        $.each(progressStatusDataSource._data, function () {
+            if (this.Id == id) {
+                status = this.Status;
+            }
+        });
+        return status;
+    }
+
+    var progressStatusDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetProgressStatus",
+                type: "post"
+            }
+        }
+    });
+
+    function progressStatusEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Status",
+                dataValueField: "Id",
+                optionLabel: "-Chọn-",
+                dataSource: progressStatusDataSource
+            });
+    }
     </script>
 }

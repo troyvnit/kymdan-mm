@@ -16,11 +16,11 @@ namespace KymdanMM.Model.Models
         public string Unit { get; set; }
         public bool Used { get; set; }
         public string UsingPurpose { get; set; }
-        public DateTime Deadline { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime ApproveDate { get; set; }
-        public DateTime FinishDate { get; set; }
-        public DateTime DeliveryDate { get; set; }
+        public DateTime? Deadline { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ApproveDate { get; set; }
+        public DateTime? FinishDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public bool Finished { get; set; }
         public bool Approved { get; set; }
         public int ProgressStatusId { get; set; }
