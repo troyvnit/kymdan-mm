@@ -26,55 +26,57 @@
 
 <div class="row">&nbsp;</div>
 <div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                    Thông tin vật tư
-                </a>
-            </p>
-        </div>
-        <div id="collapseOne" class="panel-collapse collapse in">
-            <div class="panel-body form-horizontal">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ApproveDate, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ApproveDate)</span>
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                        Thông tin vật tư
+                    </a>
+                </p>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="panel-body form-horizontal">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ApproveDate, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ApproveDate)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Approved, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Approved)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Finished, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Finished)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
+                            <div class="col-sm-8 col-md-6">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerUserName)</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Approved, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.Approved)</span>
-                        </div>
+                    <div class="col-sm-6">
                     </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Finished, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.Finished)</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
-                        <div class="col-sm-8 col-md-6">
-                            <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerUserName)</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
                 </div>
             </div>
         </div>
