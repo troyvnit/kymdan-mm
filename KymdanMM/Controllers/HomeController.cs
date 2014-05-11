@@ -78,7 +78,17 @@ namespace KymdanMM.Controllers
         {
             var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
             var users = usersContext.UserProfiles.ToList();
-            ViewBag.Departments = _departmentService.GetDepartments();
+            var departments = _departmentService.GetDepartments();
+            material.ProposerDepartmentName =
+                _departmentService.GetDepartment(material.ProposerDepartmentId).DepartmentName;
+            material.ImplementerDepartmentName =
+                _departmentService.GetDepartment(material.ImplementerDepartmentId).DepartmentName;
+            material.Status =
+                _progressStatusService.GetProgressStatus(material.ProgressStatusId).Status;
+            var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
+            if (implementUser != null)
+                material.ImplementerDisplayName = implementUser.DisplayName;
+            ViewBag.Departments = departments;
             ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
             ViewBag.Users = users;
             ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
@@ -255,10 +265,13 @@ namespace KymdanMM.Controllers
                 materialProposal.CreatedDate = DateTime.MinValue;
                 materialProposal.CreatedUserName = null;
             }
-            materialProposal.ProposerUserName = Thread.CurrentPrincipal.Identity.Name;
-            var users = usersContext.UserProfiles.ToList();
-            var currentUser = users.FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
-            if (currentUser != null) materialProposal.ProposerDepartmentId = currentUser.DepartmentId;
+            else
+            {
+                materialProposal.ProposerUserName = Thread.CurrentPrincipal.Identity.Name;
+                var users = usersContext.UserProfiles.ToList();
+                var currentUser = users.FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
+                if (currentUser != null) materialProposal.ProposerDepartmentId = currentUser.DepartmentId;
+            }
             _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
             return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
         }
@@ -410,14 +423,6 @@ namespace KymdanMM.Controllers
             if (user == null) return Json(false, JsonRequestBehavior.AllowGet);
             foreach (var material in ids.Select(id => _materialService.GetMaterial(Convert.ToInt32(id))))
             {
-                if (Thread.CurrentPrincipal.IsInRole("Department Manager") &&
-                    material.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
-                    material.Approved != true)
-                {
-                    material.Approved = true;
-                    material.StartDate = DateTime.Now;
-
-                }
                 if (Thread.CurrentPrincipal.IsInRole("Admin") &&
                     material.Approved != true)
                 {
@@ -504,10 +509,10 @@ namespace KymdanMM.Controllers
                 foreach (var file in files)
                 {
                     var fileName = Path.GetFileName(file.FileName);
-                    var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                    var physicalPath = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
                     file.SaveAs(physicalPath);
                 }
-                return Json(files.Select(a => new { name = a.FileName, size = a.ContentLength, extension = a.ContentType }), "text/plain");
+                return Json(files.Select(a => new FileViewModel { name = a.FileName, size = a.ContentLength, extension = a.ContentType }), "text/plain");
             }
             return Content("");
         }
@@ -519,7 +524,7 @@ namespace KymdanMM.Controllers
                 foreach (var fullName in fileNames)
                 {
                     var fileName = Path.GetFileName(fullName);
-                    var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                    var physicalPath = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
 
                     // TODO: Verify user permissions
 
@@ -529,7 +534,7 @@ namespace KymdanMM.Controllers
                     }
                 }
             }
-            return Content("");
+            return Json(fileNames, "text/plain");
         }
 
         public ActionResult About()

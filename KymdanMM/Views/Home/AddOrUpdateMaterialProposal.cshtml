@@ -104,6 +104,7 @@
             </div>
             <div id="collapseTwo" class="panel-collapse collapse in">
                 <div id="MaterialGrid"></div>
+                <div id="UploadImageWindow"></div>
             </div>
         </div>
     }
@@ -161,7 +162,19 @@
         </span>
         # } #
     </script>
+    <script id="fileTemplate" type="text/x-kendo-template">
+    <span class='k-progress'></span>
+    <div class='file-wrapper'>
+        <a href='/Images/Upload/#=name#' target='_blank'>
+            <img class='file-icon' src='/Images/Upload/#=name#' />
+            <h4 class='file-heading file-name-heading'>Name: #=name#</h4>
+            <h4 class='file-heading file-size-heading'>Size: #=size# bytes</h4>
+        </a>
+        <button type='button' class='k-upload-action'></button>
+</div>
+</script>
     <script type="text/javascript">
+        var wnd;
         $(document).ready(function () {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
@@ -254,6 +267,7 @@
                             Note: { editable: editable, type: "string" },
                             ImplementerDepartmentId: { type: "number", validation: { required: true } },
                             ImplementerUserName: { type: "string" },
+                            File: { type: "string" },
                             Approved: { type: "boolean", editable: false },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -280,14 +294,16 @@
                 columns: [
                     { field: "MaterialName", title: "Tên vật tư" },
                     { field: "Description", title: "Mô tả", editor: textareaEditor },
-                    { field: "Quantity", title: "SL", width: 70 },
-                    { field: "InventoryQuantity", title: "SL tồn kho", width: 70 },
-                    { field: "Unit", title: "ĐVT", width: 70 },
-                    { field: "Used", title: "Đã sử dụng?", width: 70 },
+                    { field: "Quantity", title: "SL", width: 80 },
+                    { field: "InventoryQuantity", title: "SL tồn kho", width: 80 },
+                    { field: "Unit", title: "Đơn vị tính", width: 80 },
+                    { field: "Used", title: "Đã sử dụng?", width: 90 },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden }
+                    { field: "File", title: "File", width: 70, hidden: true},
+                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100, hidden: editable },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden },
+                    { command: { text: "Hình ảnh", click: uploadImage }, title: " ", width: "100px" }
                 ],
                 dataBound: function () {
                     if (editable) {
@@ -305,6 +321,14 @@
                 editable: true
             });
 
+            wnd = $("#UploadImageWindow")
+                .kendoWindow({
+                    title: "Hình ảnh",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    width: 600
+                }).data("kendoWindow");
 
             $("#submitMaterialProposal").on("click", function () {
                 if (!$("#MaterialProposalForm").valid()) {
@@ -427,6 +451,39 @@
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
                 .appendTo(container);
         };
+        
+        function uploadImage(e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            dataItem.File = dataItem.File ? dataItem.File : "[]";
+            wnd.content("<input type=\"file\" id=\"file_" + dataItem.uid + "\" name=\"files\" />");
+            $("#file_" + dataItem.uid).kendoUpload({
+                multiple: true,
+                async: {
+                    saveUrl: '@Url.Action("SaveFile", "Home")',
+                    removeUrl: '@Url.Action("RemoveFile", "Home")',
+                    autoUpload: true
+                },
+                localization: {
+                    select: "Chọn tập tin",
+                },
+                success: function (e) {
+                    var files = JSON.parse(dataItem.File);
+                    var results = JSON.parse(e.XMLHttpRequest.responseText);
+                    if (e.operation == "remove") {
+                        files = $.grep(files, function (file) {
+                            return file.name != results[0];
+                        });
+                    } else {
+                        files = $.merge(files, results);
+                    }
+                    dataItem.set("File", JSON.stringify(files));
+                },
+                files: JSON.parse(dataItem.File),
+                template: kendo.template($('#fileTemplate').html())
+            });
+            wnd.center().open();
+        }
 
         function getImplementerDepartmentName(id) {
             var departmentName = "";

@@ -1,5 +1,6 @@
 ﻿@using System.Threading
 @using KymdanMM.Models
+@using Newtonsoft.Json
 @model KymdanMM.Models.MaterialViewModel
 @{
     ViewBag.Title = "Material";
@@ -22,6 +23,7 @@
                             user.DepartmentId;
             });
     var generalManagerComments = Model.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
+    var files = JsonConvert.DeserializeObject<List<FileViewModel>>(Model.File);
 }
 
 <div class="row">&nbsp;</div>
@@ -37,314 +39,434 @@
             </div>
             <div id="collapseOne" class="panel-collapse collapse in">
                 <div class="panel-body form-horizontal">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
-                            @Html.LabelFor(m => m.ApproveDate, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ApproveDate)</span>
+                            @Html.LabelFor(m => m.MaterialName, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.MaterialName)</span>
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.LabelFor(m => m.Approved, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Approved)</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.Deadline, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
+                            @Html.LabelFor(m => m.Description, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
                                 <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.LabelFor(m => m.Finished, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Finished)</span>
+                            @Html.LabelFor(m => m.Quantity, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Quantity)</span>
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.LabelFor(m => m.ImplementerUserName, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerUserName)</span>
+                            @Html.LabelFor(m => m.InventoryQuantity, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.InventoryQuantity)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Unit, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Unit)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.UsingPurpose, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.UsingPurpose)</span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaterialProposalCode, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.MaterialProposalCode)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProposerDepartmentName, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDepartmentName)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ImplementerDepartmentName, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ImplementerDisplayName, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDisplayName)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Status, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Status)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Finished, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">
+                                    @if (Model.Finished)
+                                    {
+                                        <span class="label label-success">
+                                            Đã hoàn tất
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-warning">
+                                            Chưa hoàn tất
+                                        </span>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Approved, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">
+                                    @if (Model.Approved) {
+                                    <span class="label label-success">
+                                        Đã duyệt
+                                    </span>
+                                    } else {
+                                    <span class="label label-warning">
+                                        Chưa duyệt
+                                    </span>
+                                    } 
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ApproveDate, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ApproveDate)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Deadline, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.Deadline)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.StartDate, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.StartDate)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.DeliveryDate, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.DeliveryDate)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FinishDate, new { @class = "col-md-5 control-label" })
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.FinishDate)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-sm-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <p class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                        Chỉ đạo của Tổng giám đốc
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseImage">
+                        Hình ảnh
                     </a>
                 </p>
             </div>
-            <div id="collapseTwo" class="panel-collapse collapse in">
+            <div id="collapseImage" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
-                            @foreach (var comment in generalManagerComments)
-                            {
-                                var str = comment.PosterDisplayName;
-                                string result = str;
-                                if (!string.IsNullOrEmpty(str))
-                                {
-                                    var words = str.Split(' ');
-                                    for (int index = 0; index < words.Length; index++)
-                                    {
-                                        var s = words[index];
-                                        if (s.Length > 0)
-                                        {
-                                            words[index] = s[0].ToString().ToUpper();
-                                        }
-                                    }
-                                    result = string.Join("", words);
-                                }
-                                if (comment.PosterUserName == currentUser.UserName)
-                                {
-                                    <li class="right clearfix">
-                                        <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                                <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="left clearfix">
-                                        <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <strong class="primary-font">@comment.PosterDisplayName</strong>
-                                                <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                                </small>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    <div class="col-sm-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <p class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                        Đơn vị đề xuất phản hồi
-                    </a>
-                </p>
-            </div>
-            <div id="collapseThree" class="panel-collapse collapse in">
-                <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
-                            @foreach (var comment in proposalDepartmentComments)
-                            {
-                                var str = comment.PosterDisplayName;
-                                string result = str;
-                                if (!string.IsNullOrEmpty(str))
-                                {
-                                    var words = str.Split(' ');
-                                    for (int index = 0; index < words.Length; index++)
-                                    {
-                                        var s = words[index];
-                                        if (s.Length > 0)
-                                        {
-                                            words[index] = s[0].ToString().ToUpper();
-                                        }
-                                    }
-                                    result = string.Join("", words);
-                                }
-                                if (comment.PosterUserName == currentUser.UserName)
-                                {
-                                    <li class="right clearfix">
-                                        <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                                <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="left clearfix">
-                                        <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <strong class="primary-font">@comment.PosterDisplayName</strong>
-                                                <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                                </small>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <p class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-                        Đơn vị thu mua phản hồi
-                    </a>
-                </p>
-            </div>
-            <div id="collapseFour" class="panel-collapse collapse in">
-                <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
-                            @foreach (var comment in implementDepartmentComments)
-                            {
-                                var str = comment.PosterDisplayName;
-                                string result = str;
-                                if (!string.IsNullOrEmpty(str))
-                                {
-                                    var words = str.Split(' ');
-                                    for (int index = 0; index < words.Length; index++)
-                                    {
-                                        var s = words[index];
-                                        if (s.Length > 0)
-                                        {
-                                            words[index] = s[0].ToString().ToUpper();
-                                        }
-                                    }
-                                    result = string.Join("", words);
-                                }
-                                if (comment.PosterUserName == currentUser.UserName)
-                                {
-                                    <li class="right clearfix">
-                                        <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
-                                                <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="left clearfix">
-                                        <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
-                                        </span>
-                                        <div class="chat-body clearfix">
-                                            <div class="header">
-                                                <strong class="primary-font">@comment.PosterDisplayName</strong>
-                                                <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
-                                                </small>
-                                            </div>
-                                            <p>
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
-<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-    <div class="container">
-        <div class="col-sm-8">
-            <div class="navbar-form navbar-left">
-                <div class="input-group">
-                    <input id="comment" type="text" class="form-control" placeholder="Nhập phản hồi...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-success" id="submitComment">
-                            Gửi
-                        </button>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="pull-right">
-                <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
-            </div>
-        </div>
-    </div>
-</nav>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#submitComment").on("click", function () {
-                $.ajax({
-                    url: '@Url.Action("AddComment", "Home")',
-                    type: "POST",
-                    data: { id: '@Model.Id', content: $("#comment").val() },
-                    dataType: "json",
-                    success: function (result) {
-                        if (result) {
-                            location.reload();
-                        }
+                    @foreach (var file in files)
+                    {
+                        <div class="col-xs-6 col-md-3">
+                            <a href="/Images/Upload/@file.name" target="_blank" class="thumbnail">
+                                <img src="/Images/Upload/@file.name" alt="...">
+                            </a>
+                        </div>
                     }
-                });
-            });
+                </div>
+            </div>
+        </div>
+    </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                    Chỉ đạo của Tổng giám đốc
+                                </a>
+                            </p>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="col-sm-12">
+                                    <ul class="chat">
+                                        @foreach (var comment in generalManagerComments)
+                            {
+                                var str = comment.PosterDisplayName;
+                                string result = str;
+                                if (!string.IsNullOrEmpty(str))
+                                {
+                                    var words = str.Split(' ');
+                                    for (int index = 0; index < words.Length; index++)
+                                    {
+                                        var s = words[index];
+                                        if (s.Length > 0)
+                                        {
+                                            words[index] = s[0].ToString().ToUpper();
+                                        }
+                                    }
+                                    result = string.Join("", words);
+                                }
+                                if (comment.PosterUserName == currentUser.UserName)
+                                {
+                            <li class="right clearfix">
+                                <span class="chat-img pull-right">
+                                    <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                        <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                                else
+                                {
+                            <li class="left clearfix">
+                                <span class="chat-img pull-left">
+                                    <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font">@comment.PosterDisplayName</strong>
+                                        <small class="pull-right text-muted">
+                                            <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </small>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                            }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                    Đơn vị đề xuất phản hồi
+                                </a>
+                            </p>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="col-sm-12">
+                                    <ul class="chat">
+                                        @foreach (var comment in proposalDepartmentComments)
+                            {
+                                var str = comment.PosterDisplayName;
+                                string result = str;
+                                if (!string.IsNullOrEmpty(str))
+                                {
+                                    var words = str.Split(' ');
+                                    for (int index = 0; index < words.Length; index++)
+                                    {
+                                        var s = words[index];
+                                        if (s.Length > 0)
+                                        {
+                                            words[index] = s[0].ToString().ToUpper();
+                                        }
+                                    }
+                                    result = string.Join("", words);
+                                }
+                                if (comment.PosterUserName == currentUser.UserName)
+                                {
+                            <li class="right clearfix">
+                                <span class="chat-img pull-right">
+                                    <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                        <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                                else
+                                {
+                            <li class="left clearfix">
+                                <span class="chat-img pull-left">
+                                    <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font">@comment.PosterDisplayName</strong>
+                                        <small class="pull-right text-muted">
+                                            <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </small>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                            }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+                                    Đơn vị thu mua phản hồi
+                                </a>
+                            </p>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="col-sm-12">
+                                    <ul class="chat">
+                                        @foreach (var comment in implementDepartmentComments)
+                            {
+                                var str = comment.PosterDisplayName;
+                                string result = str;
+                                if (!string.IsNullOrEmpty(str))
+                                {
+                                    var words = str.Split(' ');
+                                    for (int index = 0; index < words.Length; index++)
+                                    {
+                                        var s = words[index];
+                                        if (s.Length > 0)
+                                        {
+                                            words[index] = s[0].ToString().ToUpper();
+                                        }
+                                    }
+                                    result = string.Join("", words);
+                                }
+                                if (comment.PosterUserName == currentUser.UserName)
+                                {
+                            <li class="right clearfix">
+                                <span class="chat-img pull-right">
+                                    <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                        <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                                else
+                                {
+                            <li class="left clearfix">
+                                <span class="chat-img pull-left">
+                                    <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font">@comment.PosterDisplayName</strong>
+                                        <small class="pull-right text-muted">
+                                            <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </small>
+                                    </div>
+                                    <p>
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </li>
+                                }
+                            }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                        <div class="navbar-form navbar-left">
+                            <div class="input-group">
+                                <input id="comment" type="text" class="form-control" placeholder="Nhập phản hồi...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-success" id="submitComment">
+                                        Gửi
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#submitComment").on("click", function () {
+                            $.ajax({
+                                url: '@Url.Action("AddComment", "Home")',
+                                type: "POST",
+                                data: { id: '@Model.Id', content: $("#comment").val() },
+                                dataType: "json",
+                                success: function (result) {
+                                    if (result) {
+                                        location.reload();
+                                    }
+                                }
+                            });
+                        });
 
-            $("#comment").on("keypress", function (e) {
-                if (e.keyCode == 13) {
-                    $("#submitComment").trigger("click");
-                }
-            });
-        });
-    </script>
-}
+                        $("#comment").on("keypress", function (e) {
+                            if (e.keyCode == 13) {
+                                $("#submitComment").trigger("click");
+                            }
+                        });
+                    });
+                </script>
+            }

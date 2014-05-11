@@ -23,6 +23,7 @@ namespace KymdanMM.Model.Models
         public DateTime? DeliveryDate { get; set; }
         public bool Finished { get; set; }
         public bool Approved { get; set; }
+        public string File { get; set; }
         public int ProgressStatusId { get; set; }
         public string Note { get; set; }
         public string ImplementerUserName { get; set; }
