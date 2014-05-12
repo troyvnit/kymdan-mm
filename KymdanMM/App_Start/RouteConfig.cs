@@ -20,6 +20,12 @@ namespace KymdanMM
             );
 
             routes.MapRoute(
+                name: "AddMaterialProposalFromHard",
+                url: "nhap-de-xuat-giay",
+                defaults: new { controller = "Home", action = "AddOrUpdateMaterialProposal", fromHardProposal = true }
+            );
+
+            routes.MapRoute(
                 name: "UpdateMaterialProposal",
                 url: "chinh-sua-de-xuat/{id}",
                 defaults: new { controller = "Home", action = "AddOrUpdateMaterialProposal", id = UrlParameter.Optional }

@@ -187,7 +187,7 @@
                 }]
             }).data("kendoNotification");
             var editable = '@editable' == 'True';
-            var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True';
+            var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' && '@Model.FromHardProposal' != 'True';
             var materialProposalDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -245,7 +245,7 @@
                             ImplementerDepartmentId: { type: "number", validation: { required: true } },
                             ImplementerUserName: { type: "string" },
                             File: { type: "string" },
-                            Approved: { type: "boolean", editable: false },
+                            Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
                             Finished: { type: "boolean", editable: false }
                         }
                     },
@@ -269,8 +269,8 @@
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư" },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor },
+                    { field: "MaterialName", title: "Tên vật tư", width: 150 },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "Quantity", title: "SL", width: 80 },
                     { field: "InventoryQuantity", title: "SL tồn kho", width: 80 },
                     { field: "Unit", title: "Đơn vị tính", width: 80 },
@@ -278,7 +278,8 @@
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
                     { field: "File", title: "File", width: 70, hidden: true},
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100, hidden: editable },
+                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden },
                     { command: { text: "Hình ảnh", click: uploadImage }, title: " ", width: "110px" }
                 ],

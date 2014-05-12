@@ -233,8 +233,7 @@ namespace KymdanMM.Controllers
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
                             a =>
                                 a.ProposerDepartmentId == user.DepartmentId &&
-                                !a.Sent &&
-                                a.Materials.Count(m => m.Approved == true) == 0);
+                                !a.Sent);
                         break;
                     case "ReceiveAndAwaitingApprove":
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
@@ -253,10 +252,12 @@ namespace KymdanMM.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddOrUpdateMaterialProposal(int? id, bool? approved)
+        public ActionResult AddOrUpdateMaterialProposal(int? id, bool? fromHardProposal)
         {
             var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
-            var materialProposalViewModel = materialProposal != null ? Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal) : new MaterialProposalViewModel();
+            var approved = materialProposal.Materials.Count(m => m.Approved == true) > 0;
+            var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
+            materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
             var users = usersContext.UserProfiles.ToList();
             var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposalViewModel.ProposerDepartmentId == 0))))
