@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using KymdanMM.Data.Repository;
 using KymdanMM.Model.Models;
@@ -40,7 +41,7 @@ namespace KymdanMM.Data.Service
 
         public IPagedList<MaterialProposal> GetMaterialProposals(int pageNumber, int pageSize, Expression<Func<MaterialProposal, bool>> where )
         {
-            var materialProposals = _materialProposalRepository.GetPage(new Page{ PageNumber = pageNumber, PageSize = pageSize }, where, a => a.CreatedDate);
+            var materialProposals = _materialProposalRepository.GetPage(new Page{ PageNumber = pageNumber, PageSize = pageSize }, where, a => a.Materials.Min(m => m.Deadline));
             return materialProposals;
         }
 

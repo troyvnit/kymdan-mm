@@ -84,10 +84,12 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\CommentRepository.cs" />
     <Compile Include="Repository\ProgressStatusRepository.cs" />
     <Compile Include="Repository\DepartmentRepository.cs" />
     <Compile Include="Repository\MaterialRepository.cs" />
     <Compile Include="Repository\MaterialProposalRepository.cs" />
+    <Compile Include="Service\CommentService.cs" />
     <Compile Include="Service\ProgressStatusService.cs" />
     <Compile Include="Service\DepartmentService.cs" />
     <Compile Include="Service\MaterialService.cs" />

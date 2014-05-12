@@ -27,14 +27,16 @@ namespace KymdanMM.Controllers
         private IMaterialService _materialService { get; set; }
         private IDepartmentService _departmentService { get; set; }
         private IProgressStatusService _progressStatusService { get; set; }
+        private ICommentService _commentService { get; set; }
         private UsersContext usersContext { get; set; }
 
-        public HomeController(IMaterialProposalService _materialProposalService, IMaterialService _materialService, IDepartmentService _departmentService, IProgressStatusService _progressStatusService)
+        public HomeController(IMaterialProposalService _materialProposalService, IMaterialService _materialService, IDepartmentService _departmentService, IProgressStatusService _progressStatusService, ICommentService _commentService)
         {
             this._materialProposalService = _materialProposalService;
             this._departmentService = _departmentService;
             this._progressStatusService = _progressStatusService;
             this._materialService = _materialService;
+            this._commentService = _commentService;
             usersContext = new UsersContext();
         }
 
@@ -168,6 +170,12 @@ namespace KymdanMM.Controllers
             return Json(users.Where(a => currentUser != null && a.DepartmentId == currentUser.DepartmentId && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetAllUser()
+        {
+            var users = usersContext.UserProfiles.ToList();
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult GetMaterialProposal(int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus)
         {
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
@@ -219,6 +227,13 @@ namespace KymdanMM.Controllers
                             a =>
                                 a.ProposerDepartmentId == user.DepartmentId &&
                                 a.Sent &&
+                                a.Materials.Count(m => m.Approved == true) == 0);
+                        break;
+                    case "Temp":
+                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                            a =>
+                                a.ProposerDepartmentId == user.DepartmentId &&
+                                !a.Sent &&
                                 a.Materials.Count(m => m.Approved == true) == 0);
                         break;
                     case "ReceiveAndAwaitingApprove":
@@ -467,8 +482,26 @@ namespace KymdanMM.Controllers
                 readUserNames.Add(comment.PosterUserName);
                 comment.ReadUserNames = string.Join(",", readUserNames);
             }
+            comment.Approved = !Thread.CurrentPrincipal.IsInRole("Member");
             material.Comments.Add(comment);
             _materialService.AddOrUpdateMaterial(material);
+            return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult ApproveComment(int id)
+        {
+            var comment = _commentService.GetComment(id);
+            comment.Approved = true;
+            _commentService.AddOrUpdateComment(comment);
+            return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteComment(int id)
+        {
+            var comment = _commentService.GetComment(id);
+            _commentService.DeleteComment(comment);
             return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
         }
 
