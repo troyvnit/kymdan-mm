@@ -32,6 +32,7 @@ namespace KymdanMM.Models
         public bool FromHardProposal { get; set; }
         public bool Sent { get; set; }
         public bool Approved { get; set; }
+        public DateTime MinDeadline { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 
     }
 }

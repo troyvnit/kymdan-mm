@@ -86,6 +86,7 @@
                             Id: { editable: false, nullable: false, defaultValue: 0 },
                             ProposalCode: { type: "string", validation: { required: true } },
                             CreatedDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            MinDeadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             Approved: { type: "boolean" }
                         }
                     },
@@ -110,7 +111,19 @@
                     { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
                 ],
-                editable: false
+                editable: false,
+                dataBound: function () {
+                    var dataView = this.dataSource.view();
+                    for (var i = 0; i < dataView.length; i++) {
+                        if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date()) {
+                            $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                        } else if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                            $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                        } else if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
+                            $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
+                        }
+                    }
+                }
             });
 
             //----------Tab 2-----------//
