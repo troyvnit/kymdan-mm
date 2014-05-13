@@ -97,6 +97,7 @@
             <div id="collapseTwo" class="panel-collapse collapse in">
                 <div id="MaterialGrid"></div>
                 <div id="UploadImageWindow"></div>
+                <div id="CommentWindow"></div>
             </div>
         </div>
     }
@@ -166,7 +167,7 @@
 </div>
 </script>
     <script type="text/javascript">
-        var wnd;
+        var wnd, commentWindow;
         $(document).ready(function () {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
@@ -242,7 +243,7 @@
                             ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { editable: editable, type: "number" },
                             Note: { editable: editable, type: "string" },
-                            ImplementerDepartmentId: { type: "number", validation: { required: true } },
+                            ImplementerDepartmentId: { type: "number" },
                             ImplementerUserName: { type: "string" },
                             File: { type: "string" },
                             Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
@@ -269,7 +270,7 @@
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư", width: 150 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 150 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "Quantity", title: "SL", width: 80 },
                     { field: "InventoryQuantity", title: "SL tồn kho", width: 80 },
@@ -281,7 +282,7 @@
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden },
-                    { command: { text: "Hình ảnh", click: uploadImage }, title: " ", width: "110px" }
+                    { command: [{ text: "Hình ảnh", click: uploadImage }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
                     if (editable) {
@@ -456,11 +457,30 @@
                         files = $.merge(files, results);
                     }
                     dataItem.set("File", JSON.stringify(files));
+                    var imgs = $("#UploadImageWindow").find("img");
+                    $.each(imgs, function() {
+                        $(this).attr("src", this.src + "?" + new Date().getTime());
+                    });
                 },
                 files: JSON.parse(dataItem.File),
                 template: kendo.template($('#fileTemplate').html())
             });
             wnd.center().open();
+        }
+        
+        function showComment(e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            commentWindow = $("#CommentWindow")
+                .kendoWindow({
+                    title: "Phản hồi",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
+                    width: 960
+                }).data("kendoWindow");
+            commentWindow.center().open();
         }
 
         function getImplementerDepartmentName(id) {

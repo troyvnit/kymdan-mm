@@ -81,12 +81,39 @@ namespace KymdanMM.Controllers
             var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
             var users = usersContext.UserProfiles.ToList();
             var departments = _departmentService.GetDepartments();
-            material.ProposerDepartmentName =
-                _departmentService.GetDepartment(material.ProposerDepartmentId).DepartmentName;
-            material.ImplementerDepartmentName =
-                _departmentService.GetDepartment(material.ImplementerDepartmentId).DepartmentName;
-            material.Status =
-                _progressStatusService.GetProgressStatus(material.ProgressStatusId).Status;
+            var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
+            if(proposerDepartment != null)
+            material.ProposerDepartmentName = proposerDepartment.DepartmentName;
+            var implementDepartment = _departmentService.GetDepartment(material.ImplementerDepartmentId);
+            if (implementDepartment != null)
+            material.ImplementerDepartmentName = implementDepartment.DepartmentName;
+            var progressStatus = _progressStatusService.GetProgressStatus(material.ProgressStatusId);
+            if (progressStatus != null)
+            material.Status = progressStatus.Status;
+            var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
+            if (implementUser != null)
+                material.ImplementerDisplayName = implementUser.DisplayName;
+            ViewBag.Departments = departments;
+            ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+            ViewBag.Users = users;
+            ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            return View(material);
+        }
+
+        public ActionResult CommentPartialView(int id)
+        {
+            var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
+            var users = usersContext.UserProfiles.ToList();
+            var departments = _departmentService.GetDepartments();
+            var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
+            if (proposerDepartment != null)
+                material.ProposerDepartmentName = proposerDepartment.DepartmentName;
+            var implementDepartment = _departmentService.GetDepartment(material.ImplementerDepartmentId);
+            if (implementDepartment != null)
+                material.ImplementerDepartmentName = implementDepartment.DepartmentName;
+            var progressStatus = _progressStatusService.GetProgressStatus(material.ProgressStatusId);
+            if (progressStatus != null)
+                material.Status = progressStatus.Status;
             var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
             if (implementUser != null)
                 material.ImplementerDisplayName = implementUser.DisplayName;

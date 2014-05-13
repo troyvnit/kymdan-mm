@@ -390,6 +390,7 @@
     <Content Include="Views\Home\Material.cshtml" />
     <Content Include="Views\Home\GeneralManagerPage.cshtml" />
     <Content Include="Views\Home\MemberPage.cshtml" />
+    <Content Include="Views\Home\CommentPartialView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

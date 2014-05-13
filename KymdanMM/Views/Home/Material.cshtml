@@ -23,7 +23,7 @@
                             user.DepartmentId && (a.Approved || currentUser.DepartmentId == user.DepartmentId);
             });
     var generalManagerComments = Model.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
-    var files = Model.File != null ? JsonConvert.DeserializeObject<List<FileViewModel>>(Model.File) : new List<FileViewModel>();
+    var files = !string.IsNullOrEmpty(Model.File) ? JsonConvert.DeserializeObject<List<FileViewModel>>(Model.File) : new List<FileViewModel>();
 }
 
 <div class="row">&nbsp;</div>
