@@ -386,7 +386,11 @@
                         }
                         if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
                             if (isSend) {
-                                window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                                if ('@Model.FromHardProposal' == 'True') {
+                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
+                                } else {
+                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                                }
                             } else {
                                 window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
                             }

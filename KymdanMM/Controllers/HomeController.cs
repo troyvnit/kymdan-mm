@@ -287,7 +287,11 @@ namespace KymdanMM.Controllers
             materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
             var users = usersContext.UserProfiles.ToList();
             var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposalViewModel.ProposerDepartmentId == 0))))
+            var proposer = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
+            if (proposer != null)
+                materialProposalViewModel.ProposerDisplayName =
+                    proposer.DisplayName;
+            if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposal.CreatedUserName == currentUser.UserName || materialProposalViewModel.ProposerDepartmentId == 0))))
             {
                 ViewBag.Departments = _departmentService.GetDepartments();
                 ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
