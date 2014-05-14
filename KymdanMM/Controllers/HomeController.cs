@@ -310,7 +310,7 @@ namespace KymdanMM.Controllers
             }
             else
             {
-                materialProposal.ProposerUserName = Thread.CurrentPrincipal.Identity.Name;
+                materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
                 var users = usersContext.UserProfiles.ToList();
                 var currentUser = users.FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
                 if (currentUser != null) materialProposal.ProposerDepartmentId = currentUser.DepartmentId;
@@ -441,6 +441,9 @@ namespace KymdanMM.Controllers
             {
                 var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
                 material.MaterialProposalId = materialProposalId ?? material.MaterialProposalId;
+                var users = usersContext.UserProfiles.ToList();
+                var currentUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
+                if (currentUser != null) material.ImplementerDepartmentId = currentUser.DepartmentId;
                 _materialService.AddOrUpdateMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);

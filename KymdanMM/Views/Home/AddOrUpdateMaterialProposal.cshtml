@@ -6,11 +6,13 @@
 @{
     ViewBag.Title = "AddOrUpdateMaterialProposal";
     var currentUser = (UserProfile)ViewBag.CurrentUser;
+    var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var enableAttribute = (object)new { @class = "form-control" };
     var isNew = Model.Id == 0;
     var editable = !Model.Sent;
     var open = isNew ? "in" : "";
-
+    var departmentCode = Thread.CurrentPrincipal.Identity.Name.Split('-').Length > 1 ? Thread.CurrentPrincipal.Identity.Name.Split('-')[0] : "LLL";
+    var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
 }
 
 <span id="popupNotification"></span>
@@ -61,6 +63,22 @@
                                 }
                             </div>
                         </div>
+                        @if (Model.FromHardProposal)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ProposerUserName, new {@class = "col-md-4 control-label"})
+                                <div class="col-sm-8 col-md-6">
+                                    @if (editable)
+                                    {
+                                        @Html.DropDownListFor(m => m.ProposerUserName, new SelectList(users.Where(a => a.DepartmentId > 0), "UserName", "DisplayName"), "Chọn người đề xuất", enableAttribute)
+                                    }
+                                    else
+                                    {
+                                        <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                                    }
+                                </div>
+                            </div>
+                        }
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -108,7 +126,7 @@
         </div>
         <div class="col-sm-4">
             <div class="pull-right">
-                <a href="/" class="btn btn-default navbar-btn" role="button">Trở lại</a>
+                <a href="#" onclick="history.back(); return false;" class="btn btn-default navbar-btn" role="button">Trở lại</a>
                 @if (!Model.Sent)
                 {
                     <input type="button" id="saveDraftMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu tạm" />
@@ -169,6 +187,15 @@
     <script type="text/javascript">
         var wnd, commentWindow;
         $(document).ready(function () {
+            if ('@Model.FromHardProposal' != 'True') {
+                $("#ProposalCode").kendoMaskedTextBox({
+                    mask: "@currentYear/@departmentCode/00000"
+                }).removeClass("k-textbox");
+            } else {
+                $("#ProposalCode").kendoMaskedTextBox({
+                    mask: "00/LLL/00000"
+                }).removeClass("k-textbox");
+            }
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -240,6 +267,7 @@
                             UsingPurpose: { editable: editable, type: "string" },
                             Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { editable: editable, type: "number" },
                             Note: { editable: editable, type: "string" },
@@ -266,7 +294,7 @@
                 sortable: true,
                 resizable: true,
                 columnMenu: true,
-                selectable: "multiple",
+                selectable: '@editable' != 'True' ? "multiple" : false,
                 height: 400,
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
@@ -281,7 +309,9 @@
                     { field: "File", title: "File", width: 70, hidden: true},
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: hidden },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: hidden },
                     { command: [{ text: "Hình ảnh", click: uploadImage }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
@@ -292,6 +322,17 @@
 
                         $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
                             return false;
+                        });
+
+                        $(document).on("keydown", function (event) {
+                            if (event.keyCode == 32 && event.ctrlKey) {
+                                $('#MaterialGrid').data('kendoGrid').addRow();
+                                return false;
+                            }
+                            if (event.keyCode == 32 && event.shiftKey) {
+                                $('#MaterialGrid').data('kendoGrid').cancelChanges();
+                                return false;
+                            }
                         });
                     }
                 },
@@ -343,6 +384,13 @@
                         } else {
                             $("#MaterialGrid").addClass("input-validation-error");
                         }
+                        if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
+                            if (isSend) {
+                                window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                            } else {
+                                window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
+                            }
+                        } 
                     }
                 });
             }
