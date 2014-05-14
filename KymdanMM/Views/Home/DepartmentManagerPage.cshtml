@@ -469,9 +469,9 @@
                 dataBound: function () {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
-                        if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date()) {
+                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
                             $("#ApprovedImplementedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
                             $("#ApprovedImplementedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else {
 

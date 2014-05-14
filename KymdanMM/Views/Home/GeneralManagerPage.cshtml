@@ -108,6 +108,7 @@
                 columns: [
                     { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a>" },
                     { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
+                    { field: "MinDeadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhỏ nhất" },
                     { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #" },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
                 ],

@@ -7,10 +7,8 @@ namespace KymdanMM.Models
 {
     public class MaterialProposalViewModel : BaseModel
     {
-        [Required]
         [Display(Name = "Mô tả")]
         public string Description { get; set; }
-        [Required]
         [Display(Name = "Mã quản lý")]
         public string ManagementCode { get; set; }
         [Required]

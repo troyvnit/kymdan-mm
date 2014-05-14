@@ -124,17 +124,17 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
                 ],
                 editable: true,
                 dataBound: function () {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
-                        if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date()) {
+                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
                             $("#BeAssignedUnfinishedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
                             $("#BeAssignedUnfinishedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else {
 
@@ -225,8 +225,8 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày bắt đầu", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
                 ],
                 editable: false
