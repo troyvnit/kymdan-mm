@@ -213,17 +213,20 @@
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
                     { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150 },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
-                    { field: "DeliveryDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao", width: 150 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
-                ],
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
+                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200 },
+                    { field: "LastImplementDepartmentComment", template: "<div class='alert alert-warning'>#= LastImplementDepartmentComment #</div>", title: "Đơn vị thực hiện phản hồi", width: 200 },
+                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200 }
+                    ],
                 editable: false,
                 dataBound: function () {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
-                        if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date()) {
+                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
                             $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].DeliveryDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
                             $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else {
 

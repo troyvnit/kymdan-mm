@@ -128,7 +128,10 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
+                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200 },
+                    { field: "LastImplementDepartmentComment", template: "<div class='alert alert-warning'>#= LastImplementDepartmentComment #</div>", title: "Đơn vị thực hiện phản hồi", width: 200 },
+                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200 }
                 ],
                 editable: true,
                 dataBound: function () {
@@ -229,7 +232,10 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 }
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
+                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200 },
+                    { field: "LastImplementDepartmentComment", template: "<div class='alert alert-warning'>#= LastImplementDepartmentComment #</div>", title: "Đơn vị thực hiện phản hồi", width: 200 },
+                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200 }
                 ],
                 editable: false
             });

@@ -274,6 +274,8 @@
                             ImplementerDepartmentId: { type: "number" },
                             ImplementerUserName: { type: "string" },
                             File: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
                             Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -311,7 +313,10 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: hidden },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' },
+                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' },
                     { command: [{ text: "Hình ảnh", click: uploadImage }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
@@ -578,7 +583,7 @@
         var implementerUserDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: "/Home/GetUser",
+                    url: "/Home/GetAllUser",
                     type: "post"
                 }
             }

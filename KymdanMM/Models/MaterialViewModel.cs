@@ -22,10 +22,10 @@ namespace KymdanMM.Models
         [Display(Name = "Mục đích sử dụng")]
         public string UsingPurpose { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Hạn chót")]
+        [Display(Name = "Ngày nhận")]
         public DateTime? Deadline { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Ngày bắt đầu")]
+        [Display(Name = "Ngày giao việc")]
         public DateTime? StartDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Ngày duyệt")]
@@ -63,6 +63,9 @@ namespace KymdanMM.Models
         [Display(Name = "Mã đề xuất")]
         public string MaterialProposalCode { get; set; }
         public string Type { get; set; }
+        public string LastProposalDeparmentComment { get; set; }
+        public string LastImplementDepartmentComment { get; set; }
+        public string LastGeneralManagerComment { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 
     }
 }

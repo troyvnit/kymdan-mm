@@ -82,14 +82,14 @@ namespace KymdanMM.Controllers
             var users = usersContext.UserProfiles.ToList();
             var departments = _departmentService.GetDepartments();
             var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
-            if(proposerDepartment != null)
-            material.ProposerDepartmentName = proposerDepartment.DepartmentName;
+            if (proposerDepartment != null)
+                material.ProposerDepartmentName = proposerDepartment.DepartmentName;
             var implementDepartment = _departmentService.GetDepartment(material.ImplementerDepartmentId);
             if (implementDepartment != null)
-            material.ImplementerDepartmentName = implementDepartment.DepartmentName;
+                material.ImplementerDepartmentName = implementDepartment.DepartmentName;
             var progressStatus = _progressStatusService.GetProgressStatus(material.ProgressStatusId);
             if (progressStatus != null)
-            material.Status = progressStatus.Status;
+                material.Status = progressStatus.Status;
             var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
             if (implementUser != null)
                 material.ImplementerDisplayName = implementUser.DisplayName;
@@ -129,16 +129,16 @@ namespace KymdanMM.Controllers
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             if (user != null)
             {
-               var materials = _materialService.GetMaterials(pageNumber, pageSize,
-                       a => (a.ImplementerDepartmentId == departmentId ||
-                            a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
-                            a.ImplementerDepartmentId == user.DepartmentId) &&
-                           (a.ProgressStatusId == progressStatusId ||
-                            progressStatusId == null) &&
-                           (a.Approved == approveStatus || approveStatus == null) &&
-                           (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
-                            a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
-                            a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
+                var materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        a => (a.ImplementerDepartmentId == departmentId ||
+                             a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
+                             a.ImplementerDepartmentId == user.DepartmentId) &&
+                            (a.ProgressStatusId == progressStatusId ||
+                             progressStatusId == null) &&
+                            (a.Approved == approveStatus || approveStatus == null) &&
+                            (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
+                             a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
+                             a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
                 return Json(new { data = materialViewModels, total = materials.TotalItemCount },
                     JsonRequestBehavior.AllowGet);
@@ -415,7 +415,7 @@ namespace KymdanMM.Controllers
                     case "BeAssignedUnfinished":
                         materials = _materialService.GetMaterials(pageNumber, pageSize,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name && 
+                                a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 !a.Finished &&
                                 a.Approved);
                         break;
@@ -431,7 +431,35 @@ namespace KymdanMM.Controllers
                         break;
                 }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
-                return Json(new {data = materialViewModels, total = materials.TotalItemCount},
+                foreach (var materialViewModel in materialViewModels)
+                {
+                    var model = materialViewModel;
+                    var proposalDeparmentComments = materialViewModel.Comments.Where(
+                            a =>
+                            {
+                                var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
+                                return poster != null && model.ProposerDepartmentId ==
+                                            poster.DepartmentId && (a.Approved || user.DepartmentId == poster.DepartmentId);
+                            });
+                    var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
+                    if (lastProposalDeparmentComment != null)
+                        materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content;
+                    var implementDepartmentComments = materialViewModel.Comments.Where(
+                            a =>
+                            {
+                                var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
+                                return poster != null && model.ImplementerDepartmentId ==
+                                            user.DepartmentId && (a.Approved || user.DepartmentId == poster.DepartmentId);
+                            });
+                    var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
+                    if (lastImplementDepartmentComment != null)
+                        materialViewModel.LastImplementDepartmentComment = lastImplementDepartmentComment.Content;
+                    var generalManagerComments = materialViewModel.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
+                    var lastGeneralManagerComment = generalManagerComments.LastOrDefault();
+                    if (lastGeneralManagerComment != null)
+                        materialViewModel.LastGeneralManagerComment = lastGeneralManagerComment.Content;
+                }
+                return Json(new { data = materialViewModels, total = materials.TotalItemCount },
                     JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
@@ -506,7 +534,7 @@ namespace KymdanMM.Controllers
         [HttpPost]
         public ActionResult AddComment(string content, int id)
         {
-            var comment = new Comment{ Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name};
+            var comment = new Comment { Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name };
             var material = _materialService.GetMaterial(id);
             var readUserNames = new List<string>();
             var users = usersContext.UserProfiles.ToList();
