@@ -184,6 +184,34 @@
         <button type='button' class='k-upload-action'></button>
 </div>
 </script>
+    <script type="text/x-kendo-template" id="materialToolbarTemplate">
+    <div class="toolbar">
+        <div class="col-sm-2">
+            <label>Mục đích sử dụng:</label>
+            <input type="text" class="k-textbox" id="UsingPurpose" placeholder="Mục đích sử dụng" />
+        </div>
+        <div class="col-sm-2">
+            <label>Ngày nhận:</label>
+            <input id="Deadline" class="datePicker" />
+        </div>
+        @if (Model.FromHardProposal)
+        {
+            <div class="col-sm-2">
+                <label>Ngày duyệt:</label>
+                <input id="ApproveDate" class="datePicker" />
+            </div>
+            <div class="col-sm-2">
+                <label>Ngày giao việc:</label>
+                <input id="StartDate" class="datePicker" />
+            </div>
+            <div class="col-sm-2">
+                <label>Ngày hoàn thành:</label>
+                <input id="FinishDate" class="datePicker" />
+            </div>
+        }
+    </div>
+</script>
+
     <script type="text/javascript">
         var wnd, commentWindow;
         $(document).ready(function () {
@@ -199,9 +227,6 @@
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
-            $("#Deadline").kendoDatePicker({
-                format: "dd/MM/yyyy"
-            });
             var popupNotification = $("#popupNotification").kendoNotification({
                 position: {
                     top: 10,
@@ -297,8 +322,7 @@
                 resizable: true,
                 columnMenu: true,
                 selectable: '@editable' != 'True' ? "multiple" : false,
-                height: 400,
-                //toolbar: [{ name: "create", text: "Thêm" }],
+                toolbar: kendo.template($("#materialToolbarTemplate").html()),
                 columns: [
                     { field: "MaterialName", title: "Tên vật tư", width: 150 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
@@ -315,8 +339,8 @@
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' },
-                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' },
+                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { command: [{ text: "Hình ảnh", click: uploadImage }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
@@ -342,8 +366,21 @@
                     }
                 },
                 edit: function (e) {
+                    if (e.model.isNew()) {
+                        e.model.set("UsingPurpose", $("#UsingPurpose").val());
+                        e.model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
+                        if ('@Model.FromHardProposal' == 'True') {
+                            e.model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
+                            e.model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
+                            e.model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
+                        }
+                    }
                 },
                 editable: true
+            });
+            
+            $(".datePicker").kendoDatePicker({
+                format: "dd/MM/yyyy"
             });
 
             wnd = $("#UploadImageWindow")
@@ -469,9 +506,8 @@
                     data: { id: $("#Id").val(), content: $("#comment").val() },
                     dataType: "json",
                     success: function (result) {
-                        if (result) {
-                            location.reload();
-                        }
+                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                        
                     }
                 });
             });
@@ -528,6 +564,10 @@
         function showComment(e) {
             e.preventDefault();
             var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            if (dataItem.Id == 0) {
+                alert("Phải lưu trước khi phản hồi!");
+                return false;
+            }
             commentWindow = $("#CommentWindow")
                 .kendoWindow({
                     title: "Phản hồi",

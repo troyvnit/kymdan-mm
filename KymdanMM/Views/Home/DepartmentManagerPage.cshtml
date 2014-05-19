@@ -100,7 +100,7 @@
                 },
                 batch: true,
                 pageSize: 10,
-                serverPaging: true,
+                //serverPaging: true,
                 schema: {
                     model: {
                         id: "Id",
@@ -120,6 +120,10 @@
                 dataSource: sentAndAwaitingApproveDataSource,
                 navigatable: true,
                 pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
@@ -170,7 +174,7 @@
                 },
                 batch: true,
                 pageSize: 10,
-                serverPaging: true,
+                //serverPaging: true,
                 schema: {
                     model: {
                         id: "Id",
@@ -190,6 +194,10 @@
                 dataSource: tempDataSource,
                 navigatable: true,
                 pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
@@ -239,7 +247,7 @@
                 },
                 batch: true,
                 pageSize: 10,
-                serverPaging: true,
+                //serverPaging: true,
                 schema: {
                     model: {
                         id: "Id",
@@ -261,6 +269,9 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { type: "number" },
                             ImplementerUserName: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
                             ApproveStatus: { type: "number", editable: false },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -274,6 +285,10 @@
                 dataSource: approvedAwaitingReceiveDataSource,
                 navigatable: true,
                 pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
@@ -331,7 +346,7 @@
                 },
                 batch: true,
                 pageSize: 10,
-                serverPaging: true,
+                //serverPaging: true,
                 schema: {
                     model: {
                         id: "Id",
@@ -354,6 +369,9 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
                             ApproveStatus: { type: "number", editable: false },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -367,6 +385,10 @@
                 dataSource: approvedAwaitingImplementDataSource,
                 navigatable: true,
                 pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
@@ -423,7 +445,7 @@
                 },
                 batch: true,
                 pageSize: 10,
-                serverPaging: true,
+                //serverPaging: true,
                 schema: {
                     model: {
                         id: "Id",
@@ -446,6 +468,9 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
                             ApproveStatus: { type: "number", editable: false },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -459,6 +484,10 @@
                 dataSource: approvedImplementedDataSource,
                 navigatable: true,
                 pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: true,
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."

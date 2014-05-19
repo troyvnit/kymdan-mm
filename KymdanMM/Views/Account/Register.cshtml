@@ -58,8 +58,8 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Roles, new { @class = "col-md-2 control-label" })
         <div class="col-md-3">
-            @Html.HiddenFor(m => m.Roles)
-            @Html.DropDownList("RoleSelector", new SelectList(roles), new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.Roles, new SelectList(roles, "RoleName", "RoleName"), "Chọn quyền hạn", new { @class = "form-control" })
+            @*@Html.DropDownList("RoleSelector", new SelectList(roles), new { @class = "form-control" })*@
         </div>
     </div>
     <div class="form-group">

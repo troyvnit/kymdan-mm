@@ -139,4 +139,10 @@ namespace KymdanMM.Models
         public string ProviderDisplayName { get; set; }
         public string ProviderUserId { get; set; }
     }
+
+    public class RoleViewModel
+    {
+        public int Id { get; set; }
+        public string RoleName { get; set; }
+    }
 }

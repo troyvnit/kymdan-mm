@@ -203,7 +203,7 @@ namespace KymdanMM.Controllers
             return Json(users, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMaterialProposal(int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus)
+        public ActionResult GetMaterialProposal(int? pageNumber, int? pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus)
         {
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             if (user != null)
@@ -212,7 +212,7 @@ namespace KymdanMM.Controllers
                 IPagedList<MaterialProposal> materialProposals;
                 if (Thread.CurrentPrincipal.IsInRole("Admin"))
                 {
-                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                         a => (a.Materials.Count(m => m.Approved != false) > 0) &&
                             (a.ProposerDepartmentId == departmentId || a.Materials.Count(m => m.ImplementerDepartmentId == departmentId) > 0 || departmentId == null) &&
                             (a.Materials.Count(m => m.ProgressStatusId == progressStatusId) > 0 || progressStatusId == null) &&
@@ -221,7 +221,7 @@ namespace KymdanMM.Controllers
                 }
                 else if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
                 {
-                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                         a => (a.Materials.Count(m => m.ImplementerDepartmentId == departmentId) > 0 || a.ProposerDepartmentId == user.DepartmentId || a.Materials.Count(b => b.ImplementerDepartmentId == user.DepartmentId) > 0) &&
                             (a.Materials.Count(m => m.ProgressStatusId == progressStatusId) > 0 || progressStatusId == null) &&
                             (a.Materials.Count(m => m.Approved == approveStatus) > 0 || approveStatus == null) &&
@@ -229,7 +229,7 @@ namespace KymdanMM.Controllers
                 }
                 else
                 {
-                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                    materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                         a => (a.Materials.Count(m => m.ImplementerUserName == user.UserName) > 0 || a.ProposerUserName == user.UserName || a.Materials.Count(m => m.ImplementerUserName == user.UserName) > 0) &&
                             (a.Materials.Count(m => m.ProgressStatusId == progressStatusId) > 0 || progressStatusId == null) &&
                             (a.Materials.Count(m => m.Approved == approveStatus) > 0 || approveStatus == null) &&
@@ -241,7 +241,7 @@ namespace KymdanMM.Controllers
             return Json(false, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMaterialProposals(int pageNumber, int pageSize, string command)
+        public ActionResult GetMaterialProposals(int? pageNumber, int? pageSize, string command)
         {
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
             if (user != null)
@@ -250,26 +250,26 @@ namespace KymdanMM.Controllers
                 switch (command)
                 {
                     case "SentAndAwaitingApprove":
-                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                             a =>
                                 a.ProposerDepartmentId == user.DepartmentId &&
                                 a.Sent &&
                                 a.Materials.Count(m => m.Approved == true) == 0);
                         break;
                     case "Temp":
-                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                             a =>
                                 a.ProposerDepartmentId == user.DepartmentId &&
                                 !a.Sent);
                         break;
                     case "ReceiveAndAwaitingApprove":
-                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize,
+                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                             a =>
                                 a.Sent &&
                                 a.Materials.Count(m => m.Approved == true) == 0);
                         break;
                     default:
-                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber, pageSize, a => true);
+                        materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1, a => true);
                         break;
                 }
                 var data = materialProposals.Select(Mapper.Map<MaterialProposal, MaterialProposalViewModel>).ToList();
@@ -335,7 +335,7 @@ namespace KymdanMM.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMaterials(string command, int pageNumber, int pageSize, int? id, bool? approved, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus, bool? finished)
+        public ActionResult GetMaterials(string command, int? pageNumber, int? pageSize, int? id, bool? approved, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus, bool? finished)
         {
             //var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
             var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
@@ -386,20 +386,20 @@ namespace KymdanMM.Controllers
                 switch (command)
                 {
                     case "ApprovedAwaitingReceive":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 a.Approved);
                         break;
                     case "ApprovedAwaitingImplement":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Approved);
                         break;
                     case "ApprovedImplemented":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
@@ -407,27 +407,27 @@ namespace KymdanMM.Controllers
                                 a.Approved);
                         break;
                     case "ApprovedAssigned":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId != 0 &&
                                 a.Approved);
                         break;
                     case "BeAssignedUnfinished":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 !a.Finished &&
                                 a.Approved);
                         break;
                     case "BeAssignedFinished":
-                        materials = _materialService.GetMaterials(pageNumber, pageSize,
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 a.Finished &&
                                 a.Approved);
                         break;
                     default:
-                        materials = _materialService.GetMaterials(pageNumber, pageSize, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
                         break;
                 }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();

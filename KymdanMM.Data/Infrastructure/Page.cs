@@ -29,7 +29,7 @@ namespace KymdanMM.Data.Infrastructure
     {
         public static IQueryable<T> GetPage<T>(this IQueryable<T> queryable, Page page)
         {
-            return queryable.Skip(page.Skip).Take(page.PageSize);
+            return page.PageSize == 1 ? queryable : queryable.Skip(page.Skip).Take(page.PageSize);
         }
     }
 }

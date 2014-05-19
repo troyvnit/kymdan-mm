@@ -132,7 +132,7 @@ namespace KymdanMM.Controllers
         public ActionResult Register()
         {
             var model = new RegisterModel();
-            ViewBag.Roles = Roles.GetAllRoles();
+            ViewBag.Roles = Roles.GetAllRoles().Select(a => new RoleViewModel{ RoleName = a });
             ViewBag.Departments = _departmentService.GetDepartments();
             return View(model);
         }
