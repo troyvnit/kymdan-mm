@@ -114,7 +114,7 @@
             </div>
             <div id="collapseTwo" class="panel-collapse collapse in">
                 <div id="MaterialGrid"></div>
-                <div id="UploadImageWindow"></div>
+                <div id="UploadFileWindow"></div>
                 <div id="CommentWindow"></div>
             </div>
         </div>
@@ -177,7 +177,7 @@
     <span class='k-progress'></span>
     <div class='file-wrapper'>
         <a href='/Images/Upload/#=name#' target='_blank'>
-            <img class='file-icon' src='/Images/Upload/#=name#' />
+            <span class='file-icon #=addExtensionClass(files[0].extension)#'></span>
             <h4 class='file-heading file-name-heading'>Name: #=name#</h4>
             <h4 class='file-heading file-size-heading'>Size: #=size# bytes</h4>
         </a>
@@ -341,7 +341,7 @@
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { command: [{ text: "Hình ảnh", click: uploadImage }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
+                    { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
                     if (editable) {
@@ -356,6 +356,16 @@
                         $(document).on("keydown", function (event) {
                             if (event.keyCode == 32 && event.ctrlKey) {
                                 $('#MaterialGrid').data('kendoGrid').addRow();
+                                var model = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                                if (model.isNew()) {
+                                    model.set("UsingPurpose", $("#UsingPurpose").val());
+                                    model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
+                                    if ('@Model.FromHardProposal' == 'True') {
+                                        model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
+                                        model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
+                                        model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
+                                    }
+                                }
                                 return false;
                             }
                             if (event.keyCode == 32 && event.shiftKey) {
@@ -366,15 +376,9 @@
                     }
                 },
                 edit: function (e) {
-                    if (e.model.isNew()) {
-                        e.model.set("UsingPurpose", $("#UsingPurpose").val());
-                        e.model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
-                        if ('@Model.FromHardProposal' == 'True') {
-                            e.model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
-                            e.model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
-                            e.model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
-                        }
-                    }
+                    $("input[data-role='datepicker']").bind("focus", function () {
+                        $(this).data("kendoDatePicker").open();
+                    });
                 },
                 editable: true
             });
@@ -382,10 +386,14 @@
             $(".datePicker").kendoDatePicker({
                 format: "dd/MM/yyyy"
             });
+            
+            $(".datePicker").bind("focus", function () {
+                $(this).data("kendoDatePicker").open();
+            });
 
-            wnd = $("#UploadImageWindow")
+            wnd = $("#UploadFileWindow")
                 .kendoWindow({
-                    title: "Hình ảnh",
+                    title: "Đính kèm",
                     modal: true,
                     visible: false,
                     resizable: false,
@@ -524,7 +532,7 @@
                 .appendTo(container);
         };
         
-        function uploadImage(e) {
+        function uploadFile(e) {
             e.preventDefault();
             var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
             dataItem.File = dataItem.File ? dataItem.File : "[]";
@@ -550,7 +558,7 @@
                         files = $.merge(files, results);
                     }
                     dataItem.set("File", JSON.stringify(files));
-                    var imgs = $("#UploadImageWindow").find("img");
+                    var imgs = $("#UploadFileWindow").find("img");
                     $.each(imgs, function() {
                         $(this).attr("src", this.src + "?" + new Date().getTime());
                     });
@@ -668,6 +676,29 @@
                     optionLabel: "-Chọn-",
                     dataSource: progressStatusDataSource
                 });
+        }
+        
+        function addExtensionClass(extension) {
+            switch (extension) {
+                case '.jpg':
+                case '.img':
+                case '.png':
+                case '.gif':
+                    return "img-file";
+                case '.doc':
+                case '.docx':
+                    return "doc-file";
+                case '.xls':
+                case '.xlsx':
+                    return "xls-file";
+                case '.pdf':
+                    return "pdf-file";
+                case '.zip':
+                case '.rar':
+                    return "zip-file";
+                default:
+                    return "default-file";
+            }
         }
     </script>
 }

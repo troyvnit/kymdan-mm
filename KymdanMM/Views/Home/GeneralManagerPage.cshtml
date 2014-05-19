@@ -124,7 +124,7 @@
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date()) {
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                        } else if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else if (kendo.parseDate(dataView[i].MinDeadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
@@ -237,7 +237,7 @@
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
                             $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(1)) {
+                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
                             $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                         } else {
 

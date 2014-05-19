@@ -204,7 +204,7 @@
                             for (var k = 0; k < dataViewJ.length; k++) {
                                 if (kendo.parseDate(dataViewJ[k].Deadline, "dd/MM/yyyy") <= new Date() && dataViewJ[k].ApproveStatus == 2) {
                                     $("#MaterialProposalGrid").find("tr[data-uid=" + dataViewJ[k].uid + "]").addClass("btn-danger active");
-                                } else if (kendo.parseDate(dataViewJ[k].Deadline, "dd/MM/yyyy") <= new Date().addDays(1) && dataViewJ[k].ApproveStatus == 2) {
+                                } else if (kendo.parseDate(dataViewJ[k].Deadline, "dd/MM/yyyy") <= new Date().addDays(3) && dataViewJ[k].ApproveStatus == 2) {
                                     $("#MaterialProposalGrid").find("tr[data-uid=" + dataViewJ[k].uid + "]").addClass("btn-warning active");
                                 } else {
 

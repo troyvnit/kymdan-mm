@@ -50,9 +50,14 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
     float: left;
     width: 48px;
     height: 48px;
-    margin-left: 10px;
-    margin-top: 13.5px;
 }
+
+.img-file { background-image: url(/Content/ImageType/jpg.png) }
+                .doc-file { background-image: url(/Content/ImageType/doc.png) }
+                .pdf-file { background-image: url(/Content/ImageType/pdf.png) }
+                .xls-file { background-image: url(/Content/ImageType/xls.png) }
+                .zip-file { background-image: url(/Content/ImageType/zip.png) }
+                .default-file { background-image: url(/Content/ImageType/default.png) }
 
 .file-heading {
     font-family: Arial;
@@ -60,6 +65,22 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
     display: inline-block;
     float: left;
     width: 450px;
+    margin: 0 0 0 20px;
+    height: 25px;
+    line-height: 25px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.panel-body .file-heading {
+    font-family: Arial;
+    font-size: 1.1em;
+    display: inline-block;
+    float: left;
+    width: 150px;
     margin: 0 0 0 20px;
     height: 25px;
     line-height: 25px;
@@ -85,7 +106,7 @@ li.k-file .file-wrapper .k-upload-action {
 
 li.k-file div.file-wrapper {
     position: relative;
-    height: 75px;
+    height: 50px;
 }
 
 /* Success template */

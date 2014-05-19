@@ -188,7 +188,7 @@
             <div class="panel-heading">
                 <p class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseImage">
-                        Hình ảnh
+                        Đính kèm
                     </a>
                 </p>
             </div>
@@ -196,10 +196,51 @@
                 <div class="panel-body">
                     @foreach (var file in files)
                     {
+                        var iconClass = "";
+                        switch (file.extension) {
+                            case ".jpg":
+                                iconClass = "img-file";
+                                break;
+                            case ".img":
+                                iconClass = "img-file";
+                                break;
+                            case ".png":
+                                iconClass = "img-file";
+                                break;
+                            case ".gif":
+                                iconClass = "img-file";
+                                break;
+                            case ".doc":
+                            case ".docx":
+                                iconClass = "doc-file";
+                                break;
+                            case ".xls":
+                                iconClass = "doc-file";
+                                break;
+                            case ".xlsx":
+                                iconClass = "xls-file";
+                                break;
+                            case ".pdf":
+                                iconClass = "pdf-file";
+                                break;
+                            case ".zip":
+                                iconClass = "zip-file";
+                                break;
+                            case ".rar":
+                                iconClass = "zip-file";
+                                break;
+                            default:
+                                iconClass = "default-file";
+                                break;
+                        }
                         <div class="col-xs-6 col-md-3">
-                            <a href="/Images/Upload/@file.name" target="_blank" class="thumbnail">
-                                <img src="/Images/Upload/@file.name" alt="...">
-                            </a>
+                            <div class='file-wrapper'>
+                                <a href='/Images/Upload/@file.name' target='_blank'>
+                                    <span class='file-icon @iconClass'></span>
+                                    <h4 class='file-heading file-name-heading'>@file.name</h4>
+                                    <h4 class='file-heading file-size-heading'>Size: @file.size bytes</h4>
+                                </a>
+                            </div>
                         </div>
                     }
                 </div>

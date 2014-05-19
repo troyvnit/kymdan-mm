@@ -250,6 +250,12 @@
     <Content Include="Content\Bootstrap\slider-v.gif" />
     <Content Include="Content\Bootstrap\sprite.png" />
     <Content Include="Content\Bootstrap\sprite_2x.png" />
+    <Content Include="Content\ImageType\default.png" />
+    <Content Include="Content\ImageType\doc.png" />
+    <Content Include="Content\ImageType\jpg.png" />
+    <Content Include="Content\ImageType\pdf.png" />
+    <Content Include="Content\ImageType\xls.png" />
+    <Content Include="Content\ImageType\zip.png" />
     <Content Include="Content\kendo-bootstrap-min.css" />
     <Content Include="Content\kendo-common-bootstrap-min.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />

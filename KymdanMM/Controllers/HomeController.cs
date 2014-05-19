@@ -259,7 +259,7 @@ namespace KymdanMM.Controllers
                     case "Temp":
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                             a =>
-                                a.ProposerDepartmentId == user.DepartmentId &&
+                                (a.ProposerDepartmentId == user.DepartmentId || (a.FromHardProposal && a.CreatedUserName == user.UserName)) &&
                                 !a.Sent);
                         break;
                     case "ReceiveAndAwaitingApprove":
@@ -389,14 +389,16 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     case "ApprovedAwaitingImplement":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     case "ApprovedImplemented":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -404,27 +406,40 @@ namespace KymdanMM.Controllers
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 !a.Finished &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     case "ApprovedAssigned":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId != 0 &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
+                        break;
+                    case "Finished":
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                a.ImplementerDepartmentId == user.DepartmentId &&
+                                !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                a.Finished &&
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     case "BeAssignedUnfinished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 !a.Finished &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     case "BeAssignedFinished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 a.Finished &&
-                                a.Approved);
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
                         break;
                     default:
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
@@ -487,10 +502,22 @@ namespace KymdanMM.Controllers
             var materialViewModels = JsonConvert.DeserializeObject<List<MaterialViewModel>>(materials);
             foreach (var materialViewModel in materialViewModels)
             {
-                var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
+                var material = _materialService.GetMaterial(materialViewModel.Id);
                 _materialService.DeleteMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMaterialProposal(string materialProposals)
+        {
+            var materialProposalViewModels = JsonConvert.DeserializeObject<List<MaterialProposalViewModel>>(materialProposals);
+            foreach (var materialProposalViewModel in materialProposalViewModels)
+            {
+                var materialProposal = _materialProposalService.GetMaterialProposal(materialProposalViewModel.Id);
+                _materialProposalService.DeleteMaterialProposal(materialProposal);
+            }
+            return Json(materialProposalViewModels, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -608,7 +635,7 @@ namespace KymdanMM.Controllers
                     var physicalPath = Path.Combine(Server.MapPath("~/Images/Upload"), fileName);
                     file.SaveAs(physicalPath);
                 }
-                return Json(files.Select(a => new FileViewModel { name = a.FileName, size = a.ContentLength, extension = a.ContentType }), "text/plain");
+                return Json(files.Select(a => new FileViewModel { name = a.FileName, size = a.ContentLength, extension = "." + a.FileName.Split('.')[1] }), "text/plain");
             }
             return Content("");
         }
