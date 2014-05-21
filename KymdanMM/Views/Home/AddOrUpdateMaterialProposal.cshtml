@@ -404,6 +404,8 @@
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
+                $("#submitMaterialProposal").unbind("click");
+                $("#saveDraftMaterialProposal").unbind("click");
                 submitMaterialProposal(true);
             });
 
@@ -411,6 +413,8 @@
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
+                $("#submitMaterialProposal").unbind("click");
+                $("#saveDraftMaterialProposal").unbind("click");
                 submitMaterialProposal(false);
             });
 

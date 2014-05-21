@@ -389,6 +389,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                                !a.Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent);
                         break;
@@ -397,6 +398,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.ImplementerDepartmentId == user.DepartmentId &&
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                !a.Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent);
                         break;
