@@ -447,6 +447,16 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
                         break;
                 }
+                foreach (var material in materials)
+                {
+                    foreach (var comment in material.Comments)
+                    {
+                        var readUserNames = comment.ReadUserNames.Split(',').ToList();
+                        readUserNames.Add(user.UserName);
+                        comment.ReadUserNames = string.Join(",", readUserNames);
+                    }
+                    _materialService.AddOrUpdateMaterial(material);
+                }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
                 foreach (var materialViewModel in materialViewModels)
                 {

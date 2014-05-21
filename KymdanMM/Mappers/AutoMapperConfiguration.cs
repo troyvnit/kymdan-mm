@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using AutoMapper;
 using KymdanMM.Model.Models;
 using KymdanMM.Models;
@@ -44,7 +45,8 @@ namespace KymdanMM.Mappers
         protected override void Configure()
         {
             Mapper.CreateMap<MaterialProposal, MaterialProposalViewModel>().ForMember(a => a.Approved, o => o.MapFrom(a => a.Materials.Count(m => m.Approved) > 0))
-                .ForMember(a => a.MinDeadline, o => o.MapFrom(a => a.Materials.Min(m => m.Deadline)));
+                .ForMember(a => a.MinDeadline, o => o.MapFrom(a => a.Materials.Min(m => m.Deadline)))
+                .ForMember(a => a.HaveNewComment, o => o.MapFrom(a => a.Materials.Count(m => m.Comments.Count(c => !c.ReadUserNames.Contains(Thread.CurrentPrincipal.Identity.Name)) > 0) > 0));
             Mapper.CreateMap<Material, MaterialViewModel>().ForMember(a => a.MaterialProposalCode, o => o.MapFrom(a => a.MaterialProposal.ProposalCode))
                 .ForMember(a => a.ProposerDepartmentId, o => o.MapFrom(a => a.MaterialProposal.ProposerDepartmentId));
             Mapper.CreateMap<Comment, CommentViewModel>();

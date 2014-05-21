@@ -136,7 +136,7 @@
                 },
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a>" },
+                    { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a> #= getNewCommentIcon(HaveNewComment) #" },
                     { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
                 ],
@@ -761,6 +761,10 @@
                     }
                 }
             });
+        }
+
+        function getNewCommentIcon(haveNew) {
+            return haveNew ? '<img style="float:right; height: 30px;" src="/Images/comment.png">' : '';
         }
     </script>
 
