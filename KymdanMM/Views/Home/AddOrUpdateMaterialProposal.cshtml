@@ -339,8 +339,8 @@
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "LastProposalDeparmentComment", template: "<div class='alert alert-info'>#= LastProposalDeparmentComment #</div>", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { field: "LastGeneralManagerComment", template: "<div class='alert alert-success'>#= LastGeneralManagerComment #</div>", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
                 ],
                 dataBound: function () {
@@ -352,7 +352,7 @@
                         $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
                             return false;
                         });
-
+                        $(document).off("keydown");
                         $(document).on("keydown", function (event) {
                             if (event.keyCode == 32 && event.ctrlKey) {
                                 $('#MaterialGrid').data('kendoGrid').addRow();
@@ -369,7 +369,7 @@
                                 return false;
                             }
                             if (event.keyCode == 32 && event.shiftKey) {
-                                $('#MaterialGrid').data('kendoGrid').cancelChanges();
+                                $("#MaterialGrid").data("kendoGrid").dataSource.remove($("#MaterialGrid").data("kendoGrid").dataSource.data()[0]);
                                 return false;
                             }
                         });

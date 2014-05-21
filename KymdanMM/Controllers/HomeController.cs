@@ -102,26 +102,34 @@ namespace KymdanMM.Controllers
 
         public ActionResult CommentPartialView(int id)
         {
-            var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
+            var material = _materialService.GetMaterial(id);
+                var materialViewModel = Mapper.Map<Material, MaterialViewModel>(material);
             var users = usersContext.UserProfiles.ToList();
             var departments = _departmentService.GetDepartments();
-            var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
+            var proposerDepartment = _departmentService.GetDepartment(materialViewModel.ProposerDepartmentId);
             if (proposerDepartment != null)
-                material.ProposerDepartmentName = proposerDepartment.DepartmentName;
-            var implementDepartment = _departmentService.GetDepartment(material.ImplementerDepartmentId);
+                materialViewModel.ProposerDepartmentName = proposerDepartment.DepartmentName;
+            var implementDepartment = _departmentService.GetDepartment(materialViewModel.ImplementerDepartmentId);
             if (implementDepartment != null)
-                material.ImplementerDepartmentName = implementDepartment.DepartmentName;
-            var progressStatus = _progressStatusService.GetProgressStatus(material.ProgressStatusId);
+                materialViewModel.ImplementerDepartmentName = implementDepartment.DepartmentName;
+            var progressStatus = _progressStatusService.GetProgressStatus(materialViewModel.ProgressStatusId);
             if (progressStatus != null)
-                material.Status = progressStatus.Status;
-            var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
+                materialViewModel.Status = progressStatus.Status;
+            var implementUser = users.FirstOrDefault(a => a.UserName == materialViewModel.ImplementerUserName);
             if (implementUser != null)
-                material.ImplementerDisplayName = implementUser.DisplayName;
+                materialViewModel.ImplementerDisplayName = implementUser.DisplayName;
             ViewBag.Departments = departments;
             ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
             ViewBag.Users = users;
             ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            return View(material);
+            foreach (var comment in material.Comments)
+            {
+                var readUserNames = comment.ReadUserNames.Split(',').ToList();
+                readUserNames.Add(Thread.CurrentPrincipal.Identity.Name);
+                comment.ReadUserNames = string.Join(",", readUserNames);
+            }
+            _materialService.AddOrUpdateMaterial(material);
+            return View(materialViewModel);
         }
 
         public ActionResult GetProposeMaterialForDepartmentManagerPage(int pageNumber, int pageSize, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus)
@@ -447,16 +455,6 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
                         break;
                 }
-                foreach (var material in materials)
-                {
-                    foreach (var comment in material.Comments)
-                    {
-                        var readUserNames = comment.ReadUserNames.Split(',').ToList();
-                        readUserNames.Add(user.UserName);
-                        comment.ReadUserNames = string.Join(",", readUserNames);
-                    }
-                    _materialService.AddOrUpdateMaterial(material);
-                }
                 var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
                 foreach (var materialViewModel in materialViewModels)
                 {
@@ -584,7 +582,7 @@ namespace KymdanMM.Controllers
                 readUserNames.Add(comment.PosterUserName);
                 comment.ReadUserNames = string.Join(",", readUserNames);
             }
-            comment.Approved = !Thread.CurrentPrincipal.IsInRole("Member");
+            comment.Approved = true;
             material.Comments.Add(comment);
             _materialService.AddOrUpdateMaterial(material);
             return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);

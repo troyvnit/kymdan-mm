@@ -148,12 +148,12 @@ li.k-file div.file-wrapper {
 }
 
 .chat li.left .chat-body {
-    margin-left: 60px;
+    margin-left: 45px;
     margin-bottom: 10px;
 }
 
 .chat li.right .chat-body {
-    margin-right: 60px;
+    margin-right: 45px;
     margin-bottom: 10px;
 }
 
@@ -166,6 +166,8 @@ li.k-file div.file-wrapper {
 .chat li.left .chat-body p { text-align: left; }
 
 .chat li.right .chat-body p { text-align: right; }
+
+.unread{ font-weight: bold; color: #000000 !important }
 
 .panel .slidedown .glyphicon, .chat .glyphicon { margin-right: 5px; }
 
