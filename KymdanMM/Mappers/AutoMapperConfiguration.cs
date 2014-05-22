@@ -29,7 +29,9 @@ namespace KymdanMM.Mappers
 
         protected override void Configure()
         {
-            Mapper.CreateMap<MaterialProposalViewModel, MaterialProposal>();
+            Mapper.CreateMap<MaterialProposalViewModel, MaterialProposal>()
+                .ForMember(a => a.ProposalCode, o => o.MapFrom(a => a.ProposalCode.ToUpper()))
+                .ForMember(a => a.ManagementCode, o => o.MapFrom(a => a.ManagementCode.ToUpper()));
             Mapper.CreateMap<MaterialViewModel, Material>();
             Mapper.CreateMap<CommentViewModel, Comment>();
         }

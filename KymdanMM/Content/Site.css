@@ -194,3 +194,5 @@ li.k-file div.file-wrapper {
 .red { color: red; }
 
 .label-medium { font-size: 14px; }
+
+.uppercase { text-transform: uppercase; }

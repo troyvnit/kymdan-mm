@@ -63,11 +63,6 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            var hash = window.location.hash;
-            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
-            });
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -637,6 +632,11 @@
                 ],
                 editable: false
             });
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
+            });
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
         });
         Date.prototype.addDays = function(days) {
             this.setDate(this.getDate() + days);
