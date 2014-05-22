@@ -44,7 +44,12 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
     overflow: visible;
     white-space: normal;
 }
-
+.k-grid {
+    font-size: 12px;
+}
+.k-grid td {
+    line-height: 18px;
+}
 .file-icon {
     display: inline-block;
     float: left;

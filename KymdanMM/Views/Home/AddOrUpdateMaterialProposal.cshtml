@@ -137,6 +137,7 @@
                     if (Thread.CurrentPrincipal.IsInRole("Admin"))
                     {
                         <input type="button" id="approveMaterial" class="btn btn-success navbar-btn" value="Duyệt" />
+                        <input type="button" id="approveAllMaterial" class="btn btn-warning navbar-btn" value="Duyệt tất cả" />
                     }
                     <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Cập nhật" />
                 }
@@ -459,13 +460,25 @@
                     approveMaterial();
                 }
             });
+            
+            $("#approveAllMaterial").on("click", function () {
+                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
+                if ($("#MaterialProposalForm").valid()) {
+                    submitMaterialProposal(true);
+                    approveMaterial();
+                }
+            });
 
             function approveMaterial() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
                 grid.select().each(function () {
                     var dataItem = grid.dataItem($(this));
-                    ids.push(dataItem.Id);
+                    if (dataItem.ImplementerDepartmentId > 0) {
+                        ids.push(dataItem.Id);
+                    } else {
+                        alert("Vật tư " + dataItem.MaterialName + " chưa chỉ định đơn vị thực hiện!");
+                    }
                 });
                 if (ids.length > 0) {
                     $.ajax({

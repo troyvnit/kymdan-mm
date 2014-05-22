@@ -124,6 +124,7 @@
             });
 
             $("#SentAndAwaitingApproveGrid").kendoGrid({
+                autoBind: hash == "",
                 dataSource: sentAndAwaitingApproveDataSource,
                 navigatable: true,
                 pageable: true,
@@ -199,6 +200,7 @@
             });
 
             $("#TempGrid").kendoGrid({
+                autoBind: false,
                 dataSource: tempDataSource,
                 navigatable: true,
                 pageable: true,
@@ -291,6 +293,7 @@
             });
 
             $("#ApprovedAwaitingReceiveGrid").kendoGrid({
+                autoBind: false,
                 dataSource: approvedAwaitingReceiveDataSource,
                 navigatable: true,
                 pageable: true,
@@ -392,6 +395,7 @@
             });
 
             $("#ApprovedAwaitingImplementGrid").kendoGrid({
+                autoBind: false,
                 dataSource: approvedAwaitingImplementDataSource,
                 navigatable: true,
                 pageable: true,
@@ -492,6 +496,7 @@
             });
 
             $("#ApprovedImplementedGrid").kendoGrid({
+                autoBind: false,
                 dataSource: approvedImplementedDataSource,
                 navigatable: true,
                 pageable: true,
@@ -604,6 +609,7 @@
             });
 
             $("#FinishedGrid").kendoGrid({
+                autoBind: false,
                 dataSource: finishedDataSource,
                 navigatable: true,
                 pageable: true,

@@ -342,6 +342,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\kendo-all-min.js" />
     <Content Include="Scripts\kendo-culture-vi-VN-min.js" />
+    <Content Include="Scripts\kendo-culture-en-GB-min.js" />
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\main.js" />

@@ -262,7 +262,7 @@ namespace KymdanMM.Controllers
                             a =>
                                 a.ProposerDepartmentId == user.DepartmentId &&
                                 a.Sent &&
-                                a.Materials.Count(m => m.Approved == true) == 0);
+                                a.Materials.Count(m => !m.Approved) > 0);
                         break;
                     case "Temp":
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
@@ -274,7 +274,7 @@ namespace KymdanMM.Controllers
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1,
                             a =>
                                 a.Sent &&
-                                a.Materials.Count(m => m.Approved == true) == 0);
+                                a.Materials.Count(m => !m.Approved) > 0);
                         break;
                     default:
                         materialProposals = _materialProposalService.GetMaterialProposals(pageNumber ?? 1, pageSize ?? 1, a => true);
@@ -290,7 +290,7 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(int? id, bool? fromHardProposal)
         {
             var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
-            var approved = materialProposal.Materials.Count(m => m.Approved == true) > 0;
+            var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
             var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
             materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
             var users = usersContext.UserProfiles.ToList();

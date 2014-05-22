@@ -43,6 +43,9 @@
         $(document).ready(function () {
             var hash = window.location.hash;
             hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
+            });
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -118,6 +121,7 @@
             });
 
             $("#BeAssignedUnfinishedGrid").kendoGrid({
+                autoBind: hash == "",
                 dataSource: beAssignedUnfinishedDataSource,
                 navigatable: true,
                 pageable: true,
@@ -230,6 +234,7 @@
             });
 
             $("#BeAssignedFinishedGrid").kendoGrid({
+                autoBind: false,
                 dataSource: beAssignedFinishedDataSource,
                 navigatable: true,
                 pageable: true,
