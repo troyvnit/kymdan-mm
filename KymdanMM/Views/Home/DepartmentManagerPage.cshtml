@@ -70,7 +70,7 @@
             var sentAndAwaitingApproveDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: "/Home/GetMaterialProposals",
+                        url: "/Home/GetMaterials",
                         type: "post"
                     },
                     update: {
@@ -85,11 +85,10 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function(options, operation) {
+                    parameterMap: function (options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
-                                materials: kendo.stringify(options.models),
-                                materialProposalId: $("#Id").val()
+                                materials: kendo.stringify(options.models)
                             };
                         } else {
                             return {
@@ -108,9 +107,27 @@
                         id: "Id",
                         fields: {
                             Id: { editable: false, nullable: false, defaultValue: 0 },
-                            ProposalCode: { type: "string", validation: { required: true } },
-                            CreatedDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            Approved: { type: "boolean" }
+                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
+                            MaterialName: { type: "string", validation: { required: true } },
+                            Description: { type: "string" },
+                            Quantity: { type: "number" },
+                            InventoryQuantity: { type: "number" },
+                            Unit: { type: "string", validation: { required: true } },
+                            Used: { type: "boolean" },
+                            UsingPurpose: { type: "string" },
+                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
+                            Note: { type: "string" },
+                            ImplementerDepartmentId: { type: "number" },
+                            ImplementerUserName: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
+                            ApproveStatus: { type: "number", editable: false },
+                            Finished: { type: "boolean", editable: false }
                         }
                     },
                     total: "total",
@@ -119,7 +136,7 @@
             });
 
             $("#SentAndAwaitingApproveGrid").kendoGrid({
-                autoBind: hash == "",
+                autoBind: window.location.hash == "",
                 dataSource: sentAndAwaitingApproveDataSource,
                 navigatable: true,
                 pageable: true,
@@ -134,9 +151,13 @@
                 },
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a> #= getNewCommentIcon(HaveNewComment) #" },
-                    { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() }
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
+                    { field: "Quantity", title: "Số lượng", width: 200 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận", width: 150 },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
                 ],
                 editable: false
             });

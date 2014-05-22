@@ -116,7 +116,7 @@
             });
 
             $("#BeAssignedUnfinishedGrid").kendoGrid({
-                autoBind: hash == "",
+                autoBind: window.location.hash == "",
                 dataSource: beAssignedUnfinishedDataSource,
                 navigatable: true,
                 pageable: true,

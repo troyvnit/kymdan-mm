@@ -393,6 +393,19 @@ namespace KymdanMM.Controllers
                 //}
                 switch (command)
                 {
+                    case "SentAndAwaitingApprove":
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                                !a.Approved &&
+                                a.MaterialProposal.Sent);
+                        break;
+                    case "ReceiveAndAwaitingApprove":
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                !a.Approved &&
+                                a.MaterialProposal.Sent);
+                        break;
                     case "ApprovedAwaitingReceive":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
