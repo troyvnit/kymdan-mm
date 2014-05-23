@@ -476,8 +476,7 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId ==
-                                            poster.DepartmentId && (a.Approved || user.DepartmentId == poster.DepartmentId);
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId;
                             });
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
@@ -486,8 +485,7 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ImplementerDepartmentId ==
-                                            user.DepartmentId && (a.Approved || user.DepartmentId == poster.DepartmentId);
+                                return poster != null && model.ImplementerDepartmentId == poster.DepartmentId;
                             });
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)

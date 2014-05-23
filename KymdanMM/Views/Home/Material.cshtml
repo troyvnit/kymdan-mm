@@ -258,8 +258,7 @@
             </div>
             <div id="collapseTwo" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
+                    <ul class="chat">
                             @foreach (var comment in generalManagerComments)
                             {
                                 var str = comment.PosterDisplayName;
@@ -281,11 +280,11 @@
                                 {
                                     <li class="right clearfix">
                                         <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
                                                 <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
                                             </div>
                                             <p>
@@ -298,13 +297,13 @@
                                 {
                                     <li class="left clearfix">
                                         <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
                                                 <strong class="primary-font">@comment.PosterDisplayName</strong>
                                                 <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")
                                                 </small>
                                             </div>
                                             <p>
@@ -315,7 +314,6 @@
                                 }
                             }
                         </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -331,8 +329,7 @@
             </div>
             <div id="collapseThree" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
+                    <ul class="chat">
                             @foreach (var comment in proposalDepartmentComments)
                             {
                                 var user = users.FirstOrDefault(u => u.UserName == comment.PosterUserName);
@@ -355,11 +352,11 @@
                                 {
                                     <li class="right clearfix">
                                         <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
                                                 <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
                                             </div>
                                             <p>
@@ -385,13 +382,13 @@
                                 {
                                     <li class="left clearfix">
                                         <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
                                                 <strong class="primary-font">@comment.PosterDisplayName</strong>
                                                 <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")
                                                 </small>
                                             </div>
                                             <p>
@@ -414,7 +411,6 @@
                                 }
                             }
                         </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -430,8 +426,7 @@
             </div>
             <div id="collapseFour" class="panel-collapse collapse in">
                 <div class="panel-body">
-                    <div class="col-sm-12">
-                        <ul class="chat">
+                    <ul class="chat">
                             @foreach (var comment in implementDepartmentComments)
                             {
                                 var user = users.FirstOrDefault(u => u.UserName == comment.PosterUserName);
@@ -454,11 +449,11 @@
                                 {
                                     <li class="right clearfix">
                                         <span class="chat-img pull-right">
-                                            <img src="http://placehold.it/50/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/FA6F57/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
-                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                                <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small>
                                                 <strong class="pull-right primary-font">@comment.PosterDisplayName</strong>
                                             </div>
                                             <p>
@@ -484,13 +479,13 @@
                                 {
                                     <li class="left clearfix">
                                         <span class="chat-img pull-left">
-                                            <img src="http://placehold.it/50/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
+                                            <img src="http://placehold.it/35/55C1E7/fff&amp;text=@result" alt="@comment.PosterDisplayName" class="img-circle">
                                         </span>
                                         <div class="chat-body clearfix">
                                             <div class="header">
                                                 <strong class="primary-font">@comment.PosterDisplayName</strong>
                                                 <small class="pull-right text-muted">
-                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
+                                                    <span class="glyphicon glyphicon-time"></span>@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")
                                                 </small>
                                             </div>
                                             <p>
@@ -514,7 +509,6 @@
                                 }
                             }
                         </ul>
-                    </div>
                 </div>
             </div>
         </div>
