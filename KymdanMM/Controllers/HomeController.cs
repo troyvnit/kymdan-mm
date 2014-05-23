@@ -472,20 +472,33 @@ namespace KymdanMM.Controllers
                 foreach (var materialViewModel in materialViewModels)
                 {
                     var model = materialViewModel;
-                    var proposalDeparmentComments = materialViewModel.Comments.Where(
+                    var proposalDeparmentComments = model.ImplementerDepartmentId != model.ProposerDepartmentId ? 
+                        materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
                                 return poster != null && model.ProposerDepartmentId == poster.DepartmentId;
+                            }) : 
+                            materialViewModel.Comments.Where(
+                            a =>
+                            {
+                                var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName != a.PosterUserName;
                             });
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
                         materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content;
-                    var implementDepartmentComments = materialViewModel.Comments.Where(
+                    var implementDepartmentComments = model.ImplementerDepartmentId != model.ProposerDepartmentId ? materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
                                 return poster != null && model.ImplementerDepartmentId == poster.DepartmentId;
+                            }) :
+                            materialViewModel.Comments.Where(
+                            a =>
+                            {
+                                var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName == a.PosterUserName;
                             });
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)
