@@ -135,7 +135,54 @@
                 sortable: true,
                 reorderable: true,
                 resizable: true,
-                filterable: true,
+                filterable: {
+                    messages: {
+                        info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
+                        filter: "Lọc", // sets the text for the "Filter" button
+                        clear: "Xóa lọc", // sets the text for the "Clear" button
+
+                        // when filtering boolean numbers
+                        isTrue: "đúng", // sets the text for "isTrue" radio button
+                        isFalse: "sai", // sets the text for "isFalse" radio button
+
+                        //changes the text of the "And" and "Or" of the filter menu
+                        and: "Và",
+                        or: "Hoặc"
+                    },
+                    operators: {
+                        //filter menu for "string" type columns
+                        string: {
+                            startswith: "Bắt đầu với",
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            contains: "Chứa",
+                            endswith: "Kết thúc với"
+                        },
+                        //filter menu for "number" type columns
+                        number: {
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            gte: "Lớn hơn hoặc bằng",
+                            gt: "Lớn hơn",
+                            lte: "Nhỏ hơn hoặc bằng",
+                            lt: "Nhỏ hơn"
+                        },
+                        //filter menu for "date" type columns
+                        date: {
+                            eq: "Đúng ngày",
+                            neq: "Khác ngày",
+                            gte: "Đúng hoặc sau ngày",
+                            gt: "Sau ngày",
+                            lte: "Đúng hoặc trước ngày",
+                            lt: "Trước ngày"
+                        },
+                        //filter menu for foreign key values
+                        enums: {
+                            eq: "Bằng với",
+                            neq: "Khác với"
+                        }
+                    }
+                },
                 selectable: "multiple",
                 groupable: {
                     messages: {
@@ -226,6 +273,7 @@
                             DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { type: "number" },
                             Note: { type: "string" },
+                            ProposerDepartmentId: { type: "number", editable: false },
                             ImplementerDepartmentId: { type: "number" },
                             ImplementerUserName: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
@@ -260,8 +308,18 @@
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150 },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
+                    {
+                        field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150,
+                        filterable: {
+                            ui: proposerDepartmentIdApprovedAssignedGridFilter
+                        }
+                    },
+                    {
+                        field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150,
+                        filterable: {
+                            ui: implementerUserNameApprovedAssignedGridFilter
+                        }
+                    },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
@@ -469,6 +527,35 @@
                 }).data("kendoWindow");
             commentWindow.center().open();
         }
+        
+        function implementerUserNameApprovedAssignedGridFilter(element) {
+            var implementerUserNames = [];
+            var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                implementerUserNames.push({ Value: this.ImplementerUserName, Text: getImplementerDisplayName(this.ImplementerUserName) });
+            });
+            element.kendoDropDownList({
+                dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+        
+        function proposerDepartmentIdApprovedAssignedGridFilter(element) {
+            var proposerDepartmentIds = [];
+            var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                proposerDepartmentIds.push({ Value: this.ProposerDepartmentId, Text: getImplementerDepartmentName(this.ProposerDepartmentId) });
+            });
+            element.kendoDropDownList({
+                dataSource: proposerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+        
     </script>
 
 }

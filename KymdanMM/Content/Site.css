@@ -50,6 +50,11 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
 .k-grid td {
     line-height: 18px;
 }
+
+.k-grid-filter.k-state-active {
+    background-color: #eea236;
+}
+
 .file-icon {
     display: inline-block;
     float: left;
