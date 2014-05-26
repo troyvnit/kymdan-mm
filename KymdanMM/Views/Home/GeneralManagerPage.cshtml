@@ -91,7 +91,7 @@
                     }
                 },
                 batch: true,
-                pageSize: 10,
+                //pageSize: 10,
                 //serverPaging: true,
                 schema: {
                     model: {
@@ -131,7 +131,7 @@
                 autoBind: window.location.hash == "",
                 dataSource: receiveAndAwaitingApproveDataSource,
                 navigatable: true,
-                pageable: true,
+                //pageable: true,
                 sortable: true,
                 reorderable: true,
                 resizable: true,
@@ -192,26 +192,25 @@
                 },
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 70 },
                     {
-                        field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150,
+                        field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 100,
                         filterable: {
                             ui: proposerDepartmentIdReceiveAndAwaitingApproveGridFilter
                         }
                     },
-                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
-                    { field: "Quantity", title: "SL", width: 55 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận", width: 150 },
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 120 },
+                    { field: "Quantity", title: "SL", width: 50 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận", width: 80 },
                     {
-                        field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150,
+                        field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100,
                         filterable: {
                             ui: implementerDepartmentIdReceiveAndAwaitingApproveGridFilter
                         }
                     },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "70px" }
                 ],
                 editable: true,
                 dataBound: function() {
@@ -271,7 +270,7 @@
                     }
                 },
                 batch: true,
-                pageSize: 10,
+                //pageSize: 10,
                 //serverPaging: true,
                 schema: {
                     model: {
@@ -312,7 +311,7 @@
                 autoBind: false,
                 dataSource: approvedAssignedDataSource,
                 navigatable: true,
-                pageable: true,
+                //pageable: true,
                 sortable: true,
                 reorderable: true,
                 resizable: true,
@@ -372,16 +371,16 @@
                 },
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
-                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 70 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 100 },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 100 },
                     {
                         field: "ImplementerDepartmentId",
                         title: "Đơn vị thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
                         groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
-                        width: 150,
+                        width: 80,
                         filterable: {
                             ui: implementerDepartmentIdApprovedAssignedGridFilter
                         }
@@ -392,7 +391,7 @@
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ProposerDepartmentId) #",
                         groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #",
-                        width: 150,
+                        width: 80,
                         filterable: {
                             ui: proposerDepartmentIdApprovedAssignedGridFilter
                         }
@@ -403,18 +402,18 @@
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
                         groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
-                        width: 150,
+                        width: 80,
                         filterable: {
                             ui: implementerUserNameApprovedAssignedGridFilter
                         }
                     },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 150 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 200 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 70 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 70 },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
                 dataBound: function() {

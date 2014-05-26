@@ -9,7 +9,7 @@
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var enableAttribute = (object)new { @class = "form-control" };
     var isNew = Model.Id == 0;
-    var editable = !Model.Sent;
+    var editable = !Model.Sent || (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ProposerDepartmentId == currentUser.DepartmentId);
     var open = isNew ? "in" : "";
     var departmentCode = Thread.CurrentPrincipal.Identity.Name.Split('-').Length > 1 ? Thread.CurrentPrincipal.Identity.Name.Split('-')[0] : "LLL";
     var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
@@ -50,19 +50,6 @@
                                 }
                             </div>
                         </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.ManagementCode, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                @if (editable)
-                                {
-                                    @Html.TextBoxFor(m => m.ManagementCode, new { @class = "form-control uppercase" })
-                                }
-                                else
-                                {
-                                    <span class="control-label pull-left">@Html.DisplayFor(m => m.ManagementCode)</span>
-                                }
-                            </div>
-                        </div>
                         @if (Model.FromHardProposal)
                         {
                             <div class="form-group">
@@ -92,12 +79,6 @@
                                 {
                                     <span class="control-label pull-left">@Html.DisplayFor(m => m.Description)</span>
                                 }
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.Note, new { @class = "col-md-4 control-label" })
-                            <div class="col-sm-8 col-md-6">
-                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
                             </div>
                         </div>
                     </div>
@@ -187,34 +168,45 @@
 </script>
     <script type="text/x-kendo-template" id="materialToolbarTemplate">
     <div class="toolbar">
-        <div class="col-sm-2">
+@if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
+{
+    <div class="col-sm-2">
             <label>Mục đích sử dụng:</label>
             <input type="text" class="k-textbox" id="UsingPurpose" placeholder="Mục đích sử dụng" />
         </div>
-        <div class="col-sm-2">
+    <div class="col-sm-2">
             <label>Ngày nhận:</label>
             <input id="Deadline" class="datePicker" />
         </div>
-        @if (Model.FromHardProposal)
-        {
-            <div class="col-sm-2">
+    if (Model.FromHardProposal)
+     {
+         <div class="col-sm-2">
                 <label>Ngày duyệt:</label>
                 <input id="ApproveDate" class="datePicker" />
             </div>
-            <div class="col-sm-2">
+         <div class="col-sm-2">
                 <label>Ngày giao việc:</label>
                 <input id="StartDate" class="datePicker" />
             </div>
-            <div class="col-sm-2">
+         <div class="col-sm-2">
                 <label>Ngày hoàn thành:</label>
                 <input id="FinishDate" class="datePicker" />
             </div>
-        }
+     }
+}
+@if (Thread.CurrentPrincipal.IsInRole("Admin"))
+{
+         <div class="col-sm-2">
+                <label>Đơn vị thực hiện:</label>
+                <input id="ImplementerDepartment" />
+            </div>
+}
     </div>
 </script>
 
     <script type="text/javascript">
         var wnd, commentWindow;
+        var added = false;
         $(document).ready(function () {
             if ('@Model.FromHardProposal' != 'True') {
                 $("#ProposalCode").kendoMaskedTextBox({
@@ -277,7 +269,7 @@
                     }
                 },
                 batch: true,
-                pageSize: 10,
+                //pageSize: 10,
                 serverPaging: true,
                 schema: {
                     model: {
@@ -297,7 +289,7 @@
                             ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { editable: editable, type: "number" },
                             Note: { editable: editable, type: "string" },
-                            ImplementerDepartmentId: { type: "number" },
+                            ImplementerDepartmentId: { type: "number", nullable: true },
                             ImplementerUserName: { type: "string" },
                             File: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
@@ -318,33 +310,36 @@
             $("#MaterialGrid").kendoGrid({
                 dataSource: materialProposalDataSource,
                 navigatable: true,
-                pageable: true,
+                //pageable: true,
                 sortable: true,
                 resizable: true,
                 columnMenu: true,
                 selectable: '@editable' != 'True' ? "multiple" : false,
                 toolbar: kendo.template($("#materialToolbarTemplate").html()),
                 columns: [
-                    { field: "MaterialName", title: "Tên vật tư", width: 150 },
-                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
-                    { field: "Quantity", title: "SL", width: 80 },
-                    { field: "InventoryQuantity", title: "SL tồn kho", width: 80 },
-                    { field: "Unit", title: "Đơn vị tính", width: 80 },
-                    { field: "Used", title: "Đã sử dụng?", width: 90 },
-                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 170 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 150 },
+                    { field: "MaterialName", title: "Tên vật tư", width: 120 },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 120 },
+                    { field: "Quantity", title: "SL", width: 50 },
+                    { field: "InventoryQuantity", title: "Tồn kho", width: 50 },
+                    { field: "Unit", title: "ĐVT", width: 60 },
+                    { field: "Used", title: "Đã sử dụng?", width: 70 },
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 100 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 80 },
                     { field: "File", title: "File", width: 70, hidden: true},
-                    { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
-                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "220px" }
+                    { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
                 ],
                 dataBound: function () {
+                    if (!added) {
+                        added = true;
+                        $('#MaterialGrid').data('kendoGrid').addRow();
+                    } 
                     if (editable) {
                         $("#MaterialGrid .k-grid-content").on("dblclick", function () {
                             $('#MaterialGrid').data('kendoGrid').addRow();
@@ -382,6 +377,29 @@
                     });
                 },
                 editable: true
+            });
+            
+            $("#ImplementerDepartment").kendoDropDownList({
+                dataTextField: "DepartmentName",
+                dataValueField: "Id",
+                autoBind: true,
+                optionLabel: "Chọn đơn vị",
+                dataSource: {
+                    severFiltering: true,
+                    transport: {
+                        read: {
+                            url: "/Home/GetDepartment",
+                            type: "post"
+                        }
+                    }
+                }
+            });
+
+            $("#ImplementerDepartment").on('change', function () {
+                var models = $("#MaterialGrid").data("kendoGrid").dataSource.data();
+                $.each(models, function() {
+                    this.set("ImplementerDepartmentId", $("#ImplementerDepartment").val());
+                });
             });
             
             $(".datePicker").kendoDatePicker({
