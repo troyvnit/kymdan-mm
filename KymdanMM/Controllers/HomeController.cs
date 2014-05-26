@@ -350,47 +350,6 @@ namespace KymdanMM.Controllers
             if (user != null)
             {
                 IPagedList<Material> materials;
-                //if (Thread.CurrentPrincipal.IsInRole("Admin"))
-                //{
-                //    materials = _materialService.GetMaterials(pageNumber, pageSize,
-                //        a => (a.MaterialProposal.Id == id || id == null) && (a.Approved != true) &&
-                //             (a.MaterialProposal.ProposerDepartmentId == departmentId ||
-                //              a.ImplementerDepartmentId == departmentId || departmentId == null) &&
-                //             (a.ProgressStatusId == progressStatusId || progressStatusId == null) &&
-                //             (a.Approved == approveStatus || approveStatus == null) &&
-                //             (a.Finished != true || finished == null) &&
-                //             (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
-                //              a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
-                //              a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
-                //}
-                //else if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
-                //{
-                //    materials = _materialService.GetMaterials(pageNumber, pageSize,
-                //        a =>
-                //            (a.MaterialProposal.Id == id || id == null) &&
-                //            (a.MaterialProposal.ProposerDepartmentId == user.DepartmentId || a.MaterialProposal.CreatedUserName == user.UserName ||
-                //             (a.ImplementerDepartmentId == user.DepartmentId && a.Approved == true)) &&
-                //            (a.ProgressStatusId == progressStatusId ||
-                //             progressStatusId == null) &&
-                //            (a.Approved == approveStatus || approveStatus == null) &&
-                //             (a.Finished != true || finished == null) &&
-                //            (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
-                //             a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
-                //             a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
-                //}
-                //else
-                //{
-                //    materials = _materialService.GetMaterials(pageNumber, pageSize,
-                //        a => (a.MaterialProposal.Id == id || id == null) &&
-                //            (a.MaterialProposal.ProposerUserName == user.UserName || (a.ImplementerUserName == user.UserName && a.Approved == true)) &&
-                //            (a.ProgressStatusId == progressStatusId ||
-                //             progressStatusId == null) &&
-                //            (a.Approved == approveStatus || approveStatus == null) &&
-                //             (a.Finished != true || finished == null) &&
-                //            (a.MaterialProposal.ProposalCode.Contains(keyWord) ||
-                //             a.MaterialProposal.Description.Contains(keyWord) || a.Description.Contains(keyWord) ||
-                //             a.MaterialName.Contains(keyWord) || string.IsNullOrEmpty(keyWord)));
-                //}
                 switch (command)
                 {
                     case "SentAndAwaitingApprove":
@@ -634,6 +593,96 @@ namespace KymdanMM.Controllers
             ViewBag.Message = "Quyền hạn của bạn không phù hợp xem trang này!";
 
             return View();
+        }
+
+        public ActionResult GetImplementerDepartment(string command, int? id)
+        {
+            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (user != null)
+            {
+                IPagedList<Material> materials;
+                switch (command)
+                {
+                    case "SentAndAwaitingApprove":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                                 !a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "ReceiveAndAwaitingApprove":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 !a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "ApprovedAwaitingReceive":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                                 !a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "ApprovedAwaitingImplement":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                 !a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "ApprovedImplemented":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                 !a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "ApprovedAssigned":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerDepartmentId != 0 &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "Finished":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                 a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "BeAssignedUnfinished":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
+                                 !a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    case "BeAssignedFinished":
+                        materials = _materialService.GetMaterials(1, 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
+                                 a.Finished &&
+                                 a.Approved &&
+                                 a.MaterialProposal.Sent);
+                        break;
+                    default:
+                        materials = _materialService.GetMaterials(1, 1,
+                            a =>
+                                (a.MaterialProposal.Id == id || id == null));
+                        break;
+                }
+                return Json(materials.Select(a => new { Text = _departmentService.GetDepartment(a.ImplementerDepartmentId) != null ? _departmentService.GetDepartment(a.ImplementerDepartmentId).DepartmentName : "", Value = a.ImplementerDepartmentId }).ToList(), JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
         }
 
         [Authorize(Roles = "ITAdmin")]

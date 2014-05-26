@@ -52,7 +52,7 @@
         # } #
     </script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -76,7 +76,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models)
@@ -136,6 +136,7 @@
                 reorderable: true,
                 resizable: true,
                 filterable: {
+                    extra: false,
                     messages: {
                         info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
                         filter: "Lọc", // sets the text for the "Filter" button
@@ -192,18 +193,28 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
-                    { field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150 },
+                    {
+                        field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150,
+                        filterable: {
+                            ui: proposerDepartmentIdReceiveAndAwaitingApproveGridFilter
+                        }
+                    },
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
-                    { field: "Quantity", title: "Số lượng", width: 200 },
+                    { field: "Quantity", title: "SL", width: 55 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận", width: 150 },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 100 },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
+                    {
+                        field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150,
+                        filterable: {
+                            ui: implementerDepartmentIdReceiveAndAwaitingApproveGridFilter
+                        }
+                    },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
                 ],
                 editable: true,
-                dataBound: function () {
+                dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date()) {
@@ -213,6 +224,15 @@
                         } else if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
                         }
+                    }
+                },
+                filterMenuInit: function (e) {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
+                        e.container.find(".k-filter-help-text").hide();
+                        setTimeout(function () {
+                            firstValueDropDown.wrapper.hide();
+                        });
                     }
                 }
             });
@@ -236,7 +256,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models)
@@ -296,7 +316,55 @@
                 sortable: true,
                 reorderable: true,
                 resizable: true,
-                filterable: true,
+                filterable: {
+                    extra: false,
+                    messages: {
+                        info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
+                        filter: "Lọc", // sets the text for the "Filter" button
+                        clear: "Xóa lọc", // sets the text for the "Clear" button
+
+                        // when filtering boolean numbers
+                        isTrue: "đúng", // sets the text for "isTrue" radio button
+                        isFalse: "sai", // sets the text for "isFalse" radio button
+
+                        //changes the text of the "And" and "Or" of the filter menu
+                        and: "Và",
+                        or: "Hoặc"
+                    },
+                    operators: {
+                        //filter menu for "string" type columns
+                        string: {
+                            startswith: "Bắt đầu với",
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            contains: "Chứa",
+                            endswith: "Kết thúc với"
+                        },
+                        //filter menu for "number" type columns
+                        number: {
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            gte: "Lớn hơn hoặc bằng",
+                            gt: "Lớn hơn",
+                            lte: "Nhỏ hơn hoặc bằng",
+                            lt: "Nhỏ hơn"
+                        },
+                        //filter menu for "date" type columns
+                        date: {
+                            eq: "Đúng ngày",
+                            neq: "Khác ngày",
+                            gte: "Đúng hoặc sau ngày",
+                            gt: "Sau ngày",
+                            lte: "Đúng hoặc trước ngày",
+                            lt: "Trước ngày"
+                        },
+                        //filter menu for foreign key values
+                        enums: {
+                            eq: "Bằng với",
+                            neq: "Khác với"
+                        }
+                    }
+                },
                 groupable: {
                     messages: {
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
@@ -307,15 +375,35 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 200 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 200 },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 150 },
                     {
-                        field: "ProposerDepartmentId", title: "Đơn vị đề nghị", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #", width: 150,
+                        field: "ImplementerDepartmentId",
+                        title: "Đơn vị thực hiện",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
+                        width: 150,
+                        filterable: {
+                            ui: implementerDepartmentIdApprovedAssignedGridFilter
+                        }
+                    },
+                    {
+                        field: "ProposerDepartmentId",
+                        title: "Đơn vị đề nghị",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ProposerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #",
+                        width: 150,
                         filterable: {
                             ui: proposerDepartmentIdApprovedAssignedGridFilter
                         }
                     },
                     {
-                        field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150,
+                        field: "ImplementerUserName",
+                        title: "Người thực hiện",
+                        editor: implementerUserEditor,
+                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
+                        width: 150,
                         filterable: {
                             ui: implementerUserNameApprovedAssignedGridFilter
                         }
@@ -327,9 +415,9 @@
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 200 },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
-                    ],
+                ],
                 editable: false,
-                dataBound: function () {
+                dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
@@ -340,22 +428,30 @@
 
                         }
                     }
+                },
+                filterMenuInit: function (e) {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
+                        setTimeout(function () {
+                            firstValueDropDown.wrapper.hide();
+                        });
+                    }
                 }
             });
-            
-            $("#approveMaterial").on("click", function () {
-                    approveMaterial();
+
+            $("#approveMaterial").on("click", function() {
+                approveMaterial();
             });
 
-            $("#approveAllMaterial").on("click", function () {
-                $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find(">tr"));
-                    approveMaterial();
+            $("#approveAllMaterial").on("click", function() {
+                $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find("* > tr"));
+                approveMaterial();
             });
 
             function approveMaterial() {
                 var ids = [];
                 var grid = $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid");
-                grid.select().each(function () {
+                grid.select().each(function() {
                     var dataItem = grid.dataItem($(this));
                     if (dataItem.ImplementerDepartmentId > 0) {
                         ids.push(dataItem.Id);
@@ -370,7 +466,7 @@
                         data: { idString: ids.join(',') },
                         dataType: "json",
                         async: false,
-                        success: function (result) {
+                        success: function(result) {
                             if (result) {
                                 $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").dataSource.read();
                             }
@@ -379,24 +475,24 @@
                 }
             }
 
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
                 $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
             });
             var hash = window.location.hash;
             hash && $('ul.nav a[href="' + hash + '"]').tab('show');
         });
-        Date.prototype.addDays = function (days) {
+        Date.prototype.addDays = function(days) {
             this.setDate(this.getDate() + days);
             return this;
         };
-        var textareaEditor = function (container, options) {
+        var textareaEditor = function(container, options) {
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
                 .appendTo(container);
         };
 
         function getImplementerDepartmentName(id) {
             var departmentName = "";
-            $.each(implementerDepartmentDataSource._data, function () {
+            $.each(implementerDepartmentDataSource._data, function() {
                 if (this.Id == id) {
                     departmentName = this.DepartmentName;
                 }
@@ -426,7 +522,7 @@
 
         function getImplementerDisplayName(userName) {
             var displayName = "";
-            $.each(implementerUserDataSource._data, function () {
+            $.each(implementerUserDataSource._data, function() {
                 if (this.UserName == userName) {
                     displayName = this.DisplayName;
                 }
@@ -456,7 +552,7 @@
 
         function getProgressStatus(id) {
             var status = "";
-            $.each(progressStatusDataSource._data, function () {
+            $.each(progressStatusDataSource._data, function() {
                 if (this.Id == id) {
                     status = this.Status;
                 }
@@ -495,14 +591,14 @@
 
         function getMaterialProposalLink(code) {
             var proposalCode = "";
-            $.each(materialProposalCodeDataSource._data, function () {
+            $.each(materialProposalCodeDataSource._data, function() {
                 if (this.MaterialProposalCode == code) {
                     proposalCode = "Mã đề xuất: <a href='/chinh-sua-de-xuat/" + this.MaterialProposalId + "' class='label label-primary'>" + this.MaterialProposalCode + "</a>";
                 }
             });
             return proposalCode;
         }
-        
+
         function getNewCommentIcon(haveNew) {
             return haveNew ? '<img style="float:right; height: 30px;" src="/Images/comment.png">' : '';
         }
@@ -527,12 +623,18 @@
                 }).data("kendoWindow");
             commentWindow.center().open();
         }
-        
+
         function implementerUserNameApprovedAssignedGridFilter(element) {
             var implementerUserNames = [];
+            var implementerDisplayNames = [];
             var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
-                implementerUserNames.push({ Value: this.ImplementerUserName, Text: getImplementerDisplayName(this.ImplementerUserName) });
+            $.each(grid.dataSource._data, function() {
+                var displayName = getImplementerDisplayName(this.ImplementerUserName);
+                var obj = { Value: this.ImplementerUserName, Text: displayName };
+                if ($.inArray(displayName, implementerDisplayNames) == -1 && displayName != "") {
+                    implementerUserNames.push(obj);
+                    implementerDisplayNames.push(displayName);
+                }
             });
             element.kendoDropDownList({
                 dataSource: implementerUserNames,
@@ -541,12 +643,18 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function proposerDepartmentIdApprovedAssignedGridFilter(element) {
             var proposerDepartmentIds = [];
+            var proposerDepartmentNames = [];
             var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
-                proposerDepartmentIds.push({ Value: this.ProposerDepartmentId, Text: getImplementerDepartmentName(this.ProposerDepartmentId) });
+            $.each(grid.dataSource._data, function() {
+                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
+                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, proposerDepartmentNames) == -1) {
+                    proposerDepartmentIds.push(obj);
+                    proposerDepartmentNames.push(departmentName);
+                }
             });
             element.kendoDropDownList({
                 dataSource: proposerDepartmentIds,
@@ -555,7 +663,67 @@
                 optionLabel: "-Chọn-",
             });
         }
+
+        function implementerDepartmentIdApprovedAssignedGridFilter(element) {
+            var implementerDepartmentIds = [];
+            var implementerDepartmentNames = [];
+            var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function() {
+                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
+                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
+                    implementerDepartmentIds.push(obj);
+                    implementerDepartmentNames.push(departmentName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
         
+        function proposerDepartmentIdReceiveAndAwaitingApproveGridFilter(element) {
+            var proposerDepartmentIds = [];
+            var proposerDepartmentNames = [];
+            var grid = $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
+                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, proposerDepartmentNames) == -1) {
+                    proposerDepartmentIds.push(obj);
+                    proposerDepartmentNames.push(departmentName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: proposerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
+        function implementerDepartmentIdReceiveAndAwaitingApproveGridFilter(element) {
+            var implementerDepartmentIds = [];
+            var implementerDepartmentNames = [];
+            var grid = $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
+                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
+                    implementerDepartmentIds.push(obj);
+                    implementerDepartmentNames.push(departmentName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
     </script>
 
 }
