@@ -431,6 +431,7 @@
                 filterMenuInit: function (e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
+                        e.container.find(".k-filter-help-text").hide();
                         setTimeout(function () {
                             firstValueDropDown.wrapper.hide();
                         });
@@ -668,8 +669,8 @@
             var implementerDepartmentNames = [];
             var grid = $("#ApprovedAssignedGrid").data("kendoGrid");
             $.each(grid.dataSource._data, function() {
-                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
-                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                var departmentName = getImplementerDepartmentName(this.ImplementerDepartmentId);
+                var obj = { Value: this.ImplementerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
                 if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
                     implementerDepartmentIds.push(obj);
                     implementerDepartmentNames.push(departmentName);
@@ -708,8 +709,8 @@
             var implementerDepartmentNames = [];
             var grid = $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid");
             $.each(grid.dataSource._data, function () {
-                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
-                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                var departmentName = getImplementerDepartmentName(this.ImplementerDepartmentId);
+                var obj = { Value: this.ImplementerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
                 if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
                     implementerDepartmentIds.push(obj);
                     implementerDepartmentNames.push(departmentName);
