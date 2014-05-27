@@ -398,6 +398,14 @@ namespace KymdanMM.Controllers
                                 a.Approved &&
                                 a.MaterialProposal.Sent);
                         break;
+                    case "AssignedFinished":
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                a.Finished &&
+                                a.Approved &&
+                                a.MaterialProposal.Sent);
+                        break;
                     case "Finished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&

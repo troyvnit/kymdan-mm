@@ -9,6 +9,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#ReceiveAndAwaitingApprove" data-toggle="tab">Duyệt đề nghị cấp</a></li>
         <li><a href="#ApprovedAssigned" data-toggle="tab">Đã duyệt và phân công</a></li>
+        <li><a href="#AssignedFinished" data-toggle="tab">Hoàn tất</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -32,6 +33,10 @@
         <div class="tab-pane" id="ApprovedAssigned">
             <div class="row">&nbsp;</div>
             <div id="ApprovedAssignedGrid"></div>
+        </div>
+        <div class="tab-pane" id="AssignedFinished">
+            <div class="row">&nbsp;</div>
+            <div id="AssignedFinishedGrid"></div>
         </div>
     </div>
 </div>
@@ -438,6 +443,197 @@
                     }
                 }
             });
+            
+            //----------Tab 3-----------//
+            var finishedDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterials",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models)
+                            };
+                        } else {
+                            return {
+                                pageNumber: options.page,
+                                pageSize: options.pageSize,
+                                command: "AssignedFinished"
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                //pageSize: 10,
+                //serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
+                            MaterialName: { type: "string", validation: { required: true } },
+                            Description: { type: "string" },
+                            Quantity: { type: "number" },
+                            InventoryQuantity: { type: "number" },
+                            Unit: { type: "string", validation: { required: true } },
+                            Used: { type: "boolean" },
+                            UsingPurpose: { type: "string" },
+                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
+                            Note: { type: "string" },
+                            ProposerDepartmentId: { type: "number", editable: false },
+                            ImplementerDepartmentId: { type: "number" },
+                            ImplementerUserName: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
+                            ApproveStatus: { type: "number", editable: false },
+                            Finished: { type: "boolean", editable: false }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#AssignedFinishedGrid").kendoGrid({
+                autoBind: false,
+                dataSource: finishedDataSource,
+                navigatable: true,
+                //pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: {
+                    extra: false,
+                    messages: {
+                        info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
+                        filter: "Lọc", // sets the text for the "Filter" button
+                        clear: "Xóa lọc", // sets the text for the "Clear" button
+
+                        // when filtering boolean numbers
+                        isTrue: "đúng", // sets the text for "isTrue" radio button
+                        isFalse: "sai", // sets the text for "isFalse" radio button
+
+                        //changes the text of the "And" and "Or" of the filter menu
+                        and: "Và",
+                        or: "Hoặc"
+                    },
+                    operators: {
+                        //filter menu for "string" type columns
+                        string: {
+                            startswith: "Bắt đầu với",
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            contains: "Chứa",
+                            endswith: "Kết thúc với"
+                        },
+                        //filter menu for "number" type columns
+                        number: {
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            gte: "Lớn hơn hoặc bằng",
+                            gt: "Lớn hơn",
+                            lte: "Nhỏ hơn hoặc bằng",
+                            lt: "Nhỏ hơn"
+                        },
+                        //filter menu for "date" type columns
+                        date: {
+                            eq: "Đúng ngày",
+                            neq: "Khác ngày",
+                            gte: "Đúng hoặc sau ngày",
+                            gt: "Sau ngày",
+                            lte: "Đúng hoặc trước ngày",
+                            lt: "Trước ngày"
+                        },
+                        //filter menu for foreign key values
+                        enums: {
+                            eq: "Bằng với",
+                            neq: "Khác với"
+                        }
+                    }
+                },
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 70 },
+                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 100 },
+                    { field: "Description", title: "Mô tả", editor: textareaEditor, width: 100 },
+                    {
+                        field: "ImplementerDepartmentId",
+                        title: "Đơn vị thực hiện",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
+                        width: 80,
+                        filterable: {
+                            ui: implementerDepartmentIdAssignedFinishedGridFilter
+                        }
+                    },
+                    {
+                        field: "ProposerDepartmentId",
+                        title: "Đơn vị đề nghị",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ProposerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #",
+                        width: 80,
+                        filterable: {
+                            ui: proposerDepartmentIdAssignedFinishedGridFilter
+                        }
+                    },
+                    {
+                        field: "ImplementerUserName",
+                        title: "Người thực hiện",
+                        editor: implementerUserEditor,
+                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
+                        width: 80,
+                        filterable: {
+                            ui: implementerUserNameAssignedFinishedGridFilter
+                        }
+                    },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 70 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 70 },
+                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
+                ],
+                editable: false,
+                filterMenuInit: function (e) {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
+                        e.container.find(".k-filter-help-text").hide();
+                        setTimeout(function () {
+                            firstValueDropDown.wrapper.hide();
+                        });
+                    }
+                }
+            });
 
             $("#approveMaterial").on("click", function() {
                 approveMaterial();
@@ -724,6 +920,65 @@
             });
         }
 
+        function implementerUserNameAssignedFinishedGridFilter(element) {
+            var implementerUserNames = [];
+            var implementerDisplayNames = [];
+            var grid = $("#AssignedFinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var displayName = getImplementerDisplayName(this.ImplementerUserName);
+                var obj = { Value: this.ImplementerUserName, Text: displayName };
+                if ($.inArray(displayName, implementerDisplayNames) == -1 && displayName != "") {
+                    implementerUserNames.push(obj);
+                    implementerDisplayNames.push(displayName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
+        function proposerDepartmentIdAssignedFinishedGridFilter(element) {
+            var proposerDepartmentIds = [];
+            var proposerDepartmentNames = [];
+            var grid = $("#AssignedFinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var departmentName = getImplementerDepartmentName(this.ProposerDepartmentId);
+                var obj = { Value: this.ProposerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, proposerDepartmentNames) == -1) {
+                    proposerDepartmentIds.push(obj);
+                    proposerDepartmentNames.push(departmentName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: proposerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
+        function implementerDepartmentIdAssignedFinishedGridFilter(element) {
+            var implementerDepartmentIds = [];
+            var implementerDepartmentNames = [];
+            var grid = $("#AssignedFinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var departmentName = getImplementerDepartmentName(this.ImplementerDepartmentId);
+                var obj = { Value: this.ImplementerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
+                if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
+                    implementerDepartmentIds.push(obj);
+                    implementerDepartmentNames.push(departmentName);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
     </script>
 
 }
