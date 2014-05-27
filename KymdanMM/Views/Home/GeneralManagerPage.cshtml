@@ -9,7 +9,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#ReceiveAndAwaitingApprove" data-toggle="tab">Duyệt đề nghị cấp</a></li>
         <li><a href="#ApprovedAssigned" data-toggle="tab">Đã duyệt và phân công</a></li>
-        <li><a href="#AssignedFinished" data-toggle="tab">Hoàn tất</a></li>
+        <li><a href="#AssignedFinished" data-toggle="tab">Đã hoàn thành</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -424,12 +424,16 @@
                 dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
-                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
-                            $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
-                            $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
-                        } else {
+                        if (dataView[i].ImplementerUserName != "") {
+                            if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
+                                $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                            } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
+                                $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                            } else {
 
+                            }
+                        } else {
+                            $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
                         }
                     }
                 },
@@ -640,7 +644,7 @@
             });
 
             $("#approveAllMaterial").on("click", function() {
-                $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find("* > tr"));
+                $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find(">tr"));
                 approveMaterial();
             });
 

@@ -62,7 +62,7 @@
         # } #
     </script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -85,7 +85,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models)
@@ -208,17 +208,17 @@
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
                 ],
                 editable: false,
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
                 }
             });
-            
+
             //----------Tab 2-----------//
             var tempDataSource = new kendo.data.DataSource({
                 autoSync: true,
@@ -239,7 +239,7 @@
                         url: "/Home/AddOrUpdateMaterialProposal",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materialProposals: kendo.stringify(options.models),
@@ -342,11 +342,11 @@
                     { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", width: 90 }] }
                 ],
                 editable: true,
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
@@ -490,7 +490,12 @@
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     {
-                        field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100,
+                        field: "ImplementerDepartmentId",
+                        title: "Đơn vị thực hiện",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerDepartmentIdApprovedAwaitingReceiveGridFilter
                         }
@@ -504,11 +509,11 @@
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
@@ -517,7 +522,6 @@
 
             //----------Tab 4-----------//
             var approvedAwaitingImplementDataSource = new kendo.data.DataSource({
-                autoSync: true,
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -587,7 +591,6 @@
             });
 
             $("#ApprovedAwaitingImplementGrid").kendoGrid({
-                autoBind: false,
                 dataSource: approvedAwaitingImplementDataSource,
                 navigatable: true,
                 //pageable: true,
@@ -654,33 +657,17 @@
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 80 },
-                    {
-                        field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100,
-                        filterable: {
-                            ui: implementerDepartmentIdApprovedAwaitingImplementGridFilter
-                        }
-                    },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { text: { edit: "Sửa", cancel: "Hủy", update: "Lưu" }, name: "edit" }], title: " ", width: "130px" }
                 ],
-                editable: true,
-                filterMenuInit: function (e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
-                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
-                        e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
-                            firstValueDropDown.wrapper.hide();
-                        });
-                    }
-                }
+                editable: "inline"
             });
 
             //----------Tab 5-----------//
             var approvedImplementedDataSource = new kendo.data.DataSource({
-                autoSync: true,
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -733,7 +720,7 @@
                             ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             DeliveryDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
+                            ProgressStatusId: { type: "number", editable: false },
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
@@ -816,7 +803,12 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", width: 120 },
                     {
-                        field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100,
+                        field: "ImplementerUserName",
+                        title: "Người thực hiện",
+                        editor: implementerUserEditor,
+                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerUserNameApprovedImplementedGridFilter
                         }
@@ -827,10 +819,10 @@
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }, { text: "Hoàn tất", click: finishMaterial }], title: " ", width: "130px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { text: "Hoàn tất", click: finishMaterial }, { text: { edit: "Sửa", cancel: "Hủy", update: "Lưu" }, name: "edit" }], title: " ", width: "200px" }
                 ],
-                editable: false,
-                dataBound: function () {
+                editable: "inline",
+                dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
                         if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
@@ -842,17 +834,17 @@
                         }
                     }
                 },
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
                 }
             });
-            
+
             //----------Tab 6-----------//
             var finishedDataSource = new kendo.data.DataSource({
                 autoSync: true,
@@ -873,7 +865,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models)
@@ -991,7 +983,12 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", width: 120 },
                     {
-                        field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100,
+                        field: "ImplementerUserName",
+                        title: "Người thực hiện",
+                        editor: implementerUserEditor,
+                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerUserNameFinishedGridFilter
                         }
@@ -1005,17 +1002,17 @@
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
                 }
             });
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
                 $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
             });
             var hash = window.location.hash;
@@ -1160,7 +1157,7 @@
         function getNewCommentIcon(haveNew) {
             return haveNew ? '<img style="float:right; height: 30px;" src="/Images/comment.png">' : '';
         }
-        
+
         var commentWindow;
 
         function showComment(e) {
@@ -1181,12 +1178,12 @@
                 }).data("kendoWindow");
             commentWindow.center().open();
         }
-        
+
         function implementerDepartmentIdApprovedAwaitingReceiveGridFilter(element) {
             var implementerDepartmentIds = [];
             var implementerDepartmentNames = [];
             var grid = $("#ApprovedAwaitingReceiveGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var departmentName = getImplementerDepartmentName(this.ImplementerDepartmentId);
                 var obj = { Value: this.ImplementerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
                 if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
@@ -1201,12 +1198,12 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function implementerDepartmentIdApprovedAwaitingImplementGridFilter(element) {
             var implementerDepartmentIds = [];
             var implementerDepartmentNames = [];
             var grid = $("#ApprovedAwaitingImplementGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var departmentName = getImplementerDepartmentName(this.ImplementerDepartmentId);
                 var obj = { Value: this.ImplementerDepartmentId, Text: departmentName != "" ? departmentName : "Chưa phân công" };
                 if ($.inArray(departmentName, implementerDepartmentNames) == -1) {
@@ -1221,12 +1218,12 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function implementerUserNameApprovedImplementedGridFilter(element) {
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var displayName = getImplementerDisplayName(this.ImplementerUserName);
                 var obj = { Value: this.ImplementerUserName, Text: displayName };
                 if ($.inArray(displayName, implementerDisplayNames) == -1 && displayName != "") {
@@ -1246,7 +1243,7 @@
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#FinishedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var displayName = getImplementerDisplayName(this.ImplementerUserName);
                 var obj = { Value: this.ImplementerUserName, Text: displayName };
                 if ($.inArray(displayName, implementerDisplayNames) == -1 && displayName != "") {
@@ -1263,4 +1260,4 @@
         }
     </script>
 
-    }
+}

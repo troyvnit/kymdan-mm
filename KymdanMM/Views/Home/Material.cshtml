@@ -6,21 +6,31 @@
     ViewBag.Title = "Material";
     var users = (List<UserProfile>)ViewBag.Users;
     var currentUser = (UserProfile)ViewBag.CurrentUser;
-    var proposalDepartmentComments =
+    var proposalDepartmentComments = Model.ImplementerDepartmentId != Model.ProposerDepartmentId ?
         Model.Comments.Where(
             a =>
             {
                 var user = users.FirstOrDefault(u => u.UserName == a.PosterUserName);
-                return user != null && Model.ProposerDepartmentId ==
-                            user.DepartmentId && (a.Approved || currentUser.DepartmentId == user.DepartmentId);
+                return user != null && Model.ProposerDepartmentId == user.DepartmentId;
+            }) :
+            Model.Comments.Where(
+            a =>
+            {
+                var user = users.FirstOrDefault(u => u.UserName == a.PosterUserName);
+                return user != null && Model.ProposerDepartmentId == user.DepartmentId && Model.ImplementerUserName != a.PosterUserName;
             });
-    var implementDepartmentComments =
+    var implementDepartmentComments = Model.ImplementerDepartmentId != Model.ProposerDepartmentId ? 
         Model.Comments.Where(
             a =>
             {
                 var user = users.FirstOrDefault(u => u.UserName == a.PosterUserName);
-                return user != null && Model.ImplementerDepartmentId ==
-                            user.DepartmentId && (a.Approved || currentUser.DepartmentId == user.DepartmentId);
+                return user != null && Model.ImplementerDepartmentId == user.DepartmentId;
+            }) :
+            Model.Comments.Where(
+            a =>
+            {
+                var user = users.FirstOrDefault(u => u.UserName == a.PosterUserName);
+                return user != null && Model.ImplementerDepartmentId == user.DepartmentId && Model.ImplementerUserName == a.PosterUserName;
             });
     var generalManagerComments = Model.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
     var files = !string.IsNullOrEmpty(Model.File) ? JsonConvert.DeserializeObject<List<FileViewModel>>(Model.File) : new List<FileViewModel>();
@@ -164,12 +174,6 @@
                             @Html.LabelFor(m => m.StartDate, new { @class = "col-md-5 control-label" })
                             <div class="col-sm-7 col-md-7">
                                 <span class="control-label pull-left">@Html.DisplayFor(m => m.StartDate)</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.DeliveryDate, new { @class = "col-md-5 control-label" })
-                            <div class="col-sm-7 col-md-7">
-                                <span class="control-label pull-left">@Html.DisplayFor(m => m.DeliveryDate)</span>
                             </div>
                         </div>
                         <div class="form-group">

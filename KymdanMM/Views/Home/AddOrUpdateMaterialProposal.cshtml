@@ -179,129 +179,129 @@
             <input id="Deadline" class="datePicker" />
         </div>
     if (Model.FromHardProposal)
-     {
-         <div class="col-sm-2">
+    {
+        <div class="col-sm-2">
                 <label>Ngày duyệt:</label>
                 <input id="ApproveDate" class="datePicker" />
             </div>
-         <div class="col-sm-2">
+        <div class="col-sm-2">
                 <label>Ngày giao việc:</label>
                 <input id="StartDate" class="datePicker" />
             </div>
-         <div class="col-sm-2">
+        <div class="col-sm-2">
                 <label>Ngày hoàn thành:</label>
                 <input id="FinishDate" class="datePicker" />
             </div>
-     }
+    }
 }
-@if (Thread.CurrentPrincipal.IsInRole("Admin"))
-{
-         <div class="col-sm-2">
+        @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+        {
+            <div class="col-sm-2">
                 <label>Đơn vị thực hiện:</label>
                 <input id="ImplementerDepartment" />
             </div>
-}
+        }
     </div>
 </script>
 
     <script type="text/javascript">
-        var wnd, commentWindow;
-        var added = false;
-        $(document).ready(function () {
-            if ('@Model.FromHardProposal' != 'True') {
-                $("#ProposalCode").kendoMaskedTextBox({
-                    mask: "@currentYear/@departmentCode/00000"
-                }).removeClass("k-textbox");
-            } else {
-                $("#ProposalCode").kendoMaskedTextBox({
-                    mask: "00/LLL/00000"
-                }).removeClass("k-textbox");
-            }
-            implementerDepartmentDataSource.read();
-            implementerUserDataSource.read();
-            progressStatusDataSource.read();
-            var popupNotification = $("#popupNotification").kendoNotification({
-                position: {
-                    top: 10,
-                    right: 10
+    var wnd, commentWindow;
+    var added = false;
+    $(document).ready(function () {
+        if ('@Model.FromHardProposal' != 'True') {
+            $("#ProposalCode").kendoMaskedTextBox({
+                mask: "@currentYear/@departmentCode/00000"
+            }).removeClass("k-textbox");
+        } else {
+            $("#ProposalCode").kendoMaskedTextBox({
+                mask: "00/LLL/00000"
+            }).removeClass("k-textbox");
+        }
+        implementerDepartmentDataSource.read();
+        implementerUserDataSource.read();
+        progressStatusDataSource.read();
+        var popupNotification = $("#popupNotification").kendoNotification({
+            position: {
+                top: 10,
+                right: 10
+            },
+            autoHideAfter: 5000,
+            stacking: "down",
+            templates: [{
+                type: "success",
+                template: $("#successTemplate").html()
+            }]
+        }).data("kendoNotification");
+        var editable = '@editable' == 'True';
+        var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' && '@Model.FromHardProposal' != 'True';
+        var materialProposalDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/Home/GetMaterials",
+                    type: "post"
                 },
-                autoHideAfter: 5000,
-                stacking: "down",
-                templates: [{
-                    type: "success",
-                    template: $("#successTemplate").html()
-                }]
-            }).data("kendoNotification");
-            var editable = '@editable' == 'True';
-            var hidden = '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' && '@Model.FromHardProposal' != 'True';
-            var materialProposalDataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterials",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models),
-                                materialProposalId: $("#Id").val()
-                            };
-                        } else {
-                            return {
-                                id: $("#Id").val(),
-                                pageNumber: options.page,
-                                pageSize: options.pageSize,
-                                approved: '@ViewBag.Approved'
-                            };
-                        }
+                update: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
+                },
+                destroy: {
+                    url: "/Home/DeleteMaterial",
+                    type: "post",
+                },
+                create: {
+                    url: "/Home/AddOrUpdateMaterial",
+                    type: "post"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return {
+                            materials: kendo.stringify(options.models),
+                            materialProposalId: $("#Id").val()
+                        };
+                    } else {
+                        return {
+                            id: $("#Id").val(),
+                            pageNumber: options.page,
+                            pageSize: options.pageSize,
+                            approved: '@ViewBag.Approved'
+                        };
                     }
-                },
-                batch: true,
-                //pageSize: 10,
-                serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialName: { editable: editable, type: "string", validation: { required: true } },
-                            Description: { editable: editable, type: "string" },
-                            Quantity: { editable: editable, type: "number" },
-                            InventoryQuantity: { editable: editable, type: "number" },
-                            Unit: { editable: editable, type: "string", validation: { required: true } },
-                            Used: { editable: editable, type: "boolean" },
-                            UsingPurpose: { editable: editable, type: "string" },
-                            Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { editable: editable, type: "number" },
-                            Note: { editable: editable, type: "string" },
-                            ImplementerDepartmentId: { type: "number", nullable: true },
-                            ImplementerUserName: { type: "string" },
-                            File: { type: "string" },
-                            LastProposalDeparmentComment: { type: "string", editable: false },
-                            LastGeneralManagerComment: { type: "string", editable: false },
-                            Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
+                }
+            },
+            batch: true,
+            //pageSize: 10,
+            serverPaging: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, nullable: false, defaultValue: 0 },
+                        MaterialName: { editable: editable, type: "string", validation: { required: true } },
+                        Description: { editable: editable, type: "string" },
+                        Quantity: { editable: editable, type: "number", validation: { min: 1 } },
+                        InventoryQuantity: { editable: editable, type: "number" },
+                        Unit: { editable: editable, type: "string", validation: { required: true } },
+                        Used: { editable: editable, type: "boolean" },
+                        UsingPurpose: { editable: editable, type: "string" },
+                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        FinishDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                        ProgressStatusId: { editable: editable, type: "number" },
+                        Note: { editable: editable, type: "string" },
+                        ImplementerDepartmentId: { type: "number", nullable: true },
+                        ImplementerUserName: { type: "string" },
+                        File: { type: "string" },
+                        LastProposalDeparmentComment: { type: "string", editable: false },
+                        LastGeneralManagerComment: { type: "string", editable: false },
+                        Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
                             Finished: { type: "boolean", editable: false }
                         }
                     },
                     total: "total",
                     data: "data"
                 },
-                sync: function () {
+                sync: function() {
                     $("#MaterialGrid").removeClass("input-validation-error");
                     popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
                 }
@@ -314,7 +314,7 @@
                 sortable: true,
                 resizable: true,
                 columnMenu: true,
-                selectable: '@editable' != 'True' ? "multiple" : false,
+                selectable: "multiple",
                 toolbar: kendo.template($("#materialToolbarTemplate").html()),
                 columns: [
                     { field: "MaterialName", title: "Tên vật tư", width: 120 },
@@ -325,211 +325,184 @@
                     { field: "Used", title: "Đã sử dụng?", width: 70 },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 100 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 80 },
-                    { field: "File", title: "File", width: 70, hidden: true},
+                    { field: "File", title: "File", width: 70, hidden: true },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
-                ],
-                dataBound: function () {
-                    if (!added) {
-                        added = true;
+                { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
+                { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
+            ],
+            dataBound: function () {
+                if (!added && editable) {
+                    added = true;
+                    $('#MaterialGrid').data('kendoGrid').addRow();
+                }
+                if (editable) {
+                    $("#MaterialGrid .k-grid-content").on("dblclick", function () {
                         $('#MaterialGrid').data('kendoGrid').addRow();
-                    } 
-                    if (editable) {
-                        $("#MaterialGrid .k-grid-content").on("dblclick", function () {
+                    });
+
+                    $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
+                        return false;
+                    });
+                    $(document).off("keydown");
+                    $(document).on("keydown", function (event) {
+                        if (event.keyCode == 32 && event.ctrlKey) {
                             $('#MaterialGrid').data('kendoGrid').addRow();
-                        });
-
-                        $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
-                            return false;
-                        });
-                        $(document).off("keydown");
-                        $(document).on("keydown", function (event) {
-                            if (event.keyCode == 32 && event.ctrlKey) {
-                                $('#MaterialGrid').data('kendoGrid').addRow();
-                                var model = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
-                                if (model.isNew()) {
-                                    model.set("UsingPurpose", $("#UsingPurpose").val());
-                                    model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
-                                    if ('@Model.FromHardProposal' == 'True') {
-                                        model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
-                                        model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
-                                        model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
-                                    }
-                                }
-                                return false;
-                            }
-                            if (event.keyCode == 32 && event.shiftKey) {
-                                $("#MaterialGrid").data("kendoGrid").dataSource.remove($("#MaterialGrid").data("kendoGrid").dataSource.data()[0]);
-                                return false;
-                            }
-                        });
-                    }
-                },
-                edit: function (e) {
-                    $("input[data-role='datepicker']").bind("focus", function () {
-                        $(this).data("kendoDatePicker").open();
-                    });
-                },
-                editable: true
-            });
-            
-            $("#ImplementerDepartment").kendoDropDownList({
-                dataTextField: "DepartmentName",
-                dataValueField: "Id",
-                autoBind: true,
-                optionLabel: "Chọn đơn vị",
-                dataSource: {
-                    severFiltering: true,
-                    transport: {
-                        read: {
-                            url: "/Home/GetDepartment",
-                            type: "post"
-                        }
-                    }
-                }
-            });
-
-            $("#ImplementerDepartment").on('change', function () {
-                var models = $("#MaterialGrid").data("kendoGrid").dataSource.data();
-                $.each(models, function() {
-                    this.set("ImplementerDepartmentId", $("#ImplementerDepartment").val());
-                });
-            });
-            
-            $(".datePicker").kendoDatePicker({
-                format: "dd/MM/yyyy"
-            });
-            
-            $(".datePicker").bind("focus", function () {
-                $(this).data("kendoDatePicker").open();
-            });
-
-            wnd = $("#UploadFileWindow")
-                .kendoWindow({
-                    title: "Đính kèm",
-                    modal: true,
-                    visible: false,
-                    resizable: false,
-                    width: 600
-                }).data("kendoWindow");
-
-            $("#submitMaterialProposal").on("click", function () {
-                if (!$("#MaterialProposalForm").valid()) {
-                    return;
-                }
-                $("#submitMaterialProposal").unbind("click");
-                $("#saveDraftMaterialProposal").unbind("click");
-                submitMaterialProposal(true);
-            });
-
-            $("#saveDraftMaterialProposal").on("click", function () {
-                if (!$("#MaterialProposalForm").valid()) {
-                    return;
-                }
-                $("#submitMaterialProposal").unbind("click");
-                $("#saveDraftMaterialProposal").unbind("click");
-                submitMaterialProposal(false);
-            });
-
-            function submitMaterialProposal(isSend) {
-                if (isSend) {
-                    $("#Sent").val(isSend);
-                }
-                $.ajax({
-                    url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
-                    type: "POST",
-                    data: $("form").serialize(),
-                    dataType: "json",
-                    async: false,
-                    success: function (id) {
-                        popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
-                        $("#Id").val(id);
-                        var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
-                        if (data) {
-                            data.dirty = true;
-                            $("#MaterialGrid").data("kendoGrid").saveChanges();
-                        } else {
-                            $("#MaterialGrid").addClass("input-validation-error");
-                        }
-                        if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
-                            if (isSend) {
+                            var model = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                            if (model.isNew()) {
+                                model.set("UsingPurpose", $("#UsingPurpose").val());
+                                model.set("Deadline", $("#Deadline").data("kendoDatePicker").value());
                                 if ('@Model.FromHardProposal' == 'True') {
-                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
-                                } else {
-                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                                    model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
+                                    model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
+                                    model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
                                 }
-                            } else {
-                                window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
                             }
-                        } 
-                    }
-                });
-            }
-
-            $("#approveMaterial").on("click", function () {
-                if ($("#MaterialProposalForm").valid()) {
-                    submitMaterialProposal(true);
-                    approveMaterial();
-                }
-            });
-            
-            $("#approveAllMaterial").on("click", function () {
-                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
-                if ($("#MaterialProposalForm").valid()) {
-                    submitMaterialProposal(true);
-                    approveMaterial();
-                }
-            });
-
-            function approveMaterial() {
-                var ids = [];
-                var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function () {
-                    var dataItem = grid.dataItem($(this));
-                    if (dataItem.ImplementerDepartmentId > 0) {
-                        ids.push(dataItem.Id);
-                    } else {
-                        alert("Vật tư " + dataItem.MaterialName + " chưa chỉ định đơn vị thực hiện!");
-                    }
-                });
-                if (ids.length > 0) {
-                    $.ajax({
-                        url: '@Url.Action("ApproveMaterial", "Home")',
-                        type: "POST",
-                        data: { idString: ids.join(',') },
-                        dataType: "json",
-                        async: false,
-                        success: function (result) {
-                            if (result) {
-                                $("#MaterialGrid").data("kendoGrid").dataSource.read();
-                            }
+                            return false;
+                        }
+                        if (event.keyCode == 32 && event.shiftKey) {
+                            $("#MaterialGrid").data("kendoGrid").select().each(function () {
+                                $("#MaterialGrid").data("kendoGrid").dataSource.remove($("#MaterialGrid").data("kendoGrid").dataItem($(this)));
+                            });
+                            return false;
                         }
                     });
                 }
-            }
+            },
+            edit: function (e) {
+                $("input[data-role='datepicker']").bind("focus", function () {
+                    $(this).data("kendoDatePicker").open();
+                });
+            },
+            editable: true
+        });
 
-            $("#finishMaterialProposal").on("click", function () {
-                if ($("#MaterialProposalForm").valid()) {
-                    submitMaterialProposal(true);
-                    finishMaterialProposal();
+        $("#ImplementerDepartment").kendoDropDownList({
+            dataTextField: "DepartmentName",
+            dataValueField: "Id",
+            autoBind: true,
+            optionLabel: "Chọn đơn vị",
+            dataSource: {
+                severFiltering: true,
+                transport: {
+                    read: {
+                        url: "/Home/GetDepartment",
+                        type: "post"
+                    }
+                }
+            }
+        });
+
+        $("#ImplementerDepartment").on('change', function () {
+            var models = $("#MaterialGrid").data("kendoGrid").dataSource.data();
+            $.each(models, function () {
+                this.set("ImplementerDepartmentId", $("#ImplementerDepartment").val());
+            });
+        });
+
+        $(".datePicker").kendoDatePicker({
+            format: "dd/MM/yyyy"
+        });
+
+        $(".datePicker").bind("focus", function () {
+            $(this).data("kendoDatePicker").open();
+        });
+
+        wnd = $("#UploadFileWindow")
+            .kendoWindow({
+                title: "Đính kèm",
+                modal: true,
+                visible: false,
+                resizable: false,
+                width: 600
+            }).data("kendoWindow");
+
+        $("#submitMaterialProposal").on("click", function () {
+            if (!$("#MaterialProposalForm").valid()) {
+                return;
+            }
+            $("#submitMaterialProposal").unbind("click");
+            $("#saveDraftMaterialProposal").unbind("click");
+            submitMaterialProposal(true);
+        });
+
+        $("#saveDraftMaterialProposal").on("click", function () {
+            if (!$("#MaterialProposalForm").valid()) {
+                return;
+            }
+            $("#submitMaterialProposal").unbind("click");
+            $("#saveDraftMaterialProposal").unbind("click");
+            submitMaterialProposal(false);
+        });
+
+        function submitMaterialProposal(isSend) {
+            if (isSend) {
+                $("#Sent").val(isSend);
+            }
+            $.ajax({
+                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+                type: "POST",
+                data: $("form").serialize(),
+                dataType: "json",
+                async: false,
+                success: function (id) {
+                    popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
+                    $("#Id").val(id);
+                    var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                    if (data) {
+                        data.dirty = true;
+                        $("#MaterialGrid").data("kendoGrid").saveChanges();
+                    } else {
+                        $("#MaterialGrid").addClass("input-validation-error");
+                    }
+                    if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
+                        if (isSend) {
+                            if ('@Model.FromHardProposal' == 'True') {
+                                window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
+                            } else {
+                                window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                            }
+                        } else {
+                            window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
+                        }
+                    }
                 }
             });
+        }
 
-            function finishMaterialProposal() {
-                var ids = [];
-                var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function () {
-                    var dataItem = grid.dataItem($(this));
+        $("#approveMaterial").on("click", function () {
+            if ($("#MaterialProposalForm").valid()) {
+                submitMaterialProposal(true);
+                approveMaterial();
+            }
+        });
+
+        $("#approveAllMaterial").on("click", function () {
+            $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find("* > tr"));
+            if ($("#MaterialProposalForm").valid()) {
+                submitMaterialProposal(true);
+                approveMaterial();
+            }
+        });
+
+        function approveMaterial() {
+            var ids = [];
+            var grid = $("#MaterialGrid").data("kendoGrid");
+            grid.select().each(function () {
+                var dataItem = grid.dataItem($(this));
+                if (dataItem.ImplementerDepartmentId > 0) {
                     ids.push(dataItem.Id);
-                });
+                } else {
+                    alert("Vật tư " + dataItem.MaterialName + " chưa chỉ định đơn vị thực hiện!");
+                }
+            });
+            if (ids.length > 0) {
                 $.ajax({
-                    url: '@Url.Action("FinishMaterial", "Home")',
+                    url: '@Url.Action("ApproveMaterial", "Home")',
                     type: "POST",
                     data: { idString: ids.join(',') },
                     dataType: "json",
@@ -541,199 +514,228 @@
                     }
                 });
             }
+        }
 
-            $("#submitComment").on("click", function () {
-                $.ajax({
-                    url: '@Url.Action("AddComment", "Home")',
-                    type: "POST",
-                    data: { id: $("#Id").val(), content: $("#comment").val() },
-                    dataType: "json",
-                    success: function (result) {
-                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
-                        
-                    }
-                });
+        $("#finishMaterialProposal").on("click", function () {
+            if ($("#MaterialProposalForm").valid()) {
+                submitMaterialProposal(true);
+                finishMaterialProposal();
+            }
+        });
+
+        function finishMaterialProposal() {
+            var ids = [];
+            var grid = $("#MaterialGrid").data("kendoGrid");
+            grid.select().each(function () {
+                var dataItem = grid.dataItem($(this));
+                ids.push(dataItem.Id);
             });
+            $.ajax({
+                url: '@Url.Action("FinishMaterial", "Home")',
+                type: "POST",
+                data: { idString: ids.join(',') },
+                dataType: "json",
+                async: false,
+                success: function (result) {
+                    if (result) {
+                        $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            });
+        }
 
-            $("#comment").on("keypress", function (e) {
-                if (e.keyCode == 13) {
-                    $("#submitComment").trigger("click");
+        $("#submitComment").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("AddComment", "Home")',
+                type: "POST",
+                data: { id: $("#Id").val(), content: $("#comment").val() },
+                dataType: "json",
+                success: function (result) {
+                    $("#MaterialGrid").data("kendoGrid").dataSource.read();
+
                 }
             });
         });
 
-        var textareaEditor = function (container, options) {
-            $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
-                .appendTo(container);
-        };
-        
-        function uploadFile(e) {
-            e.preventDefault();
-            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            dataItem.File = dataItem.File ? dataItem.File : "[]";
-            wnd.content("<input type=\"file\" id=\"file_" + dataItem.uid + "\" name=\"files\" />");
-            $("#file_" + dataItem.uid).kendoUpload({
-                multiple: true,
-                async: {
-                    saveUrl: '@Url.Action("SaveFile", "Home")',
-                    removeUrl: '@Url.Action("RemoveFile", "Home")',
-                    autoUpload: true
-                },
-                localization: {
-                    select: "Chọn tập tin",
-                },
-                success: function (e) {
-                    var files = JSON.parse(dataItem.File);
-                    var results = JSON.parse(e.XMLHttpRequest.responseText);
-                    if (e.operation == "remove") {
-                        files = $.grep(files, function (file) {
-                            return file.name != results[0];
-                        });
-                    } else {
-                        files = $.merge(files, results);
-                    }
-                    dataItem.set("File", JSON.stringify(files));
-                    var imgs = $("#UploadFileWindow").find("img");
-                    $.each(imgs, function() {
-                        $(this).attr("src", this.src + "?" + new Date().getTime());
+        $("#comment").on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                $("#submitComment").trigger("click");
+            }
+        });
+    });
+
+    var textareaEditor = function (container, options) {
+        $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
+            .appendTo(container);
+    };
+
+    function uploadFile(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        dataItem.File = dataItem.File ? dataItem.File : "[]";
+        wnd.content("<input type=\"file\" id=\"file_" + dataItem.uid + "\" name=\"files\" />");
+        $("#file_" + dataItem.uid).kendoUpload({
+            multiple: true,
+            async: {
+                saveUrl: '@Url.Action("SaveFile", "Home")',
+                removeUrl: '@Url.Action("RemoveFile", "Home")',
+                autoUpload: true
+            },
+            localization: {
+                select: "Chọn tập tin",
+            },
+            success: function (e) {
+                var files = JSON.parse(dataItem.File);
+                var results = JSON.parse(e.XMLHttpRequest.responseText);
+                if (e.operation == "remove") {
+                    files = $.grep(files, function (file) {
+                        return file.name != results[0];
                     });
-                },
-                files: JSON.parse(dataItem.File),
-                template: kendo.template($('#fileTemplate').html())
-            });
-            wnd.center().open();
-        }
-        
-        function showComment(e) {
-            e.preventDefault();
-            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-            if (dataItem.Id == 0) {
-                alert("Phải lưu trước khi phản hồi!");
-                return false;
-            }
-            commentWindow = $("#CommentWindow")
-                .kendoWindow({
-                    title: "Phản hồi",
-                    modal: true,
-                    visible: false,
-                    resizable: false,
-                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
-                    width: 960
-                }).data("kendoWindow");
-            commentWindow.center().open();
-        }
-
-        function getImplementerDepartmentName(id) {
-            var departmentName = "";
-            $.each(implementerDepartmentDataSource._data, function () {
-                if (this.Id == id) {
-                    departmentName = this.DepartmentName;
+                } else {
+                    files = $.merge(files, results);
                 }
-            });
-            return departmentName;
-        }
+                dataItem.set("File", JSON.stringify(files));
+                var imgs = $("#UploadFileWindow").find("img");
+                $.each(imgs, function () {
+                    $(this).attr("src", this.src + "?" + new Date().getTime());
+                });
+            },
+            files: JSON.parse(dataItem.File),
+            template: kendo.template($('#fileTemplate').html())
+        });
+        wnd.center().open();
+    }
 
-        var implementerDepartmentDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetDepartment",
-                    type: "post"
-                }
+    function showComment(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (dataItem.Id == 0) {
+            alert("Phải lưu trước khi phản hồi!");
+            return false;
+        }
+        commentWindow = $("#CommentWindow")
+            .kendoWindow({
+                title: "Phản hồi",
+                modal: true,
+                visible: false,
+                resizable: false,
+                content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
+                width: 960
+            }).data("kendoWindow");
+        commentWindow.center().open();
+    }
+
+    function getImplementerDepartmentName(id) {
+        var departmentName = "";
+        $.each(implementerDepartmentDataSource._data, function () {
+            if (this.Id == id) {
+                departmentName = this.DepartmentName;
             }
         });
+        return departmentName;
+    }
 
-        function implementerDepartmentEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "DepartmentName",
-                    dataValueField: "Id",
-                    optionLabel: "-Chọn-",
-                    dataSource: implementerDepartmentDataSource
-                });
+    var implementerDepartmentDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetDepartment",
+                type: "post"
+            }
         }
+    });
 
-        function getImplementerDisplayName(userName) {
-            var displayName = "";
-            $.each(implementerUserDataSource._data, function () {
-                if (this.UserName == userName) {
-                    displayName = this.DisplayName;
-                }
+    function implementerDepartmentEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "DepartmentName",
+                dataValueField: "Id",
+                optionLabel: "-Chọn-",
+                dataSource: implementerDepartmentDataSource
             });
-            return displayName;
-        }
+    }
 
-        var implementerUserDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetAllUser",
-                    type: "post"
-                }
+    function getImplementerDisplayName(userName) {
+        var displayName = "";
+        $.each(implementerUserDataSource._data, function () {
+            if (this.UserName == userName) {
+                displayName = this.DisplayName;
             }
         });
+        return displayName;
+    }
 
-        function implementerUserEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "DisplayName",
-                    dataValueField: "UserName",
-                    optionLabel: "-Chọn-",
-                    dataSource: implementerUserDataSource
-                });
+    var implementerUserDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetAllUser",
+                type: "post"
+            }
         }
+    });
 
-        function getProgressStatus(id) {
-            var status = "";
-            $.each(progressStatusDataSource._data, function () {
-                if (this.Id == id) {
-                    status = this.Status;
-                }
+    function implementerUserEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "DisplayName",
+                dataValueField: "UserName",
+                optionLabel: "-Chọn-",
+                dataSource: implementerUserDataSource
             });
-            return status;
-        }
+    }
 
-        var progressStatusDataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/Home/GetProgressStatus",
-                    type: "post"
-                }
+    function getProgressStatus(id) {
+        var status = "";
+        $.each(progressStatusDataSource._data, function () {
+            if (this.Id == id) {
+                status = this.Status;
             }
         });
+        return status;
+    }
 
-        function progressStatusEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
-                .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: "Status",
-                    dataValueField: "Id",
-                    optionLabel: "-Chọn-",
-                    dataSource: progressStatusDataSource
-                });
-        }
-        
-        function addExtensionClass(extension) {
-            switch (extension) {
-                case '.jpg':
-                case '.img':
-                case '.png':
-                case '.gif':
-                    return "img-file";
-                case '.doc':
-                case '.docx':
-                    return "doc-file";
-                case '.xls':
-                case '.xlsx':
-                    return "xls-file";
-                case '.pdf':
-                    return "pdf-file";
-                case '.zip':
-                case '.rar':
-                    return "zip-file";
-                default:
-                    return "default-file";
+    var progressStatusDataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "/Home/GetProgressStatus",
+                type: "post"
             }
         }
+    });
+
+    function progressStatusEditor(container, options) {
+        $('<input required data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Status",
+                dataValueField: "Id",
+                optionLabel: "-Chọn-",
+                dataSource: progressStatusDataSource
+            });
+    }
+
+    function addExtensionClass(extension) {
+        switch (extension) {
+            case '.jpg':
+            case '.img':
+            case '.png':
+            case '.gif':
+                return "img-file";
+            case '.doc':
+            case '.docx':
+                return "doc-file";
+            case '.xls':
+            case '.xlsx':
+                return "xls-file";
+            case '.pdf':
+                return "pdf-file";
+            case '.zip':
+            case '.rar':
+                return "zip-file";
+            default:
+                return "default-file";
+        }
+    }
     </script>
 }

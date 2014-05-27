@@ -8,6 +8,8 @@
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
@@ -53,6 +55,18 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
 
 .k-grid-filter.k-state-active {
     background-color: #eea236;
+}
+
+.k-grid .btn-primary {
+    background-color: #25383c;
+}
+
+.k-grid .btn-warning {
+    background-color: #f88017;
+}
+
+.k-grid .btn-danger {
+    background-color: #9f000f;
 }
 
 .file-icon {
