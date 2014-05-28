@@ -307,7 +307,7 @@
         });
 
         function implementerDepartmentEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
+            $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
                     dataTextField: "DepartmentName",
@@ -337,7 +337,7 @@
         });
 
         function implementerUserEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
+            $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
                     dataTextField: "DisplayName",
@@ -367,7 +367,7 @@
         });
 
         function progressStatusEditor(container, options) {
-            $('<input required data-bind="value:' + options.field + '"/>')
+            $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
                     dataTextField: "Status",
