@@ -58,15 +58,24 @@ input[type="checkbox"].input-validation-error { border: 0 none; }
 }
 
 .k-grid .btn-primary {
-    background-color: #25383c;
+    background-color: #AFEEEE;
 }
 
 .k-grid .btn-warning {
-    background-color: #f88017;
+    background-color: #FFFACD;
 }
 
 .k-grid .btn-danger {
-    background-color: #9f000f;
+    background-color: #F08080;
+}
+
+.k-state-selected {
+    background-color: #AFEEEE !important;
+    color: #000000!important;
+}
+
+.k-grid .active {
+    color: #000000!important;
 }
 
 .file-icon {

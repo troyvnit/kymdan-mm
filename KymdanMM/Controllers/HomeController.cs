@@ -688,7 +688,7 @@ namespace KymdanMM.Controllers
                                 (a.MaterialProposal.Id == id || id == null));
                         break;
                 }
-                return Json(materials.Select(a => new { Text = _departmentService.GetDepartment(a.ImplementerDepartmentId) != null ? _departmentService.GetDepartment(a.ImplementerDepartmentId).DepartmentName : "", Value = a.ImplementerDepartmentId }).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(materials.OrderByDescending(a => a.Deadline).Select(a => new { Text = _departmentService.GetDepartment(a.ImplementerDepartmentId) != null ? _departmentService.GetDepartment(a.ImplementerDepartmentId).DepartmentName : "", Value = a.ImplementerDepartmentId }).ToList(), JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
         }

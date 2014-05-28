@@ -380,17 +380,6 @@
                     { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 100 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 100 },
                     {
-                        field: "ImplementerDepartmentId",
-                        title: "Đơn vị thực hiện",
-                        editor: implementerDepartmentEditor,
-                        template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
-                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
-                        width: 80,
-                        filterable: {
-                            ui: implementerDepartmentIdApprovedAssignedGridFilter
-                        }
-                    },
-                    {
                         field: "ProposerDepartmentId",
                         title: "Đơn vị đề nghị",
                         editor: implementerDepartmentEditor,
@@ -399,6 +388,17 @@
                         width: 80,
                         filterable: {
                             ui: proposerDepartmentIdApprovedAssignedGridFilter
+                        }
+                    },
+                    {
+                        field: "ImplementerDepartmentId",
+                        title: "Đơn vị thực hiện",
+                        editor: implementerDepartmentEditor,
+                        template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
+                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
+                        width: 80,
+                        filterable: {
+                            ui: implementerDepartmentIdApprovedAssignedGridFilter
                         }
                     },
                     {
@@ -679,6 +679,7 @@
                 $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
             });
             var hash = window.location.hash;
+            $('ul.nav a[href="' + hash + '"]').parent().removeClass("active");
             hash && $('ul.nav a[href="' + hash + '"]').tab('show');
         });
         Date.prototype.addDays = function(days) {
@@ -812,6 +813,7 @@
                 alert("Phải lưu trước khi phản hồi!");
                 return false;
             }
+            var hash = "#" + e.delegateTarget.parentElement.id;
             commentWindow = $("#CommentWindow")
                 .kendoWindow({
                     title: "Phản hồi",
@@ -819,7 +821,11 @@
                     visible: false,
                     resizable: false,
                     content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
-                    width: 600
+                    width: 600,
+                    close: function (e) {
+                        $('ul.nav a[href="' + hash + '"]').parent().removeClass("active");
+                        $('ul.nav a[href="' + hash + '"]').tab('show');
+                    }
                 }).data("kendoWindow");
             commentWindow.center().open();
         }
