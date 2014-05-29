@@ -141,10 +141,10 @@
                     operators: {
                         //filter menu for "string" type columns
                         string: {
+                            contains: "Chứa",
                             startswith: "Bắt đầu với",
                             eq: "Bằng với",
                             neq: "Khác với",
-                            contains: "Chứa",
                             endswith: "Kết thúc với"
                         },
                         //filter menu for "number" type columns
@@ -180,7 +180,7 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
-                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 100 },
+                    { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 100 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80 },
@@ -302,10 +302,10 @@
                     operators: {
                         //filter menu for "string" type columns
                         string: {
+                            contains: "Chứa",
                             startswith: "Bắt đầu với",
                             eq: "Bằng với",
                             neq: "Khác với",
-                            contains: "Chứa",
                             endswith: "Kết thúc với"
                         },
                         //filter menu for "number" type columns
@@ -341,7 +341,7 @@
                 //toolbar: [{ name: "create", text: "Thêm" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
-                    { field: "MaterialName", template: "<a href='/Home/Material/#= Id #' class='label label-success pull-right'>Xem</a> #= MaterialName #", title: "Tên vật tư", width: 100 },
+                    { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 100 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80 },
@@ -476,6 +476,11 @@
                 }
             });
             return proposalCode;
+        }
+
+        function getMaterialName(id, materialName, file) {
+            return file != "" && file != "[]" ? "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/attachment.png' style='width: 15px;'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName :
+                "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName;
         }
 
         var commentWindow;

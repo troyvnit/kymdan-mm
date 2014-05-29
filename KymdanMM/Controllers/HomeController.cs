@@ -198,11 +198,11 @@ namespace KymdanMM.Controllers
             return Json(progressStatus, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetUser()
+        public ActionResult GetUser(int? departmentId)
         {
             var users = usersContext.UserProfiles.ToList();
             var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            return Json(users.Where(a => currentUser != null && a.DepartmentId == currentUser.DepartmentId && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
+            return Json(users.Where(a => currentUser != null && a.DepartmentId == (departmentId ?? currentUser.DepartmentId) && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetAllUser()

@@ -26,6 +26,10 @@
                     {
                         <li>@Html.ActionLink("Quản lý đề xuất", "Index", "Home")</li>
                     }
+                    @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
+                        <li><a href="/giao-viec">Giao việc</a></li>
+                    }
                     @if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
                     {
                         <li><a href="/them-de-xuat">Thêm đề xuất vật tư</a></li>

@@ -320,7 +320,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Images\attachment.png" />
     <Content Include="Images\comment.png" />
+    <Content Include="Images\view.png" />
     <Content Include="Scripts\bootstrap-checkbox.js" />
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />

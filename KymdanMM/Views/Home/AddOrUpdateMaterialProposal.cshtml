@@ -9,7 +9,7 @@
     var users = (IEnumerable<UserProfile>)ViewBag.Users;
     var enableAttribute = (object)new { @class = "form-control" };
     var isNew = Model.Id == 0;
-    var editable = !Model.Sent || (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ProposerDepartmentId == currentUser.DepartmentId);
+    var editable = !Model.Sent || (Thread.CurrentPrincipal.IsInRole("Department Manager") && Model.ProposerDepartmentId == currentUser.DepartmentId) || Thread.CurrentPrincipal.IsInRole("Admin");
     var open = isNew ? "in" : "";
     var departmentCode = Thread.CurrentPrincipal.Identity.Name.Split('-').Length > 1 ? Thread.CurrentPrincipal.Identity.Name.Split('-')[0] : "LLL";
     var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
@@ -194,7 +194,7 @@
             </div>
     }
 }
-        @if (Thread.CurrentPrincipal.IsInRole("Admin"))
+        @if (Thread.CurrentPrincipal.IsInRole("Admin") && !ViewBag.Approved)
         {
             <div class="col-sm-2">
                 <label>Đơn vị thực hiện:</label>
@@ -329,7 +329,7 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: true },
                 { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                 { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
