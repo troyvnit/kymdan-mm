@@ -175,7 +175,7 @@
             <input type="text" class="k-textbox" id="UsingPurpose" placeholder="Mục đích sử dụng" />
         </div>
     <div class="col-sm-2">
-            <label>Ngày nhận:</label>
+            <label>Ngày đề nghị nhận:</label>
             <input id="Deadline" class="datePicker" />
         </div>
     if (Model.FromHardProposal)
@@ -185,11 +185,11 @@
                 <input id="ApproveDate" class="datePicker" />
             </div>
         <div class="col-sm-2">
-                <label>Ngày giao việc:</label>
+                <label>Ngày triển khai:</label>
                 <input id="StartDate" class="datePicker" />
             </div>
         <div class="col-sm-2">
-                <label>Ngày hoàn thành:</label>
+                <label>Thời hạn hoàn thành:</label>
                 <input id="FinishDate" class="datePicker" />
             </div>
     }
@@ -324,12 +324,12 @@
                     { field: "Unit", title: "ĐVT", width: 60 },
                     { field: "Used", title: "Đã sử dụng?", template: "<input type='checkbox' #= (Used === true) ? checked='checked' : '' # disabled />", width: 70 },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 100 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận vật tư", width: 80 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     { field: "File", title: "File", width: 70, hidden: true },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: true },
+                { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
+                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                 { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                 { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },

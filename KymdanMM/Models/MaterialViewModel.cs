@@ -22,21 +22,21 @@ namespace KymdanMM.Models
         [Display(Name = "Mục đích sử dụng")]
         public string UsingPurpose { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Ngày nhận")]
+        [Display(Name = "Ngày đề nghị nhận")]
         public DateTime? Deadline { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Ngày giao việc")]
+        [Display(Name = "Ngày triển khai")]
         public DateTime? StartDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Ngày duyệt")]
         public DateTime? ApproveDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Ngày hoàn thành")]
+        [Display(Name = "Thời hạn hoàn thành")]
         public DateTime? FinishDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Ngày giao")]
         public DateTime? DeliveryDate { get; set; }
-        [Display(Name = "Hoàn tất")]
+        [Display(Name = "Hoàn thành")]
         public bool Finished { get; set; }
         [Display(Name = "Duyệt")]
         public bool Approved { get; set; }

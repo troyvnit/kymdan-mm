@@ -211,7 +211,7 @@
                     },
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "Quantity", title: "SL", width: 50 },
-                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày nhận", width: 80 },
+                    { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     {
                         field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100,
                         filterable: {
@@ -417,8 +417,8 @@
                             ui: implementerUserNameApprovedAssignedGridFilter
                         }
                     },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 70 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 70 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 70 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 70 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
@@ -624,8 +624,8 @@
                             ui: implementerUserNameAssignedFinishedGridFilter
                         }
                     },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày giao việc", width: 70 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Ngày hoàn tất", width: 70 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 70 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 70 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
@@ -850,13 +850,29 @@
         });
 
         function implementerDepartmentEditor(container, options) {
+            var containerCache = container;
             $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
                     dataTextField: "DepartmentName",
                     dataValueField: "Id",
                     optionLabel: "-Chọn-",
-                    dataSource: implementerDepartmentDataSource
+                    dataSource: implementerDepartmentDataSource,
+                    change: function (e) {
+                        containerCache.parent().find("td[data-container-for='ImplementerUserName'] input").kendoDropDownList({
+                            dataTextField: "DisplayName",
+                            dataValueField: "UserName",
+                            optionLabel: "-Chọn-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "/Home/GetUser?departmentId=" + this.value(),
+                                        type: "post"
+                                    }
+                                }
+                            }
+                        }).data("kendoDropDownList");
+                    }
                 });
         }
 

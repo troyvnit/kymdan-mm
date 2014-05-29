@@ -191,7 +191,7 @@
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 150 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 200 },
                     { field: "ApproveStatus", title: "Duyệt", template: $("#approveStatusTemplate").html(), width: 150 },
-                    { field: "Finished", title: "Hoàn tất", template: $("#finishStatusTemplate").html(), width: 130 },
+                    { field: "Finished", title: "Hoàn thành", template: $("#finishStatusTemplate").html(), width: 130 },
                     { field: "Note", title: "Ghi chú", editor: textareaEditor, width: 150 },
                     { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", locked: true, width: 200 }] }
                 ],
