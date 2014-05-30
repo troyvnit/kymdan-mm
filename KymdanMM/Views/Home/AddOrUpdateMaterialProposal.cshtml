@@ -477,7 +477,6 @@
         $("#approveMaterial").on("click", function () {
             if ($("#MaterialProposalForm").valid()) {
                 approveMaterial();
-                submitMaterialProposal(true);
             }
         });
 
@@ -485,7 +484,6 @@
             $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
             if ($("#MaterialProposalForm").valid()) {
                 approveMaterial();
-                submitMaterialProposal(true);
             }
         });
 

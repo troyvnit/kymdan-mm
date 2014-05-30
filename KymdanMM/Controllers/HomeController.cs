@@ -437,8 +437,8 @@ namespace KymdanMM.Controllers
                         break;
                 }
                 var materialViewModels = command == "SentAndAwaitingApprove" || command == "ReceiveAndAwaitingApprove" ?
-                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderByDescending(a => a.Deadline) :
-                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderByDescending(a => a.FinishDate);
+                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderBy(a => a.Deadline) :
+                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderBy(a => a.FinishDate);
                 foreach (var materialViewModel in materialViewModels)
                 {
                     var model = materialViewModel;
