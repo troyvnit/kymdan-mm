@@ -650,7 +650,10 @@
             .kendoDropDownList({
                 dataTextField: "DepartmentName",
                 dataValueField: "Id",
-                optionLabel: "-Chọn-",
+                optionLabel: {
+                    DepartmentName: "-Chọn-",
+                    Id: 0
+                },
                 dataSource: implementerDepartmentDataSource
             });
     }

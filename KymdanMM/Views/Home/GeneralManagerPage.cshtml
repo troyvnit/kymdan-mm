@@ -296,9 +296,9 @@
                             Used: { editable: false, type: "boolean" },
                             UsingPurpose: { editable: false, type: "string" },
                             Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { editable: false, type: "number" },
                             Note: { editable: false, type: "string" },
@@ -851,6 +851,7 @@
 
         function implementerDepartmentEditor(container, options) {
             var containerCache = container;
+            var model = options.model;
             $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
@@ -872,6 +873,7 @@
                                 }
                             }
                         }).data("kendoDropDownList");
+                        model.set("ImplementerUserName", "");
                     }
                 });
         }
