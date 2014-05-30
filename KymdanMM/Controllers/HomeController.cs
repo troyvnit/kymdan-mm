@@ -436,7 +436,9 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
                         break;
                 }
-                var materialViewModels = materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList();
+                var materialViewModels = command == "SentAndAwaitingApprove" || command == "ReceiveAndAwaitingApprove" ?
+                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderByDescending(a => a.Deadline) :
+                    materials.Select(Mapper.Map<Material, MaterialViewModel>).ToList().OrderByDescending(a => a.FinishDate);
                 foreach (var materialViewModel in materialViewModels)
                 {
                     var model = materialViewModel;
@@ -689,7 +691,7 @@ namespace KymdanMM.Controllers
                                 (a.MaterialProposal.Id == id || id == null));
                         break;
                 }
-                return Json(materials.OrderByDescending(a => a.Deadline).Select(a => new { Text = _departmentService.GetDepartment(a.ImplementerDepartmentId) != null ? _departmentService.GetDepartment(a.ImplementerDepartmentId).DepartmentName : "", Value = a.ImplementerDepartmentId }).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(materials.Select(a => new { Text = _departmentService.GetDepartment(a.ImplementerDepartmentId) != null ? _departmentService.GetDepartment(a.ImplementerDepartmentId).DepartmentName : "", Value = a.ImplementerDepartmentId }).ToList(), JsonRequestBehavior.AllowGet);
             }
             return Json(false, JsonRequestBehavior.AllowGet);
         }
