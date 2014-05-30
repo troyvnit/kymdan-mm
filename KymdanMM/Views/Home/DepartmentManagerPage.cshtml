@@ -522,6 +522,9 @@
 
             //----------Tab 4-----------//
             var approvedAwaitingImplementDataSource = new kendo.data.DataSource({
+                sync: function(e) {
+                    $("#ApprovedAwaitingImplementGrid").data("kendoGrid").dataSource.read();
+                },
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -591,6 +594,7 @@
             });
 
             $("#ApprovedAwaitingImplementGrid").kendoGrid({
+                autoBind: false,
                 dataSource: approvedAwaitingImplementDataSource,
                 navigatable: true,
                 //pageable: true,
