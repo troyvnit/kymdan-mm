@@ -283,10 +283,10 @@
                         Unit: { editable: editable, type: "string", validation: { required: true } },
                         Used: { editable: editable, type: "boolean" },
                         UsingPurpose: { editable: editable, type: "string" },
-                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true }, defaultValue: null },
-                        StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true }, defaultValue: null },
-                        FinishDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true }, defaultValue: null },
-                        ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", validation: { required: true }, defaultValue: null },
+                        Deadline: { editable: editable, type: "date", format: "dd/MM/yyyy", defaultValue: null },
+                        StartDate: { editable: editable, type: "date", format: "dd/MM/yyyy", defaultValue: null },
+                        FinishDate: { editable: editable, type: "date", format: "dd/MM/yyyy", defaultValue: null },
+                        ApproveDate: { editable: editable, type: "date", format: "dd/MM/yyyy", defaultValue: null },
                         ProgressStatusId: { editable: editable, type: "number" },
                         Note: { editable: editable, type: "string" },
                         ImplementerDepartmentId: { type: "number" },
@@ -427,7 +427,7 @@
             }
             $("#submitMaterialProposal").unbind("click");
             $("#saveDraftMaterialProposal").unbind("click");
-            submitMaterialProposal(true);
+            submitMaterialProposal(true, false);
         });
 
         $("#saveDraftMaterialProposal").on("click", function () {
@@ -436,10 +436,10 @@
             }
             $("#submitMaterialProposal").unbind("click");
             $("#saveDraftMaterialProposal").unbind("click");
-            submitMaterialProposal(false);
+            submitMaterialProposal(false, false);
         });
 
-        function submitMaterialProposal(isSend) {
+        function submitMaterialProposal(isSend, isApprove) {
             if (isSend) {
                 $("#Sent").val(isSend);
             }
@@ -470,20 +470,23 @@
                             window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
                         }
                     }
+                    if (isApprove) {
+                        approveMaterial();
+                    }
                 }
             });
         }
 
         $("#approveMaterial").on("click", function () {
             if ($("#MaterialProposalForm").valid()) {
-                approveMaterial();
+                submitMaterialProposal(true, true);
             }
         });
 
         $("#approveAllMaterial").on("click", function () {
             $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
             if ($("#MaterialProposalForm").valid()) {
-                approveMaterial();
+                submitMaterialProposal(true, true);
             }
         });
 
@@ -516,7 +519,7 @@
 
         $("#finishMaterialProposal").on("click", function () {
             if ($("#MaterialProposalForm").valid()) {
-                submitMaterialProposal(true);
+                submitMaterialProposal(true, false);
                 finishMaterialProposal();
             }
         });

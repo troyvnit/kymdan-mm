@@ -289,24 +289,33 @@ namespace KymdanMM.Controllers
         [HttpGet]
         public ActionResult AddOrUpdateMaterialProposal(int? id, bool? fromHardProposal)
         {
-            var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal();
-            var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
-            var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
-            materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
             var users = usersContext.UserProfiles.ToList();
             var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            var proposer = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
-            if (proposer != null)
-                materialProposalViewModel.ProposerDisplayName =
-                    proposer.DisplayName;
-            if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposal.CreatedUserName == currentUser.UserName || materialProposalViewModel.ProposerDepartmentId == 0))))
+            if (currentUser != null)
             {
-                ViewBag.Departments = _departmentService.GetDepartments();
-                ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
-                ViewBag.Users = users;
-                ViewBag.CurrentUser = currentUser;
-                ViewBag.Approved = approved;
-                return View(materialProposalViewModel);
+                var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
+                var currentDepartmentName = _departmentService.GetDepartment(currentUser.DepartmentId).DepartmentName;
+                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderByDescending(a => a.ProposalCode)
+                    .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
+                    var currentProposalCodeSplited = lastMaterialProposal != null ?
+                        lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
+                    var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal { ProposalCode = fromHardProposal != true ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : "" };
+                var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
+                var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
+                materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
+                var proposer = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
+                if (proposer != null)
+                    materialProposalViewModel.ProposerDisplayName =
+                        proposer.DisplayName;
+                if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposal.CreatedUserName == currentUser.UserName || materialProposalViewModel.ProposerDepartmentId == 0))))
+                {
+                    ViewBag.Departments = _departmentService.GetDepartments();
+                    ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
+                    ViewBag.Users = users;
+                    ViewBag.CurrentUser = currentUser;
+                    ViewBag.Approved = approved;
+                    return View(materialProposalViewModel);
+                }
             }
             return RedirectToAction("AccessDenied");
         }
