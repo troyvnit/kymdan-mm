@@ -296,9 +296,9 @@
                             Used: { editable: false, type: "boolean" },
                             UsingPurpose: { editable: false, type: "string" },
                             Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { type: "date", format: "dd/MM/yyyy" },
                             ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { type: "date", format: "dd/MM/yyyy" },
                             DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             ProgressStatusId: { editable: false, type: "number" },
                             Note: { editable: false, type: "string" },
@@ -874,6 +874,8 @@
                             }
                         }).data("kendoDropDownList");
                         model.set("ImplementerUserName", "");
+                        model.set("StartDate", null);
+                        model.set("FinishDate", null);
                     }
                 });
         }

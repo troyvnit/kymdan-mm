@@ -38,7 +38,7 @@ namespace KymdanMM.Data.Infrastructure
             foreach (var property in dbEntityEntry.OriginalValues.PropertyNames)
             {
                 var original = dbEntityEntry.OriginalValues.GetValue<object>(property);
-                if (original == null || (original is int && (int) original == 0) ||
+                if (((property != "StartDate" && property != "FinishDate") && original == null) || (original is int && (int)original == 0) ||
                     (original is DateTime && (DateTime) original == DateTime.MinValue))
                 {
                     dbEntityEntry.Property(property).IsModified = false;
