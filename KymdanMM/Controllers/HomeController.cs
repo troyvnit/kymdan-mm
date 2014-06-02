@@ -295,15 +295,14 @@ namespace KymdanMM.Controllers
             {
                 var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
                 var currentDepartmentName = _departmentService.GetDepartment(currentUser.DepartmentId).DepartmentName;
-                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderByDescending(a => a.ProposalCode)
+                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.ProposalCode)
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
                         lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
                 var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : 
                     new MaterialProposal
                     {
-                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : "",
-                        ProposerUserName = fromHardProposal == true && Thread.CurrentPrincipal.IsInRole("Admin") ? currentUser.UserName : ""
+                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : ""
                     };
                 var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
                 var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
@@ -328,6 +327,10 @@ namespace KymdanMM.Controllers
         [HttpPost]
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
+            var existed =
+                _materialProposalService.GetMaterialProposals()
+                    .Where(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", "")).Select(a => a.Id).FirstOrDefault();
+            materialProposalViewModel.Id = existed;
             var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
             if (materialProposal.Id != 0)
             {
