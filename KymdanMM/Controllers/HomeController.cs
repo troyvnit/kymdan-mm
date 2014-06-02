@@ -299,7 +299,12 @@ namespace KymdanMM.Controllers
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
                         lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
-                    var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : new MaterialProposal { ProposalCode = fromHardProposal != true ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : "" };
+                var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : 
+                    new MaterialProposal
+                    {
+                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : "",
+                        ProposerUserName = fromHardProposal == true && Thread.CurrentPrincipal.IsInRole("Admin") ? currentUser.UserName : ""
+                    };
                 var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
                 var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
                 materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
@@ -307,7 +312,7 @@ namespace KymdanMM.Controllers
                 if (proposer != null)
                     materialProposalViewModel.ProposerDisplayName =
                         proposer.DisplayName;
-                if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && currentUser != null && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposal.CreatedUserName == currentUser.UserName || materialProposalViewModel.ProposerDepartmentId == 0))))
+                if (Thread.CurrentPrincipal.IsInRole("Admin") || ((Thread.CurrentPrincipal.IsInRole("Department Manager") && (materialProposalViewModel.ProposerDepartmentId == currentUser.DepartmentId || materialProposal.CreatedUserName == currentUser.UserName || materialProposalViewModel.ProposerDepartmentId == 0))))
                 {
                     ViewBag.Departments = _departmentService.GetDepartments();
                     ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
