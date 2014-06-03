@@ -336,9 +336,16 @@ namespace KymdanMM.Controllers
                 var src = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
                 foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
                 {
-                    if (item.Name != "Comments" && item.Name != "Materials")
+                    if (item.Name != "Comments" && item.Name != "Materials" && item.Name != "Sent")
                     {
                         item.SetValue(existed, item.GetValue(src));
+                    }
+                    if (item.Name == "Sent")
+                    {
+                        if (!existed.Sent)
+                        {
+                            item.SetValue(existed, item.GetValue(src));
+                        }
                     }
                 }
                 existed.CreatedDate = DateTime.MinValue;
