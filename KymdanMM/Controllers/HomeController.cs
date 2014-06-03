@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -328,24 +329,33 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             var existed =
-                _materialProposalService.GetMaterialProposals()
-                    .Where(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", "")).Select(a => a.Id).FirstOrDefault();
-            materialProposalViewModel.Id = existed;
-            var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
-            if (materialProposal.Id != 0)
+                _materialProposalService.GetMaterialProposals().FirstOrDefault(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", "") || a.Id == materialProposalViewModel.Id);
+            if (existed != null)
             {
-                materialProposal.CreatedDate = DateTime.MinValue;
-                materialProposal.CreatedUserName = null;
+                materialProposalViewModel.Id = existed.Id;
+                var src = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
+                foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
+                {
+                    if (item.Name != "Comments" && item.Name != "Materials")
+                    {
+                        item.SetValue(existed, item.GetValue(src));
+                    }
+                }
+                existed.CreatedDate = DateTime.MinValue;
+                existed.CreatedUserName = null;
+                _materialProposalService.AddOrUpdateMaterialProposal(existed);
+                return Json(existed.Id, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                var materialProposal = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
                 materialProposal.ProposerUserName = materialProposal.ProposerUserName ?? Thread.CurrentPrincipal.Identity.Name;
                 var users = usersContext.UserProfiles.ToList();
                 var currentUser = users.FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
                 if (currentUser != null) materialProposal.ProposerDepartmentId = currentUser.DepartmentId;
+                _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
+                return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
             }
-            _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
-            return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
