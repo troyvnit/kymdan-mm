@@ -94,6 +94,9 @@ namespace KymdanMM.Controllers
             var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
             if (implementUser != null)
                 material.ImplementerDisplayName = implementUser.DisplayName;
+            var proposeUser = users.FirstOrDefault(a => a.UserName == material.ProposerUserName);
+            if (proposeUser != null)
+                material.ProposerDisplayName = proposeUser.DisplayName;
             ViewBag.Departments = departments;
             ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
             ViewBag.Users = users;
@@ -299,15 +302,19 @@ namespace KymdanMM.Controllers
                 var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.ProposalCode)
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
-                        lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
+                        lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "TM", "00000"};
                 var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : 
                     new MaterialProposal
                     {
-                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : ""
+                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[3]) + 1) : ""
                     };
                 var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
                 var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
                 materialProposalViewModel.FromHardProposal = materialProposalViewModel.FromHardProposal == true || fromHardProposal == true;
+                materialProposalViewModel.ProposerUserName =
+                    string.IsNullOrEmpty(materialProposalViewModel.ProposerUserName)
+                        ? Thread.CurrentPrincipal.Identity.Name
+                        : materialProposalViewModel.ProposerUserName;
                 var proposer = users.FirstOrDefault(a => a.UserName == materialProposalViewModel.ProposerUserName);
                 if (proposer != null)
                     materialProposalViewModel.ProposerDisplayName =
@@ -481,13 +488,13 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId;
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             }) : 
                             materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName != a.PosterUserName;
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName != a.PosterUserName && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
@@ -496,13 +503,13 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ImplementerDepartmentId == poster.DepartmentId;
+                                return poster != null && model.ImplementerDepartmentId == poster.DepartmentId && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             }) :
                             materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName == a.PosterUserName;
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName == a.PosterUserName && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)

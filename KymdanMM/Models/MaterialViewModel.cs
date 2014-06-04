@@ -59,6 +59,10 @@ namespace KymdanMM.Models
         public int ProposerDepartmentId { get; set; }
         [Display(Name = "Đơn vị đề nghị")]
         public string ProposerDepartmentName { get; set; }
+        [Display(Name = "Người đề xuất")]
+        public string ProposerUserName { get; set; }
+        [Display(Name = "Người đề xuất")]
+        public string ProposerDisplayName { get; set; }
         public int MaterialProposalId { get; set; }
         [Display(Name = "Mã đề xuất")]
         public string MaterialProposalCode { get; set; }

@@ -204,7 +204,7 @@
                     { field: "Quantity", title: "SL", width: 70 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 150 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 200 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 200 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
                 ],
                 editable: false,
@@ -505,7 +505,7 @@
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
@@ -661,7 +661,7 @@
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
@@ -822,7 +822,7 @@
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }, { text: "Hoàn thành", click: finishMaterial }, { text: { edit: "Sửa", cancel: "Hủy", update: "Lưu" }, name: "edit" }], title: " ", width: "200px" }
                 ],
                 editable: "inline",
@@ -1002,7 +1002,7 @@
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của tổng giám đốc", width: 100 },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,

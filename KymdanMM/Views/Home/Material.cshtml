@@ -101,6 +101,19 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            @if (Roles.IsUserInRole(Model.ProposerUserName, "Admin"))
+                            {
+                                <label class="col-md-5 control-label" for="ProposerUserName">Người giao</label>
+                            }
+                            else
+                            {
+                                @Html.LabelFor(m => m.ProposerDisplayName, new { @class = "col-md-5 control-label" })
+                            }
+                            <div class="col-sm-7 col-md-7">
+                                <span class="control-label pull-left">@Html.DisplayFor(m => m.ProposerDisplayName)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             @Html.LabelFor(m => m.ImplementerDepartmentName, new { @class = "col-md-5 control-label" })
                             <div class="col-sm-7 col-md-7">
                                 <span class="control-label pull-left">@Html.DisplayFor(m => m.ImplementerDepartmentName)</span>

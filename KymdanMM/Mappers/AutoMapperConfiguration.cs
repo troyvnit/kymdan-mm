@@ -52,6 +52,7 @@ namespace KymdanMM.Mappers
                 .ForMember(a => a.CreatedDate, o => o.MapFrom(a => a.CreatedDate != null ? a.CreatedDate.Date : DateTime.Now.Date));
             Mapper.CreateMap<Material, MaterialViewModel>().ForMember(a => a.MaterialProposalCode, o => o.MapFrom(a => a.MaterialProposal.ProposalCode))
                 .ForMember(a => a.ProposerDepartmentId, o => o.MapFrom(a => a.MaterialProposal.ProposerDepartmentId))
+                .ForMember(a => a.ProposerUserName, o => o.MapFrom(a => a.MaterialProposal.ProposerUserName))
                 .ForMember(a => a.ApproveDate, o => o.MapFrom(a => a.ApproveDate != null ? ((DateTime)a.ApproveDate).Date : a.ApproveDate))
                 .ForMember(a => a.Deadline, o => o.MapFrom(a => a.Deadline != null ? ((DateTime)a.Deadline).Date : a.Deadline))
                 .ForMember(a => a.StartDate, o => o.MapFrom(a => a.StartDate != null ? ((DateTime)a.StartDate).Date : a.StartDate))
