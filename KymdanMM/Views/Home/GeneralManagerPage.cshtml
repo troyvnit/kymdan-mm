@@ -379,7 +379,7 @@
                         empty: "Kéo thả tên cột vào đây để xem theo nhóm."
                     }
                 },
-                //toolbar: [{ name: "create", text: "Thêm" }],
+                toolbar: [{ name: "save", text: "Lưu" }, { name: "cancel", text: "Hủy" }],
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 70 },
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
@@ -390,7 +390,7 @@
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ProposerDepartmentId) #",
                         groupHeaderTemplate: "Đơn vị đề nghị: #= getImplementerDepartmentName(value) #",
-                        width: 50,
+                        width: 60,
                         filterable: {
                             ui: proposerDepartmentIdApprovedAssignedGridFilter
                         }
@@ -401,7 +401,7 @@
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
                         groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #",
-                        width: 50,
+                        width: 60,
                         filterable: {
                             ui: implementerDepartmentIdApprovedAssignedGridFilter
                         }
@@ -417,15 +417,15 @@
                             ui: implementerUserNameApprovedAssignedGridFilter
                         }
                     },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 70 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 70 },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 85 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 85 },
                     { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }, { text: { edit: "Sửa", cancel: "Hủy", update: "Lưu" }, name: "edit" }], title: " ", width: "135px" }
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
                 ],
-                editable: "inline",
+                editable: true,
                 dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
@@ -850,29 +850,18 @@
         });
 
         function implementerDepartmentEditor(container, options) {
-            var containerCache = container;
             var model = options.model;
             $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
                     dataTextField: "DepartmentName",
                     dataValueField: "Id",
-                    optionLabel: "-Chọn-",
+                    optionLabel:  {
+                        DepartmentName: "-Chọn-",
+                        Id: 0
+                    },
                     dataSource: implementerDepartmentDataSource,
                     change: function (e) {
-                        containerCache.parent().find("td[data-container-for='ImplementerUserName'] input").kendoDropDownList({
-                            dataTextField: "DisplayName",
-                            dataValueField: "UserName",
-                            optionLabel: "-Chọn-",
-                            dataSource: {
-                                transport: {
-                                    read: {
-                                        url: "/Home/GetUser?departmentId=" + this.value(),
-                                        type: "post"
-                                    }
-                                }
-                            }
-                        }).data("kendoDropDownList");
                         model.set("ImplementerUserName", "");
                         model.set("StartDate", null);
                         model.set("FinishDate", null);

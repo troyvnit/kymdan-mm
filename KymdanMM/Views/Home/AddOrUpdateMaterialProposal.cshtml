@@ -640,6 +640,7 @@
         });
 
         function implementerDepartmentEditor(container, options) {
+            var model = options.model;
             $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
@@ -649,7 +650,10 @@
                         DepartmentName: "-Chọn-",
                         Id: 0
                     },
-                    dataSource: implementerDepartmentDataSource
+                    dataSource: implementerDepartmentDataSource,
+                    change: function (e) {
+                        model.set("ImplementerUserName", "");
+                    }
                 });
         }
 
@@ -676,10 +680,18 @@
             $('<input data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
+                    autoBind: true,
                     dataTextField: "DisplayName",
                     dataValueField: "UserName",
                     optionLabel: "-Chọn-",
-                    dataSource: implementerUserDataSource
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "/Home/GetUser?departmentId=" + options.model.ImplementerDepartmentId,
+                                type: "post"
+                            }
+                        }
+                    }
                 });
         }
 

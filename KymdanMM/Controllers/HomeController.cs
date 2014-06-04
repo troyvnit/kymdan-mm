@@ -205,8 +205,7 @@ namespace KymdanMM.Controllers
         public ActionResult GetUser(int? departmentId)
         {
             var users = usersContext.UserProfiles.ToList();
-            var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            return Json(users.Where(a => currentUser != null && a.DepartmentId == (departmentId ?? currentUser.DepartmentId) && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
+            return Json(users.Where(a => (departmentId == null || a.DepartmentId == departmentId || departmentId == 0) && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetAllUser()
