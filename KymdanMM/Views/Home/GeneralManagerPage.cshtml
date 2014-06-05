@@ -230,9 +230,7 @@
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
                         } else if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
                             $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
-                        } else if (kendo.parseDate(dataView[i].Deadline, "dd/MM/yyyy") <= new Date().addDays(3)) {
-                            $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
-                        }
+                        } 
                     }
                 },
                 filterMenuInit: function (e) {

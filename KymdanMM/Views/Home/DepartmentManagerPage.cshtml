@@ -517,6 +517,16 @@
                             firstValueDropDown.wrapper.hide();
                         });
                     }
+                },
+                dataBound: function () {
+                    var dataView = this.dataSource.view();
+                    for (var i = 0; i < dataView.length; i++) {
+                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
+                            $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
+                            $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                        } 
+                    }
                 }
             });
 
@@ -665,9 +675,14 @@
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
+                   { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
                 ],
-                editable: true
+                editable: true,
+                edit: function (e) {
+                    if (e.model.StartDate == null) {
+                        e.model.set("StartDate", new Date().addDays(1));
+                    }
+                }
             });
 
             //----------Tab 5-----------//
@@ -732,7 +747,7 @@
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
                             ApproveStatus: { type: "number", editable: false },
-                            Finished: { type: "boolean", editable: false }
+                            Finished: { type: "boolean" }
                         }
                     },
                     total: "total",
@@ -823,7 +838,8 @@
                     { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }, { text: "Hoàn thành", click: finishMaterial }], title: " ", width: "130px" }
+                     { field: "Finished", title: "Hoàn thành", template: "<input type='checkbox' #= (Finished === true) ? checked='checked' : '' # disabled />", width: 70 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
                 ],
                 editable: true,
                 dataBound: function() {
