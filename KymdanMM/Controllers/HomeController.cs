@@ -10,6 +10,8 @@ using System.Web.Mvc;
 using System.Web.Security;
 using AutoMapper;
 using KymdanMM.Data;
+using KymdanMM.Data.Infrastructure;
+using KymdanMM.Data.Repository;
 using KymdanMM.Data.Service;
 using KymdanMM.Filters;
 using KymdanMM.Model.Models;
@@ -31,13 +33,14 @@ namespace KymdanMM.Controllers
         private ICommentService _commentService { get; set; }
         private UsersContext usersContext { get; set; }
 
-        public HomeController(IMaterialProposalService _materialProposalService, IMaterialService _materialService, IDepartmentService _departmentService, IProgressStatusService _progressStatusService, ICommentService _commentService)
+        public HomeController()
         {
-            this._materialProposalService = _materialProposalService;
-            this._departmentService = _departmentService;
-            this._progressStatusService = _progressStatusService;
-            this._materialService = _materialService;
-            this._commentService = _commentService;
+            var databaseFactory = new DatabaseFactory();
+            this._materialProposalService = new MaterialProposalService(new MaterialProposalRepository(databaseFactory), new UnitOfWork(databaseFactory));
+            this._departmentService = new DepartmentService(new DepartmentRepository(databaseFactory), new UnitOfWork(databaseFactory));
+            this._progressStatusService = new ProgressStatusService(new ProgressStatusRepository(databaseFactory), new UnitOfWork(databaseFactory));
+            this._materialService = new MaterialService(new MaterialRepository(databaseFactory), new UnitOfWork(databaseFactory));
+            this._commentService = new CommentService(new CommentRepository(databaseFactory), new UnitOfWork(databaseFactory));
             usersContext = new UsersContext();
         }
 
