@@ -8,8 +8,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
-using KymdanMM.Data.Infrastructure;
-using KymdanMM.Data.Repository;
 using KymdanMM.Data.Service;
 using Microsoft.Web.WebPages.OAuth;
 using Newtonsoft.Json;
@@ -24,10 +22,9 @@ namespace KymdanMM.Controllers
     public class AccountController : Controller
     {
         private IDepartmentService _departmentService { get; set; }
-        public AccountController()
+        public AccountController(IDepartmentService _departmentService)
         {
-            var databaseFactory = new DatabaseFactory();
-            this._departmentService = new DepartmentService(new DepartmentRepository(databaseFactory), new UnitOfWork(databaseFactory));
+            this._departmentService = _departmentService;
         }
         public ActionResult Index()
         {

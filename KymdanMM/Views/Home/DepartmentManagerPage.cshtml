@@ -521,11 +521,17 @@
                 dataBound: function () {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
-                        if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
-                            $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
-                        } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
-                            $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
-                        } 
+                        if (dataView[i].ImplementerUserName != "") {
+                            if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date()) {
+                                $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-danger active");
+                            } else if (kendo.parseDate(dataView[i].FinishDate, "dd/MM/yyyy") <= new Date().addDays(3)) {
+                                $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
+                            } else {
+
+                            }
+                        } else {
+                            $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
+                        }
                     }
                 }
             });
