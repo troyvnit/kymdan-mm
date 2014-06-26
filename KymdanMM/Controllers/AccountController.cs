@@ -60,6 +60,9 @@ namespace KymdanMM.Controllers
                 var user = dbContext.UserProfiles.Find(account.Id);
                 if (user != null)
                 {
+                    user.DepartmentId = account.Department.Id;
+                    user.FirstName = account.FirstName;
+                    user.LastName = account.LastName;
                     dbContext.UserProfiles.AddOrUpdate(user);
                     dbContext.SaveChanges();
                     foreach (var role in Roles.GetRolesForUser(user.UserName))
@@ -74,6 +77,27 @@ namespace KymdanMM.Controllers
                             }
                             Roles.AddUserToRole(user.UserName, role);
                         }
+                }
+            }
+            return Json(accounts, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteAccount(string models)
+        {
+            var dbContext = new UsersContext();
+            var accounts = JsonConvert.DeserializeObject<List<AccountGridViewModel>>(models);
+            foreach (var account in accounts)
+            {
+                var user = dbContext.UserProfiles.Find(account.Id);
+                if (user != null)
+                {
+                    foreach (var role in Roles.GetRolesForUser(user.UserName))
+                    {
+                        Roles.RemoveUserFromRole(user.UserName, role);
+                    }
+                    dbContext.UserProfiles.Remove(user);
+                    dbContext.SaveChanges();
                 }
             }
             return Json(accounts, JsonRequestBehavior.AllowGet);
@@ -159,8 +183,7 @@ namespace KymdanMM.Controllers
                         }
                         Roles.AddUserToRole(model.UserName, role);
                     }
-                    WebSecurity.Login(model.UserName, model.Password);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Register", "Account");
                 }
                 catch (MembershipCreateUserException e)
                 {

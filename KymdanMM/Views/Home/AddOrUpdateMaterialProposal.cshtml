@@ -201,14 +201,14 @@
     <script type="text/javascript">
         var wnd, commentWindow;
         var added = false;
-        $(document).ready(function () {
+        $(document).ready(function() {
             if ('@Model.FromHardProposal' != 'True') {
                 $("#ProposalCode").kendoMaskedTextBox({
-                    mask: "@currentYear/@departmentCode/TM/00000"
+                    mask: "@currentYear/@departmentCode/00000"
                 }).removeClass("k-textbox");
             } else {
                 $("#ProposalCode").kendoMaskedTextBox({
-                    mask: "00/LLL/TM/00000"
+                    mask: "00/LLL/00000"
                 }).removeClass("k-textbox");
             }
             implementerDepartmentDataSource.read();
@@ -246,7 +246,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models),
@@ -272,8 +272,8 @@
                             Id: { editable: false, nullable: false, defaultValue: 0 },
                             MaterialName: { editable: editable, type: "string", validation: { required: true } },
                             Description: { editable: editable, type: "string" },
-                            Quantity: { editable: editable, type: "number", validation: { min: 1 }, defaultValue: 1 },
-                            InventoryQuantity: { editable: editable, type: "number" },
+                            Quantity: { editable: editable, type: "number", defaultValue: 1, format: "{0:#.##}" },
+                            InventoryQuantity: { editable: editable, type: "number", format: "{0:#.##}" },
                             Unit: { editable: editable, type: "string" },
                             Used: { editable: editable, type: "boolean" },
                             UsingPurpose: { editable: editable, type: "string" },
@@ -295,7 +295,7 @@
                     total: "total",
                     data: "data"
                 },
-                sync: function () {
+                sync: function() {
                     $("#MaterialGrid").removeClass("input-validation-error");
                     popupNotification.show({ message: "Lưu danh sách vật tư thành công!" }, "success");
                 }
@@ -321,29 +321,35 @@
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     { field: "File", title: "File", width: 70, hidden: true },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
-                { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
-                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
-                { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
-                { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
+                    { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
                 ],
-                dataBound: function () {
+                dataBound: function() {
                     if (!added && editable && '@isNew' == 'True') {
                         added = true;
                         $('#MaterialGrid').data('kendoGrid').addRow();
+                        if ('@Model.FromHardProposal' == 'True' && '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True') {
+                            var model = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                            if (model.isNew()) {
+                                model.set("ImplementerDepartmentId", '@currentUser.DepartmentId');
+                            }
+                        }
                     }
                     if (editable) {
-                        $("#MaterialGrid .k-grid-content").on("dblclick", function () {
+                        $("#MaterialGrid .k-grid-content").on("dblclick", function() {
                             $('#MaterialGrid').data('kendoGrid').addRow();
                         });
 
-                        $("#MaterialGrid .k-grid-content table").on("dblclick", function () {
+                        $("#MaterialGrid .k-grid-content table").on("dblclick", function() {
                             return false;
                         });
                         $(document).off("keydown");
-                        $(document).on("keydown", function (event) {
+                        $(document).on("keydown", function(event) {
                             if (event.keyCode == 32 && event.ctrlKey) {
                                 $('#MaterialGrid').data('kendoGrid').addRow();
                                 var model = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
@@ -354,12 +360,15 @@
                                         model.set("ApproveDate", $("#ApproveDate").data("kendoDatePicker").value());
                                         model.set("StartDate", $("#StartDate").data("kendoDatePicker").value());
                                         model.set("FinishDate", $("#FinishDate").data("kendoDatePicker").value());
+                                        if ('@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True') {
+                                            model.set("ImplementerDepartmentId", '@currentUser.DepartmentId');
+                                        }
                                     }
                                 }
                                 return false;
                             }
                             if (event.keyCode == 32 && event.shiftKey) {
-                                $("#MaterialGrid").data("kendoGrid").select().each(function () {
+                                $("#MaterialGrid").data("kendoGrid").select().each(function() {
                                     $("#MaterialGrid").data("kendoGrid").dataSource.remove($("#MaterialGrid").data("kendoGrid").dataItem($(this)));
                                 });
                                 return false;
@@ -367,8 +376,8 @@
                         });
                     }
                 },
-                edit: function (e) {
-                    $("input[data-role='datepicker']").bind("focus", function () {
+                edit: function(e) {
+                    $("input[data-role='datepicker']").bind("focus", function() {
                         $(this).data("kendoDatePicker").open();
                     });
                 },
@@ -391,9 +400,9 @@
                 }
             });
 
-            $("#ImplementerDepartment").on('change', function () {
+            $("#ImplementerDepartment").on('change', function() {
                 var models = $("#MaterialGrid").data("kendoGrid").dataSource.data();
-                $.each(models, function () {
+                $.each(models, function() {
                     this.set("ImplementerDepartmentId", $("#ImplementerDepartment").val());
                 });
             });
@@ -402,7 +411,7 @@
                 format: "dd/MM/yyyy"
             });
 
-            $(".datePicker").bind("focus", function () {
+            $(".datePicker").bind("focus", function() {
                 $(this).data("kendoDatePicker").open();
             });
 
@@ -415,7 +424,7 @@
                     width: 600
                 }).data("kendoWindow");
 
-            $("#submitMaterialProposal").on("click", function () {
+            $("#submitMaterialProposal").on("click", function() {
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
@@ -424,7 +433,7 @@
                 submitMaterialProposal(true, false);
             });
 
-            $("#saveDraftMaterialProposal").on("click", function () {
+            $("#saveDraftMaterialProposal").on("click", function() {
                 if (!$("#MaterialProposalForm").valid()) {
                     return;
                 }
@@ -443,7 +452,7 @@
                     data: $("form").serialize(),
                     dataType: "json",
                     async: false,
-                    success: function (id) {
+                    success: function(id) {
                         popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
                         $("#Id").val(id);
                         var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
@@ -471,14 +480,14 @@
                 });
             }
 
-            $("#approveMaterial").on("click", function () {
+            $("#approveMaterial").on("click", function() {
                 if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true, true);
                 }
             });
 
-            $("#approveAllMaterial").on("click", function () {
-                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
+            $("#approveAllMaterial").on("click", function() {
+                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find("* > tr"));
                 if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true, true);
                 }
@@ -487,7 +496,7 @@
             function approveMaterial() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function () {
+                grid.select().each(function() {
                     var dataItem = grid.dataItem($(this));
                     if (dataItem.ImplementerDepartmentId > 0) {
                         ids.push(dataItem.Id);
@@ -502,7 +511,7 @@
                         data: { idString: ids.join(',') },
                         dataType: "json",
                         async: false,
-                        success: function (result) {
+                        success: function(result) {
                             if (result) {
                                 $("#MaterialGrid").data("kendoGrid").dataSource.read();
                             }
@@ -511,7 +520,7 @@
                 }
             }
 
-            $("#finishMaterialProposal").on("click", function () {
+            $("#finishMaterialProposal").on("click", function() {
                 if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true, false);
                     finishMaterialProposal();
@@ -521,7 +530,7 @@
             function finishMaterialProposal() {
                 var ids = [];
                 var grid = $("#MaterialGrid").data("kendoGrid");
-                grid.select().each(function () {
+                grid.select().each(function() {
                     var dataItem = grid.dataItem($(this));
                     ids.push(dataItem.Id);
                 });
@@ -531,7 +540,7 @@
                     data: { idString: ids.join(',') },
                     dataType: "json",
                     async: false,
-                    success: function (result) {
+                    success: function(result) {
                         if (result) {
                             $("#MaterialGrid").data("kendoGrid").dataSource.read();
                         }
@@ -539,27 +548,27 @@
                 });
             }
 
-            $("#submitComment").on("click", function () {
+            $("#submitComment").on("click", function() {
                 $.ajax({
                     url: '@Url.Action("AddComment", "Home")',
                     type: "POST",
                     data: { id: $("#Id").val(), content: $("#comment").val() },
                     dataType: "json",
-                    success: function (result) {
+                    success: function(result) {
                         $("#MaterialGrid").data("kendoGrid").dataSource.read();
 
                     }
                 });
             });
 
-            $("#comment").on("keypress", function (e) {
+            $("#comment").on("keypress", function(e) {
                 if (e.keyCode == 13) {
                     $("#submitComment").trigger("click");
                 }
             });
         });
 
-        var textareaEditor = function (container, options) {
+        var textareaEditor = function(container, options) {
             $('<textarea class="k-input k-textbox" data-bind="value:' + options.field + '" />')
                 .appendTo(container);
         };
@@ -579,11 +588,11 @@
                 localization: {
                     select: "Chọn tập tin",
                 },
-                success: function (e) {
+                success: function(e) {
                     var files = JSON.parse(dataItem.File);
                     var results = JSON.parse(e.XMLHttpRequest.responseText);
                     if (e.operation == "remove") {
-                        files = $.grep(files, function (file) {
+                        files = $.grep(files, function(file) {
                             return file.name != results[0];
                         });
                     } else {
@@ -591,7 +600,7 @@
                     }
                     dataItem.set("File", JSON.stringify(files));
                     var imgs = $("#UploadFileWindow").find("img");
-                    $.each(imgs, function () {
+                    $.each(imgs, function() {
                         $(this).attr("src", this.src + "?" + new Date().getTime());
                     });
                 },
@@ -622,7 +631,7 @@
 
         function getImplementerDepartmentName(id) {
             var departmentName = "";
-            $.each(implementerDepartmentDataSource._data, function () {
+            $.each(implementerDepartmentDataSource._data, function() {
                 if (this.Id == id) {
                     departmentName = this.DepartmentName;
                 }
@@ -651,7 +660,7 @@
                         Id: 0
                     },
                     dataSource: implementerDepartmentDataSource,
-                    change: function (e) {
+                    change: function(e) {
                         model.set("ImplementerUserName", "");
                     }
                 });
@@ -659,7 +668,7 @@
 
         function getImplementerDisplayName(userName) {
             var displayName = "";
-            $.each(implementerUserDataSource._data, function () {
+            $.each(implementerUserDataSource._data, function() {
                 if (this.UserName == userName) {
                     displayName = this.DisplayName;
                 }
@@ -697,7 +706,7 @@
 
         function getProgressStatus(id) {
             var status = "";
-            $.each(progressStatusDataSource._data, function () {
+            $.each(progressStatusDataSource._data, function() {
                 if (this.Id == id) {
                     status = this.Status;
                 }
@@ -727,24 +736,24 @@
 
         function addExtensionClass(extension) {
             switch (extension) {
-                case '.jpg':
-                case '.img':
-                case '.png':
-                case '.gif':
-                    return "img-file";
-                case '.doc':
-                case '.docx':
-                    return "doc-file";
-                case '.xls':
-                case '.xlsx':
-                    return "xls-file";
-                case '.pdf':
-                    return "pdf-file";
-                case '.zip':
-                case '.rar':
-                    return "zip-file";
-                default:
-                    return "default-file";
+            case '.jpg':
+            case '.img':
+            case '.png':
+            case '.gif':
+                return "img-file";
+            case '.doc':
+            case '.docx':
+                return "doc-file";
+            case '.xls':
+            case '.xlsx':
+                return "xls-file";
+            case '.pdf':
+                return "pdf-file";
+            case '.zip':
+            case '.rar':
+                return "zip-file";
+            default:
+                return "default-file";
             }
         }
     </script>

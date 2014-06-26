@@ -205,7 +205,7 @@ namespace KymdanMM.Controllers
         public ActionResult GetUser(int? departmentId)
         {
             var users = usersContext.UserProfiles.ToList();
-            return Json(users.Where(a => (departmentId == null || a.DepartmentId == departmentId || departmentId == 0) && Roles.IsUserInRole(a.UserName, "Member")), JsonRequestBehavior.AllowGet);
+            return Json(users.Where(a => (departmentId == null || a.DepartmentId == departmentId || departmentId == 0) && (Roles.IsUserInRole(a.UserName, "Member") || Roles.IsUserInRole(a.UserName, "Department Manager"))), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetAllUser()
@@ -301,11 +301,11 @@ namespace KymdanMM.Controllers
                 var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.ProposalCode)
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
-                        lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "TM", "00000"};
+                        lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
                 var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : 
                     new MaterialProposal
                     {
-                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[3]) + 1) : ""
+                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : ""
                     };
                 var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
                 var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
@@ -532,6 +532,18 @@ namespace KymdanMM.Controllers
             {
                 var material = Mapper.Map<MaterialViewModel, Material>(materialViewModel);
                 material.MaterialProposalId = materialProposalId ?? material.MaterialProposalId;
+                material.Deadline = material.Deadline != null
+                    ? ((DateTime) material.Deadline).AddHours(7)
+                    : material.Deadline;
+                material.ApproveDate = material.ApproveDate != null
+                    ? ((DateTime)material.ApproveDate).AddHours(7)
+                    : material.ApproveDate;
+                material.StartDate = material.StartDate != null
+                    ? ((DateTime)material.StartDate).AddHours(7)
+                    : material.StartDate;
+                material.FinishDate = material.FinishDate != null
+                    ? ((DateTime)material.FinishDate).AddHours(7)
+                    : material.FinishDate;
                 var users = usersContext.UserProfiles.ToList();
                 var currentUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
                 if (currentUser != null) material.ImplementerDepartmentId = currentUser.DepartmentId;

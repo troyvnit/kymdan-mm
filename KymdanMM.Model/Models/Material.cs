@@ -11,8 +11,8 @@ namespace KymdanMM.Model.Models
         }
         public string MaterialName { get; set; }
         public string Description { get; set; }
-        public int Quantity { get; set; }
-        public int InventoryQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal InventoryQuantity { get; set; }
         public string Unit { get; set; }
         public bool Used { get; set; }
         public string UsingPurpose { get; set; }

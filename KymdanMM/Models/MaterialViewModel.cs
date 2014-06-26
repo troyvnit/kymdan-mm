@@ -12,9 +12,9 @@ namespace KymdanMM.Models
         [Display(Name = "Mô tả")]
         public string Description { get; set; }
         [Display(Name = "Số lượng")]
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         [Display(Name = "Số lượng tồn kho")]
-        public int InventoryQuantity { get; set; }
+        public decimal InventoryQuantity { get; set; }
         [Display(Name = "Đơn vị")]
         public string Unit { get; set; }
         [Display(Name = "Đã sử dụng")]
