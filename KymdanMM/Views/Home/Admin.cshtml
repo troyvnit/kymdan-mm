@@ -111,11 +111,13 @@
                 data: { departmentName: $("#DepartmentName").val() },
                 dataType: "json",
                 success: function (result) {
-                    if (result) {
+                    if (result.success) {
                         $("#DepartmentName").val('');
-                        $("#Department").append('<li class="list-group-item">' + result.DepartmentName +
-                            '<a href="javascript:void(0)" data-id="' + result.Id + '" class="deleteDepartment">' +
+                        $("#Department").append('<li class="list-group-item">' + result.department.DepartmentName +
+                            '<a href="javascript:void(0)" data-id="' + result.department.Id + '" class="deleteDepartment">' +
                             '<span class="glyphicon glyphicon-minus pull-right red"></span></a></li>');
+                    } else {
+                        alert(result.message);
                     }
                 }
             });

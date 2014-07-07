@@ -201,15 +201,15 @@
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 100 },
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 200 },
-                    { field: "Quantity", title: "SL", width: 70 },
+                    { field: "Quantity", title: "SL", template: '<div style="text-align:right;">#= kendo.toString(Quantity, "n2") #</div>', width: 70 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 150 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 200 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 200 },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 200 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 200 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "110px" }
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -343,7 +343,7 @@
                 ],
                 editable: true,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -502,15 +502,20 @@
                     },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    {
+                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        filterable: {
+                            ui: progressStatusIdApprovedAwaitingReceiveGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -677,7 +682,7 @@
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
@@ -840,10 +845,15 @@
                     },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    {
+                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        filterable: {
+                            ui: progressStatusIdApprovedImplementedGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                      { field: "Finished", title: "Hoàn thành", template: "<input type='checkbox' #= (Finished === true) ? checked='checked' : '' # disabled />", width: 70 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
                 ],
@@ -861,7 +871,7 @@
                     }
                 },
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -1021,15 +1031,20 @@
                     },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    {
+                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        filterable: {
+                            ui: progressStatusIdFinishedGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -1300,6 +1315,66 @@
             });
             element.kendoDropDownList({
                 dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+        
+        function progressStatusIdApprovedAwaitingReceiveGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#ApprovedAwaitingReceiveGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        } 
+        
+        function progressStatusIdApprovedImplementedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        } 
+        
+        function progressStatusIdFinishedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#FinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
                 dataTextField: "Text",
                 dataValueField: "Value",
                 optionLabel: "-Chọn-",

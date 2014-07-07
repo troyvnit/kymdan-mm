@@ -70,6 +70,9 @@ namespace KymdanMM.Models
         public string LastProposalDeparmentComment { get; set; }
         public string LastImplementDepartmentComment { get; set; }
         public string LastGeneralManagerComment { get; set; }
+        public string LastProposalDeparmentCommentReadClass { get; set; }
+        public string LastImplementDepartmentCommentReadClass { get; set; }
+        public string LastGeneralManagerCommentReadClass { get; set; }
         public IList<CommentViewModel> Comments { get; set; } 
     }
 }

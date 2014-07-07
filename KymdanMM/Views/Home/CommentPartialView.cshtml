@@ -94,6 +94,9 @@
 <script type="text/javascript">
         $(document).ready(function () {
             $("#submitComment").on("click", function () {
+                if ($("#comment").val() == "") {
+                    return false;
+                }
                 $.ajax({
                     url: '@Url.Action("AddComment", "Home")',
                     type: "POST",

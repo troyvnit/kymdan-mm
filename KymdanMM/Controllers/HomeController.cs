@@ -168,8 +168,12 @@ namespace KymdanMM.Controllers
         public ActionResult AddDepartment(string departmentName)
         {
             var department = new Department { DepartmentName = departmentName };
+            if (_departmentService.GetDepartments().Any(a => a.DepartmentName.ToUpper() == departmentName.ToUpper()))
+            {
+                return Json(new { success = false, message = "Đã tồn tại tên phòng ban \"" + departmentName + "\""});
+            }
             _departmentService.AddOrUpdateDepartment(department);
-            return Json(department, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, department}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -497,7 +501,14 @@ namespace KymdanMM.Controllers
                             });
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
-                        materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content;
+                    {
+                        materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content.Length > 120 ? lastProposalDeparmentComment.Content.Substring(0, 120) + "..." : lastProposalDeparmentComment.Content;
+                        materialViewModel.LastProposalDeparmentCommentReadClass = lastProposalDeparmentComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
+                    }
+                    else
+                    {
+                        materialViewModel.LastProposalDeparmentComment = "";
+                    }
                     var implementDepartmentComments = model.ImplementerDepartmentId != model.ProposerDepartmentId ? materialViewModel.Comments.Where(
                             a =>
                             {
@@ -512,11 +523,28 @@ namespace KymdanMM.Controllers
                             });
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)
-                        materialViewModel.LastImplementDepartmentComment = lastImplementDepartmentComment.Content;
+                    {
+                        materialViewModel.LastImplementDepartmentComment = lastImplementDepartmentComment.Content.Length > 120 ? lastImplementDepartmentComment.Content.Substring(0, 120) + "..." : lastImplementDepartmentComment.Content;
+                        materialViewModel.LastImplementDepartmentCommentReadClass = lastImplementDepartmentComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
+                    }
+                    else
+                    {
+                        materialViewModel.LastImplementDepartmentComment = "";
+                    }
                     var generalManagerComments = materialViewModel.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
                     var lastGeneralManagerComment = generalManagerComments.LastOrDefault();
                     if (lastGeneralManagerComment != null)
-                        materialViewModel.LastGeneralManagerComment = lastGeneralManagerComment.Content;
+                    {
+                        materialViewModel.LastGeneralManagerComment = lastGeneralManagerComment.Content.Length > 120
+                            ? lastGeneralManagerComment.Content.Substring(0, 120) + "..."
+                            : lastGeneralManagerComment.Content;
+                        materialViewModel.LastGeneralManagerCommentReadClass =
+                            lastGeneralManagerComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
+                    }
+                    else
+                    {
+                        materialViewModel.LastGeneralManagerComment = "";
+                    }
                 }
                 return Json(new { data = materialViewModels, total = materials.TotalItemCount },
                     JsonRequestBehavior.AllowGet);

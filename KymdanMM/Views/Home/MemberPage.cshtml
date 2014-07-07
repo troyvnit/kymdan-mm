@@ -184,10 +184,15 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    {
+                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        filterable: {
+                            ui: progressStatusIdBeAssignedUnfinishedGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: true,
@@ -345,10 +350,15 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    { field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100 },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100 },
+                    {
+                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        filterable: {
+                            ui: progressStatusIdBeAssignedFinishedGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false
@@ -507,6 +517,46 @@
                     }
                 }).data("kendoWindow");
             commentWindow.center().open();
+        }
+        
+        function progressStatusIdBeAssignedUnfinishedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#BeAssignedUnfinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        } 
+        
+        function progressStatusIdBeAssignedFinishedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#BeAssignedFinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
         }
     </script>
 

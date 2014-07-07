@@ -272,8 +272,8 @@
                             Id: { editable: false, nullable: false, defaultValue: 0 },
                             MaterialName: { editable: editable, type: "string", validation: { required: true } },
                             Description: { editable: editable, type: "string" },
-                            Quantity: { editable: editable, type: "number", defaultValue: 1, format: "{0:#.##}" },
-                            InventoryQuantity: { editable: editable, type: "number", format: "{0:#.##}" },
+                            Quantity: { editable: editable, type: "number" },
+                            InventoryQuantity: { editable: editable, type: "number" },
                             Unit: { editable: editable, type: "string" },
                             Used: { editable: editable, type: "boolean" },
                             UsingPurpose: { editable: editable, type: "string" },
@@ -288,6 +288,8 @@
                             File: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
+                            LastProposalDeparmentCommentReadClass: { type: "string", editable: false },
+                            LastGeneralManagerCommentReadClass: { type: "string", editable: false },
                             Approved: { type: "boolean", editable: false, defaultValue: '@Model.FromHardProposal' == 'True' },
                             Finished: { type: "boolean", editable: false }
                         }
@@ -313,8 +315,8 @@
                 columns: [
                     { field: "MaterialName", title: "Tên vật tư", width: 120 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 120 },
-                    { field: "Quantity", title: "SL", width: 50 },
-                    { field: "InventoryQuantity", title: "Tồn kho", width: 50 },
+                    { field: "Quantity", title: "SL", template: '<div style="text-align:right;">#= kendo.toString(Quantity, "n2") #</div>', width: 50 },
+                    { field: "InventoryQuantity", title: "Tồn kho", template: '<div style="text-align:right;">#= kendo.toString(InventoryQuantity, "n2") #</div>', width: 50 },
                     { field: "Unit", title: "ĐVT", width: 60 },
                     { field: "Used", title: "Đã sử dụng?", template: "<input type='checkbox' #= (Used === true) ? checked='checked' : '' # disabled />", width: 70 },
                     { field: "UsingPurpose", title: "Mục đích sử dụng", editor: textareaEditor, width: 100 },
@@ -325,8 +327,8 @@
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "LastProposalDeparmentComment", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
-                    { field: "LastGeneralManagerComment", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
                 ],
                 dataBound: function() {
@@ -487,7 +489,7 @@
             });
 
             $("#approveAllMaterial").on("click", function() {
-                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find("* > tr"));
+                $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
                 if ($("#MaterialProposalForm").valid()) {
                     submitMaterialProposal(true, true);
                 }
