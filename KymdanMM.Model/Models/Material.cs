@@ -26,8 +26,11 @@ namespace KymdanMM.Model.Models
         public string File { get; set; }
         public int ProgressStatusId { get; set; }
         public string Note { get; set; }
+        public bool Deleted { get; set; }
         public string ImplementerUserName { get; set; }
+        public string ImplementerUserNames { get; set; }
         public int ImplementerDepartmentId { get; set; }
+        public string ImplementerDepartmentIds { get; set; }
         public int MaterialProposalId { get; set; }
         public virtual MaterialProposal MaterialProposal { get; set; }
         public virtual IList<Comment> Comments { get; set; } 

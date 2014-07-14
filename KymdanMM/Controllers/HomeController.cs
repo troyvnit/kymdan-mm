@@ -401,13 +401,15 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 !a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "ReceiveAndAwaitingApprove":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "ApprovedAwaitingReceive":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -415,7 +417,8 @@ namespace KymdanMM.Controllers
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 !a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "ApprovedAwaitingImplement":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -424,7 +427,8 @@ namespace KymdanMM.Controllers
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 !a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "ApprovedImplemented":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -433,7 +437,8 @@ namespace KymdanMM.Controllers
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 !a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "ApprovedAssigned":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -441,7 +446,8 @@ namespace KymdanMM.Controllers
                                 a.ImplementerDepartmentId != 0 &&
                                 !a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "AssignedFinished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -449,7 +455,8 @@ namespace KymdanMM.Controllers
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "Finished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -458,7 +465,18 @@ namespace KymdanMM.Controllers
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
+                        break;
+                    case "Received":
+                        materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
+                            a => (a.MaterialProposal.Id == id || id == null) &&
+                                a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
+                                !string.IsNullOrEmpty(a.ImplementerUserName) &&
+                                a.Finished &&
+                                a.Approved &&
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "BeAssignedUnfinished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -466,7 +484,8 @@ namespace KymdanMM.Controllers
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 !a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     case "BeAssignedFinished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
@@ -474,7 +493,8 @@ namespace KymdanMM.Controllers
                                 a.ImplementerUserName == Thread.CurrentPrincipal.Identity.Name &&
                                 a.Finished &&
                                 a.Approved &&
-                                a.MaterialProposal.Sent);
+                                a.MaterialProposal.Sent &&
+                                !a.Deleted);
                         break;
                     default:
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1, a => (a.MaterialProposal.Id == id || id == null) && (a.Approved == approved || approved == null));
@@ -587,7 +607,8 @@ namespace KymdanMM.Controllers
             foreach (var materialViewModel in materialViewModels)
             {
                 var material = _materialService.GetMaterial(materialViewModel.Id);
-                _materialService.DeleteMaterial(material);
+                material.Deleted = true;
+                _materialService.AddOrUpdateMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
         }

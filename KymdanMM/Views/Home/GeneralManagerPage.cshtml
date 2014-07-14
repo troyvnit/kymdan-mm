@@ -220,9 +220,11 @@
                     },
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "70px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
                 ],
-                editable: true,
+                editable: {
+                    confirmation: "Bạn có chắc muốn xóa ?"
+                },
                 dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
@@ -426,9 +428,11 @@
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
                 ],
-                editable: true,
+                editable: {
+                    confirmation: "Bạn có chắc muốn xóa ? Lưu ý: Bấm lưu để hoàn tất thao tác!"
+                },
                 dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
@@ -458,6 +462,7 @@
             
             //----------Tab 3-----------//
             var finishedDataSource = new kendo.data.DataSource({
+                autoSync: true,
                 transport: {
                     read: {
                         url: "/Home/GetMaterials",
@@ -498,23 +503,23 @@
                         fields: {
                             Id: { editable: false, nullable: false, defaultValue: 0 },
                             MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
-                            MaterialName: { type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            InventoryQuantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            MaterialName: { type: "string", validation: { required: true }, editable: false },
+                            Description: { type: "string", editable: false },
+                            Quantity: { type: "number", editable: false },
+                            InventoryQuantity: { type: "number", editable: false },
+                            Unit: { type: "string", validation: { required: true }, editable: false },
+                            Used: { type: "boolean", editable: false },
+                            UsingPurpose: { type: "string", editable: false },
+                            Deadline: { type: "date", format: "dd/MM/yyyy", validation: { required: true }, editable: false },
+                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true }, editable: false },
+                            ApproveDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true }, editable: false },
                             FinishDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             DeliveryDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
+                            ProgressStatusId: { type: "number", editable: false },
                             Note: { type: "string" },
                             ProposerDepartmentId: { type: "number", editable: false },
-                            ImplementerDepartmentId: { type: "number" },
-                            ImplementerUserName: { type: "string" },
+                            ImplementerDepartmentId: { type: "number", editable: false },
+                            ImplementerUserName: { type: "string", editable: false },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
@@ -638,9 +643,11 @@
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
                 ],
-                editable: false,
+                editable: {
+                    confirmation: "Bạn có chắc muốn xóa ?"
+                },
                 filterMenuInit: function (e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
@@ -774,7 +781,9 @@
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
                     { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", width: 90 }] }
                 ],
-                editable: true,
+                editable: {
+                    confirmation: "Bạn có chắc muốn xóa ?"
+                },
                 filterMenuInit: function (e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
