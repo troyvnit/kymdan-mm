@@ -22,8 +22,30 @@
                             user.DepartmentId && (a.Approved || currentUser.DepartmentId == user.DepartmentId);
             });
     var generalManagerComments = Model.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
+    var relateMaterials = ViewBag.RelateMaterials;
 }
 
+<form class="form-horizontal" role="form" style="position: fixed; bottom: 0;">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Phản hồi</label>
+        <div class="col-sm-8">
+            <div class="input-group">
+                <input id="comment" type="text" class="form-control" placeholder="Nhập phản hồi...">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" id="submitComment">
+                        Gửi
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="RelateIdsSelector" class="col-sm-2 control-label">Phản hồi cho</label>
+        <div class="col-sm-8">
+            @Html.DropDownList("RelateIdsSelector", new SelectList(relateMaterials, "Id", "MaterialName"), new { @class = "form-control", multiple = "multiple" })
+        </div>
+    </div>
+</form>
 <ul class="chat">
     @foreach (var comment in Model.Comments.OrderByDescending(a => a.CreatedDate))
     {
@@ -81,33 +103,24 @@
         }
     }
 </ul>
-<div class="navbar-form navbar-left">
-    <div class="input-group">
-        <input id="comment" type="text" class="form-control" placeholder="Nhập phản hồi...">
-        <span class="input-group-btn">
-            <button class="btn btn-success" id="submitComment">
-                Gửi
-            </button>
-        </span>
-    </div>
-</div>
-<script type="text/javascript">
-        $(document).ready(function () {
-            $("#submitComment").on("click", function () {
-                if ($("#comment").val() == "") {
-                    return false;
-                }
-                $.ajax({
-                    url: '@Url.Action("AddComment", "Home")',
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#submitComment").on("click", function () {
+            if ($("#comment").val() == "") {
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("AddComment", "Home")',
                     type: "POST",
-                    data: { id: '@Model.Id', content: $("#comment").val() },
+                    data: { ids: $("#RelateIdsSelector").val().join(','), content: $("#comment").val() },
                     dataType: "json",
                     success: function (result) {
                         if (result) {
                             window.commentWindow.refresh();
                         }
                     }
-                });
+            });
+            return false;
             });
 
             $("#comment").on("keypress", function (e) {
@@ -115,5 +128,11 @@
                     $("#submitComment").trigger("click");
                 }
             });
-        });
-</script>
+
+            $("#RelateIdsSelector").multiselect({
+                buttonWidth: '100%',
+                includeSelectAllOption: true
+            });
+            $("#RelateIdsSelector").multiselect('select', '@Model.Id');
+    });
+    </script>

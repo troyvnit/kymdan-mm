@@ -209,7 +209,7 @@
                     }
                 }
             });
-            
+
             //----------Tab 2-----------//
             var beAssignedFinishedDataSource = new kendo.data.DataSource({
                 autoSync: true,
@@ -502,23 +502,27 @@
                 alert("Phải lưu trước khi phản hồi!");
                 return false;
             }
+            var dataItems = this._data;
+            var relateIds = [];
+            $.each(dataItems, function () {
+                relateIds.push(this.Id);
+            });
             var hash = "#" + e.delegateTarget.parentElement.id;
             commentWindow = $("#CommentWindow")
                 .kendoWindow({
                     title: "Phản hồi",
                     modal: true,
                     visible: false,
-                    resizable: false,
-                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
+                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id + '&relateIds=' + relateIds.join(','),
                     width: 600,
-                    close: function (e) {
+                    close: function(e) {
                         $('ul.nav a[href="' + hash + '"]').parent().removeClass("active");
                         $('ul.nav a[href="' + hash + '"]').tab('show');
                     }
                 }).data("kendoWindow");
             commentWindow.center().open();
         }
-        
+
         function progressStatusIdBeAssignedUnfinishedGridFilter(element) {
             var progressStatusIds = [];
             var statuses = [];
@@ -537,8 +541,8 @@
                 dataValueField: "Value",
                 optionLabel: "-Chọn-",
             });
-        } 
-        
+        }
+
         function progressStatusIdBeAssignedFinishedGridFilter(element) {
             var progressStatusIds = [];
             var statuses = [];

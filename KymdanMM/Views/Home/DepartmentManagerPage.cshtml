@@ -498,7 +498,8 @@
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     {
-                        hidden: true, field: "ImplementerDepartmentId",
+                        hidden: true,
+                        field: "ImplementerDepartmentId",
                         title: "Đơn vị thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
@@ -509,7 +510,12 @@
                         }
                     },
                     {
-                        field: "ImplementerDepartmentIds", title: "Đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100,
+                        field: "ImplementerDepartmentIds",
+                        title: "Đơn vị thực hiện",
+                        editor: implementerDepartmentsEditor,
+                        template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #",
+                        groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerDepartmentIdsApprovedAwaitingReceiveGridFilter
                         }
@@ -517,7 +523,12 @@
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
-                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        field: "ProgressStatusId",
+                        title: "Trạng thái tiến độ",
+                        editor: progressStatusEditor,
+                        template: "#= getProgressStatus(ProgressStatusId) #",
+                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
+                        width: 100,
                         filterable: {
                             ui: progressStatusIdApprovedAwaitingReceiveGridFilter
                         }
@@ -537,7 +548,7 @@
                         });
                     }
                 },
-                dataBound: function () {
+                dataBound: function() {
                     var dataView = this.dataSource.view();
                     for (var i = 0; i < dataView.length; i++) {
                         if (dataView[i].ImplementerUserName != "") {
@@ -702,10 +713,10 @@
                     { field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                   { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
                 ],
                 editable: true,
-                edit: function (e) {
+                edit: function(e) {
                     if (e.model.StartDate == null) {
                         e.model.set("StartDate", new Date());
                     }
@@ -850,7 +861,8 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        hidden: true, field: "ImplementerUserName",
+                        hidden: true,
+                        field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -861,7 +873,12 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames",
+                        title: "Người thực hiện",
+                        editor: implementerUsersEditor,
+                        template: "#= getImplementerDisplayNames(ImplementerUserNames) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerUserNamesApprovedImplementedGridFilter
                         }
@@ -869,7 +886,12 @@
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
-                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        field: "ProgressStatusId",
+                        title: "Trạng thái tiến độ",
+                        editor: progressStatusEditor,
+                        template: "#= getProgressStatus(ProgressStatusId) #",
+                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
+                        width: 100,
                         filterable: {
                             ui: progressStatusIdApprovedImplementedGridFilter
                         }
@@ -877,7 +899,7 @@
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                     { field: "Finished", title: "Hoàn thành", template: "<input type='checkbox' #= (Finished === true) ? checked='checked' : '' # disabled />", width: 70 },
+                    { field: "Finished", title: "Hoàn thành", template: "<input type='checkbox' #= (Finished === true) ? checked='checked' : '' # disabled />", width: 70 },
                     { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
                 ],
                 editable: {
@@ -1045,7 +1067,8 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        hidden: true, field: "ImplementerUserName",
+                        hidden: true,
+                        field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -1056,7 +1079,12 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames",
+                        title: "Người thực hiện",
+                        editor: implementerUsersEditor,
+                        template: "#= getImplementerDisplayNames(ImplementerUserNames) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerUserNamesFinishedGridFilter
                         }
@@ -1064,7 +1092,12 @@
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
-                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        field: "ProgressStatusId",
+                        title: "Trạng thái tiến độ",
+                        editor: progressStatusEditor,
+                        template: "#= getProgressStatus(ProgressStatusId) #",
+                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
+                        width: 100,
                         filterable: {
                             ui: progressStatusIdFinishedGridFilter
                         }
@@ -1085,7 +1118,7 @@
                     }
                 }
             });
-            
+
             //----------Tab 7-----------//
             var receivedDataSource = new kendo.data.DataSource({
                 autoSync: true,
@@ -1106,7 +1139,7 @@
                         url: "/Home/AddOrUpdateMaterial",
                         type: "post"
                     },
-                    parameterMap: function (options, operation) {
+                    parameterMap: function(options, operation) {
                         if (operation !== "read" && options.models) {
                             return {
                                 materials: kendo.stringify(options.models)
@@ -1225,7 +1258,8 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        hidden: true, field: "ImplementerUserName",
+                        hidden: true,
+                        field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -1236,7 +1270,12 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames",
+                        title: "Người thực hiện",
+                        editor: implementerUsersEditor,
+                        template: "#= getImplementerDisplayNames(ImplementerUserNames) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #",
+                        width: 100,
                         filterable: {
                             ui: implementerUserNamesReceivedGridFilter
                         }
@@ -1244,7 +1283,12 @@
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
-                        field: "ProgressStatusId", title: "Trạng thái tiến độ", editor: progressStatusEditor, template: "#= getProgressStatus(ProgressStatusId) #", groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #", width: 100,
+                        field: "ProgressStatusId",
+                        title: "Trạng thái tiến độ",
+                        editor: progressStatusEditor,
+                        template: "#= getProgressStatus(ProgressStatusId) #",
+                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
+                        width: 100,
                         filterable: {
                             ui: progressStatusIdReceivedGridFilter
                         }
@@ -1255,11 +1299,11 @@
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
-                filterMenuInit: function (e) {
+                filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function () {
+                        setTimeout(function() {
                             firstValueDropDown.wrapper.hide();
                         });
                     }
@@ -1308,7 +1352,7 @@
                 .kendoDropDownList({
                     dataTextField: "DepartmentName",
                     dataValueField: "Id",
-                    optionLabel:  {
+                    optionLabel: {
                         DepartmentName: "-Chọn-",
                         Id: 0
                     },
@@ -1318,10 +1362,10 @@
 
         function getImplementerDepartments(ids) {
             var departments = [];
-            $.each(ids.split(','), function () {
+            $.each(ids.split(','), function() {
                 var departmentName = "";
                 var id = this;
-                $.each(implementerDepartmentDataSource._data, function () {
+                $.each(implementerDepartmentDataSource._data, function() {
                     if (this.Id == id) {
                         departmentName = this.DepartmentName;
                     }
@@ -1333,10 +1377,10 @@
 
         function getImplementerDepartmentNames(ids) {
             var departmentNames = [];
-            $.each(ids.split(','), function () {
+            $.each(ids.split(','), function() {
                 var departmentName = "";
                 var id = this;
-                $.each(implementerDepartmentDataSource._data, function () {
+                $.each(implementerDepartmentDataSource._data, function() {
                     if (this.Id == id) {
                         departmentName = this.DepartmentName;
                     }
@@ -1358,10 +1402,10 @@
                         Id: 0
                     },
                     dataSource: implementerDepartmentDataSource,
-                    open: function () {
+                    open: function() {
                         this.value(model.ImplementerDepartmentIds.split(','));
                     },
-                    change: function (e) {
+                    change: function(e) {
                         model.set("ImplementerUserNames", "");
                         model.set("ImplementerDepartmentIds", this.value());
                     }
@@ -1404,13 +1448,13 @@
                     }
                 });
         }
-        
+
         function getImplementerUsers(userNames) {
             var users = [];
-            $.each(userNames.split(','), function () {
+            $.each(userNames.split(','), function() {
                 var displayName = "";
                 var userName = this;
-                $.each(implementerUserDataSource._data, function () {
+                $.each(implementerUserDataSource._data, function() {
                     if (this.UserName == userName) {
                         displayName = this.DisplayName;
                     }
@@ -1422,10 +1466,10 @@
 
         function getImplementerDisplayNames(userNames) {
             var displayNames = [];
-            $.each(userNames.split(','), function () {
+            $.each(userNames.split(','), function() {
                 var displayName = "";
                 var userName = this;
-                $.each(implementerUserDataSource._data, function () {
+                $.each(implementerUserDataSource._data, function() {
                     if (this.UserName == userName) {
                         displayName = this.DisplayName;
                     }
@@ -1451,10 +1495,10 @@
                             }
                         }
                     },
-                    open: function () {
+                    open: function() {
                         this.value(options.model.ImplementerUserNames.split(','));
                     },
-                    change: function (e) {
+                    change: function(e) {
                         options.model.set("ImplementerUserNames", this.value());
                     }
                 });
@@ -1530,9 +1574,9 @@
         function getNewCommentIcon(haveNew) {
             return haveNew ? '<img style="float:right; height: 30px;" src="/Images/comment.png">' : '';
         }
-        
+
         function getMaterialName(id, materialName, file) {
-            return file != "" && file != "[]" ? "<a href='/Home/Material/"+id+"' class='label label-success pull-right'><img src='/Images/attachment.png' style='width: 15px;'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName :
+            return file != "" && file != "[]" ? "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/attachment.png' style='width: 15px;'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName :
                 "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName;
         }
 
@@ -1545,16 +1589,20 @@
                 alert("Phải lưu trước khi phản hồi!");
                 return false;
             }
+            var dataItems = this._data;
+            var relateIds = [];
+            $.each(dataItems, function () {
+                relateIds.push(this.Id);
+            });
             var hash = "#" + e.delegateTarget.parentElement.id;
             commentWindow = $("#CommentWindow")
                 .kendoWindow({
                     title: "Phản hồi",
                     modal: true,
                     visible: false,
-                    resizable: false,
-                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id,
+                    content: '@Url.Action("CommentPartialView")' + '?id=' + dataItem.Id + '&relateIds=' + relateIds.join(','),
                     width: 600,
-                    close: function (e) {
+                    close: function(e) {
                         $('ul.nav a[href="' + hash + '"]').parent().removeClass("active");
                         $('ul.nav a[href="' + hash + '"]').tab('show');
                     }
@@ -1581,14 +1629,14 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function implementerDepartmentIdsApprovedAwaitingReceiveGridFilter(element) {
             var implementerDepartmentIds = [];
             var implementerDepartmentNames = [];
             var grid = $("#ApprovedAwaitingReceiveGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var departments = getImplementerDepartments(this.ImplementerDepartmentIds);
-                $.each(departments, function () {
+                $.each(departments, function() {
                     var department = this;
                     var obj = { Value: department.id, Text: department.departmentName != "" ? department.departmentName : "Chưa phân công" };
                     if ($.inArray(department.departmentName, implementerDepartmentNames) == -1) {
@@ -1644,14 +1692,14 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function implementerUserNamesApprovedImplementedGridFilter(element) {
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var users = getImplementerUsers(this.ImplementerUserNames);
-                $.each(users, function () {
+                $.each(users, function() {
                     var user = this;
                     var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
                     if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
@@ -1687,14 +1735,14 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function implementerUserNamesFinishedGridFilter(element) {
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#FinishedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var users = getImplementerUsers(this.ImplementerUserNames);
-                $.each(users, function () {
+                $.each(users, function() {
                     var user = this;
                     var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
                     if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
@@ -1710,52 +1758,12 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
         function progressStatusIdApprovedAwaitingReceiveGridFilter(element) {
             var progressStatusIds = [];
             var statuses = [];
             var grid = $("#ApprovedAwaitingReceiveGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
-                var status = getProgressStatus(this.ProgressStatusId);
-                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
-                if ($.inArray(status, statuses) == -1) {
-                    progressStatusIds.push(obj);
-                    statuses.push(status);
-                }
-            });
-            element.kendoDropDownList({
-                dataSource: progressStatusIds,
-                dataTextField: "Text",
-                dataValueField: "Value",
-                optionLabel: "-Chọn-",
-            });
-        } 
-        
-        function progressStatusIdApprovedImplementedGridFilter(element) {
-            var progressStatusIds = [];
-            var statuses = [];
-            var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
-                var status = getProgressStatus(this.ProgressStatusId);
-                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
-                if ($.inArray(status, statuses) == -1) {
-                    progressStatusIds.push(obj);
-                    statuses.push(status);
-                }
-            });
-            element.kendoDropDownList({
-                dataSource: progressStatusIds,
-                dataTextField: "Text",
-                dataValueField: "Value",
-                optionLabel: "-Chọn-",
-            });
-        } 
-        
-        function progressStatusIdFinishedGridFilter(element) {
-            var progressStatusIds = [];
-            var statuses = [];
-            var grid = $("#FinishedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var status = getProgressStatus(this.ProgressStatusId);
                 var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
                 if ($.inArray(status, statuses) == -1) {
@@ -1770,12 +1778,52 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
+        function progressStatusIdApprovedImplementedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function() {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
+        function progressStatusIdFinishedGridFilter(element) {
+            var progressStatusIds = [];
+            var statuses = [];
+            var grid = $("#FinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function() {
+                var status = getProgressStatus(this.ProgressStatusId);
+                var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
+                if ($.inArray(status, statuses) == -1) {
+                    progressStatusIds.push(obj);
+                    statuses.push(status);
+                }
+            });
+            element.kendoDropDownList({
+                dataSource: progressStatusIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+
         function implementerUserNameReceivedGridFilter(element) {
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#ReceivedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var displayName = getImplementerDisplayName(this.ImplementerUserName);
                 var obj = { Value: this.ImplementerUserName, Text: displayName };
                 if ($.inArray(displayName, implementerDisplayNames) == -1 && displayName != "") {
@@ -1795,9 +1843,9 @@
             var implementerUserNames = [];
             var implementerDisplayNames = [];
             var grid = $("#ReceivedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var users = getImplementerUsers(this.ImplementerUserNames);
-                $.each(users, function () {
+                $.each(users, function() {
                     var user = this;
                     var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
                     if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
@@ -1818,7 +1866,7 @@
             var progressStatusIds = [];
             var statuses = [];
             var grid = $("#ReceivedGrid").data("kendoGrid");
-            $.each(grid.dataSource._data, function () {
+            $.each(grid.dataSource._data, function() {
                 var status = getProgressStatus(this.ProgressStatusId);
                 var obj = { Value: this.ProgressStatusId, Text: status != "" ? status : "Chưa có trạng thái" };
                 if ($.inArray(status, statuses) == -1) {

@@ -226,3 +226,8 @@ li.k-file div.file-wrapper {
 .label-medium { font-size: 14px; }
 
 .uppercase { text-transform: uppercase; }
+
+#CommentWindow {
+    padding-bottom: 105px;
+    display: none;
+}

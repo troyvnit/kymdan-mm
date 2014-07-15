@@ -104,7 +104,7 @@ namespace KymdanMM.Controllers
             return View(material);
         }
 
-        public ActionResult CommentPartialView(int id)
+        public ActionResult CommentPartialView(int id, string relateIds)
         {
             var material = _materialService.GetMaterial(id);
                 var materialViewModel = Mapper.Map<Material, MaterialViewModel>(material);
@@ -126,6 +126,8 @@ namespace KymdanMM.Controllers
             ViewBag.ProgressStatuses = _progressStatusService.GetProgressStatuses();
             ViewBag.Users = users;
             ViewBag.CurrentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            var relateMaterials = relateIds.Split(',').Select(relateId => _materialService.GetMaterial(Convert.ToInt32(relateId))).ToList();
+            ViewBag.RelateMaterials = relateMaterials;
             foreach (var comment in material.Comments)
             {
                 var readUserNames = comment.ReadUserNames.Split(',').ToList();
@@ -526,7 +528,7 @@ namespace KymdanMM.Controllers
                 foreach (var materialViewModel in materialViewModels)
                 {
                     var model = materialViewModel;
-                    var proposalDeparmentComments = model.ImplementerDepartmentId != model.ProposerDepartmentId ? 
+                    var proposalDeparmentComments = !(model.ImplementerDepartmentIds.StartsWith(model.ProposerDepartmentId + ",") || model.ImplementerDepartmentIds.Contains("," + model.ProposerDepartmentId + ",") || model.ImplementerDepartmentIds.EndsWith("," + model.ProposerDepartmentId) || model.ImplementerDepartmentIds == model.ProposerDepartmentId.ToString()) ? 
                         materialViewModel.Comments.Where(
                             a =>
                             {
@@ -537,7 +539,7 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName != a.PosterUserName && !Roles.IsUserInRole(a.PosterUserName, "Admin");
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && !(model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
@@ -549,17 +551,18 @@ namespace KymdanMM.Controllers
                     {
                         materialViewModel.LastProposalDeparmentComment = "";
                     }
-                    var implementDepartmentComments = model.ImplementerDepartmentId != model.ProposerDepartmentId ? materialViewModel.Comments.Where(
+                    var implementDepartmentComments = !(model.ImplementerDepartmentIds.StartsWith(model.ProposerDepartmentId + ",") || model.ImplementerDepartmentIds.Contains("," + model.ProposerDepartmentId + ",") || model.ImplementerDepartmentIds.EndsWith("," + model.ProposerDepartmentId) || model.ImplementerDepartmentIds == model.ProposerDepartmentId.ToString()) ? 
+                        materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ImplementerDepartmentId == poster.DepartmentId && !Roles.IsUserInRole(a.PosterUserName, "Admin");
+                                return poster != null && (model.ImplementerDepartmentIds.StartsWith(poster.DepartmentId + ",") || model.ImplementerDepartmentIds.Contains("," + poster.DepartmentId + ",") || model.ImplementerDepartmentIds.EndsWith("," + poster.DepartmentId) || model.ImplementerDepartmentIds == poster.DepartmentId.ToString()) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             }) :
                             materialViewModel.Comments.Where(
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && model.ImplementerUserName == a.PosterUserName && !Roles.IsUserInRole(a.PosterUserName, "Admin");
+                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && (model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)
@@ -684,23 +687,33 @@ namespace KymdanMM.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddComment(string content, int id)
+        public ActionResult AddComment(string content, string ids)
         {
-            var comment = new Comment { Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name };
-            var material = _materialService.GetMaterial(id);
-            var readUserNames = new List<string>();
-            var users = usersContext.UserProfiles.ToList();
-            var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
-            if (user != null)
+            if (string.IsNullOrEmpty(ids))
             {
-                comment.PosterDisplayName = user.DisplayName;
-                readUserNames.Add(comment.PosterUserName);
-                comment.ReadUserNames = string.Join(",", readUserNames);
+                return Json("", JsonRequestBehavior.AllowGet);
             }
-            comment.Approved = true;
-            material.Comments.Add(comment);
-            _materialService.AddOrUpdateMaterial(material);
-            return Json(Mapper.Map<Comment, CommentViewModel>(comment), JsonRequestBehavior.AllowGet);
+            else
+            {
+                foreach (var id in ids.Replace("multiselect-all,", "").Split(','))
+                {
+                    var comment = new Comment { Content = content, PosterUserName = Thread.CurrentPrincipal.Identity.Name };
+                    var material = _materialService.GetMaterial(Convert.ToInt32(id));
+                    var readUserNames = new List<string>();
+                    var users = usersContext.UserProfiles.ToList();
+                    var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+                    if (user != null)
+                    {
+                        comment.PosterDisplayName = user.DisplayName;
+                        readUserNames.Add(comment.PosterUserName);
+                        comment.ReadUserNames = string.Join(",", readUserNames);
+                    }
+                    comment.Approved = true;
+                    material.Comments.Add(comment);
+                    _materialService.AddOrUpdateMaterial(material);
+                }
+                return Json(new CommentViewModel{Content = "OK"}, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]
