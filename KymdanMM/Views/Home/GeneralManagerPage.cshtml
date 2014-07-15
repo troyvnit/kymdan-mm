@@ -219,7 +219,7 @@
                     { field: "Quantity", title: "SL", template: '<div style="text-align:right;">#= kendo.toString(Quantity, "n2") #</div>', width: 50 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     {
-                        field: "ImplementerDepartmentId",
+                        hidden: true, field: "ImplementerDepartmentId",
                         title: "Đơn vị thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
@@ -231,7 +231,7 @@
                     },
                     {
                         field: "ImplementerDepartmentIds",
-                        title: "Những đơn vị thực hiện",
+                        title: "Đơn vị thực hiện",
                         editor: implementerDepartmentsEditor,
                         template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #",
                         groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #",
@@ -420,7 +420,7 @@
                         }
                     },
                     {
-                        field: "ImplementerDepartmentId",
+                        hidden: true, field: "ImplementerDepartmentId",
                         title: "ĐV thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
@@ -431,13 +431,13 @@
                         }
                     },
                     {
-                        field: "ImplementerDepartmentIds", title: "Những đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 60,
+                        field: "ImplementerDepartmentIds", title: "ĐV thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 60,
                         filterable: {
                             ui: implementerDepartmentIdsApprovedAssignedGridFilter
                         }
                     },
                     {
-                        field: "ImplementerUserName",
+                        hidden: true, field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -448,7 +448,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
                         filterable: {
                             ui: implementerUserNamesApprovedAssignedGridFilter
                         }
@@ -643,7 +643,7 @@
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "Description", title: "Mô tả", editor: textareaEditor, width: 100 },
                     {
-                        field: "ImplementerDepartmentId",
+                        hidden: true, field: "ImplementerDepartmentId",
                         title: "ĐV thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
@@ -654,7 +654,7 @@
                         }
                     },
                     {
-                        field: "ImplementerDepartmentIds", title: "Những đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 50,
+                        field: "ImplementerDepartmentIds", title: "ĐV thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 50,
                         filterable: {
                             ui: implementerDepartmentIdsAssignedFinishedGridFilter
                         }
@@ -671,7 +671,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserName",
+                        hidden: true, field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -682,7 +682,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
                         filterable: {
                             ui: implementerUserNamesAssignedFinishedGridFilter
                         }
@@ -973,7 +973,7 @@
                 });
                 departmentNames.push(departmentName);
             });
-            return departmentNames.join(',');
+            return departmentNames.join(', ');
         }
 
         function implementerDepartmentsEditor(container, options) {
@@ -992,7 +992,9 @@
                         this.value(model.ImplementerDepartmentIds.split(','));
                     },
                     change: function(e) {
-                        model.set("ImplementerUserName", "");
+                        model.set("ImplementerUserNames", "");
+                        model.set("StartDate", null);
+                        model.set("FinishDate", null);
                         model.set("ImplementerDepartmentIds", this.value());
                     }
                 });
@@ -1062,7 +1064,7 @@
                 });
                 displayNames.push(displayName);
             });
-            return displayNames.join(',');
+            return displayNames.join(', ');
         }
 
         function implementerUsersEditor(container, options) {

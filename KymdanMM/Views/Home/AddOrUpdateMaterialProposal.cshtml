@@ -195,7 +195,7 @@
                     <input id="ImplementerDepartment" />
                 </div>
                 <div class="col-sm-2">
-                    <label>Những đơn vị thực hiện:</label>
+                    <label>Đơn vị thực hiện:</label>
                     <input id="ImplementerDepartments" />
                 </div>
             }
@@ -332,9 +332,9 @@
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
-                    { field: "ImplementerDepartmentIds", title: "Những đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                    { field: "ImplementerDepartmentIds", title: "Đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
-                    { field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { command: [{ text: "Đính kèm", click: uploadFile }, { text: "Phản hồi", click: showComment }], title: " ", width: "150px" }
@@ -710,7 +710,7 @@
                 });
                 departmentNames.push(departmentName);
             });
-            return departmentNames.join(',');
+            return departmentNames.join(', ');
         }
 
         function implementerDepartmentsEditor(container, options) {
@@ -729,7 +729,7 @@
                         this.value(model.ImplementerDepartmentIds.split(','));
                     },
                     change: function(e) {
-                        model.set("ImplementerUserName", "");
+                        model.set("ImplementerUserNames", "");
                         model.set("ImplementerDepartmentIds", this.value());
                     }
                 });
@@ -785,7 +785,7 @@
                 });
                 displayNames.push(displayName);
             });
-            return displayNames.join(',');
+            return displayNames.join(', ');
         }
 
         function implementerUsersEditor(container, options) {

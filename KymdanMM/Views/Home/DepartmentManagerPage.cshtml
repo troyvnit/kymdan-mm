@@ -498,7 +498,7 @@
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 120 },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     {
-                        field: "ImplementerDepartmentId",
+                        hidden: true, field: "ImplementerDepartmentId",
                         title: "Đơn vị thực hiện",
                         editor: implementerDepartmentEditor,
                         template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #",
@@ -509,7 +509,7 @@
                         }
                     },
                     {
-                        field: "ImplementerDepartmentIds", title: "Những đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100,
+                        field: "ImplementerDepartmentIds", title: "Đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100,
                         filterable: {
                             ui: implementerDepartmentIdsApprovedAwaitingReceiveGridFilter
                         }
@@ -698,8 +698,8 @@
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "TGĐ duyệt", width: 80 },
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
-                    { field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100 },
+                    { hidden: true, field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
+                    { field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
@@ -850,7 +850,7 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        field: "ImplementerUserName",
+                        hidden: true, field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -861,7 +861,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
                         filterable: {
                             ui: implementerUserNamesApprovedImplementedGridFilter
                         }
@@ -1045,7 +1045,7 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        field: "ImplementerUserName",
+                        hidden: true, field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -1056,7 +1056,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
                         filterable: {
                             ui: implementerUserNamesFinishedGridFilter
                         }
@@ -1225,7 +1225,7 @@
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
                     {
-                        field: "ImplementerUserName",
+                        hidden: true, field: "ImplementerUserName",
                         title: "Người thực hiện",
                         editor: implementerUserEditor,
                         template: "#= getImplementerDisplayName(ImplementerUserName) #",
@@ -1236,7 +1236,7 @@
                         }
                     },
                     {
-                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
                         filterable: {
                             ui: implementerUserNamesReceivedGridFilter
                         }
@@ -1343,7 +1343,7 @@
                 });
                 departmentNames.push(departmentName);
             });
-            return departmentNames.join(',');
+            return departmentNames.join(', ');
         }
 
         function implementerDepartmentsEditor(container, options) {
@@ -1362,7 +1362,7 @@
                         this.value(model.ImplementerDepartmentIds.split(','));
                     },
                     change: function (e) {
-                        model.set("ImplementerUserName", "");
+                        model.set("ImplementerUserNames", "");
                         model.set("ImplementerDepartmentIds", this.value());
                     }
                 });
@@ -1432,7 +1432,7 @@
                 });
                 displayNames.push(displayName);
             });
-            return displayNames.join(',');
+            return displayNames.join(', ');
         }
 
         function implementerUsersEditor(container, options) {
