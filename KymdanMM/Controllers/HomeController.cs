@@ -144,7 +144,7 @@ namespace KymdanMM.Controllers
                 var materials = _materialService.GetMaterials(pageNumber, pageSize,
                         a => (a.ImplementerDepartmentId == departmentId ||
                              a.MaterialProposal.ProposerDepartmentId == user.DepartmentId ||
-                             a.ImplementerDepartmentId == user.DepartmentId) &&
+                             (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId))) &&
                             (a.ProgressStatusId == progressStatusId ||
                              progressStatusId == null) &&
                             (a.Approved == approveStatus || approveStatus == null) &&
@@ -423,7 +423,7 @@ namespace KymdanMM.Controllers
                     case "ApprovedAwaitingImplement":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                a.ImplementerDepartmentId == user.DepartmentId &&
+                                (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                 string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 !a.Finished &&
                                 a.Approved &&
@@ -433,7 +433,7 @@ namespace KymdanMM.Controllers
                     case "ApprovedImplemented":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                a.ImplementerDepartmentId == user.DepartmentId &&
+                                (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 !a.Finished &&
                                 a.Approved &&
@@ -461,7 +461,7 @@ namespace KymdanMM.Controllers
                     case "Finished":
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                a.ImplementerDepartmentId == user.DepartmentId &&
+                                (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                 a.Finished &&
                                 a.Approved &&
@@ -739,7 +739,7 @@ namespace KymdanMM.Controllers
                     case "ApprovedAwaitingImplement":
                         materials = _materialService.GetMaterials(1, 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                  string.IsNullOrEmpty(a.ImplementerUserName) &&
                                  !a.Finished &&
                                  a.Approved &&
@@ -748,7 +748,7 @@ namespace KymdanMM.Controllers
                     case "ApprovedImplemented":
                         materials = _materialService.GetMaterials(1, 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                  !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                  !a.Finished &&
                                  a.Approved &&
@@ -764,7 +764,7 @@ namespace KymdanMM.Controllers
                     case "Finished":
                         materials = _materialService.GetMaterials(1, 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
-                                 a.ImplementerDepartmentId == user.DepartmentId &&
+                                 (a.ImplementerDepartmentId == user.DepartmentId || a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId)) &&
                                  !string.IsNullOrEmpty(a.ImplementerUserName) &&
                                  a.Finished &&
                                  a.Approved &&

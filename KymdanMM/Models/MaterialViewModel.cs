@@ -49,10 +49,14 @@ namespace KymdanMM.Models
         public string Note { get; set; }
         [Display(Name = "Người thực hiện")]
         public string ImplementerUserName { get; set; }
+        [Display(Name = "Những người thực hiện")]
+        public string ImplementerUserNames { get; set; }
         [Display(Name = "Người thực hiện")]
         public string ImplementerDisplayName { get; set; }
         [Display(Name = "Đơn vị thực hiện")]
         public int ImplementerDepartmentId { get; set; }
+        [Display(Name = "Những đơn vị thực hiện")]
+        public string ImplementerDepartmentIds { get; set; }
         [Display(Name = "Đơn vị thực hiện")]
         public string ImplementerDepartmentName { get; set; }
         [Display(Name = "Đơn vị đề nghị")]

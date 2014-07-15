@@ -508,6 +508,12 @@
                             ui: implementerDepartmentIdApprovedAwaitingReceiveGridFilter
                         }
                     },
+                    {
+                        field: "ImplementerDepartmentIds", title: "Những đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100,
+                        filterable: {
+                            ui: implementerDepartmentIdsApprovedAwaitingReceiveGridFilter
+                        }
+                    },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
@@ -523,7 +529,7 @@
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ImplementerDepartmentIds" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -1287,6 +1293,58 @@
                 });
         }
 
+        function getImplementerDepartments(ids) {
+            var departments = [];
+            $.each(ids.split(','), function () {
+                var departmentName = "";
+                var id = this;
+                $.each(implementerDepartmentDataSource._data, function () {
+                    if (this.Id == id) {
+                        departmentName = this.DepartmentName;
+                    }
+                });
+                departments.push({ id: id, departmentName: departmentName });
+            });
+            return departments;
+        }
+
+        function getImplementerDepartmentNames(ids) {
+            var departmentNames = [];
+            $.each(ids.split(','), function () {
+                var departmentName = "";
+                var id = this;
+                $.each(implementerDepartmentDataSource._data, function () {
+                    if (this.Id == id) {
+                        departmentName = this.DepartmentName;
+                    }
+                });
+                departmentNames.push(departmentName);
+            });
+            return departmentNames.join(',');
+        }
+
+        function implementerDepartmentsEditor(container, options) {
+            var model = options.model;
+            $('<input data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoMultiSelect({
+                    dataTextField: "DepartmentName",
+                    dataValueField: "Id",
+                    optionLabel: {
+                        DepartmentName: "-Chọn-",
+                        Id: 0
+                    },
+                    dataSource: implementerDepartmentDataSource,
+                    open: function () {
+                        this.value(model.ImplementerDepartmentIds.split(','));
+                    },
+                    change: function (e) {
+                        model.set("ImplementerUserName", "");
+                        model.set("ImplementerDepartmentIds", this.value());
+                    }
+                });
+        }
+
         function getImplementerDisplayName(userName) {
             var displayName = "";
             $.each(implementerUserDataSource._data, function() {
@@ -1437,6 +1495,29 @@
                     implementerDepartmentIds.push(obj);
                     implementerDepartmentNames.push(departmentName);
                 }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerDepartmentIds,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+        
+        function implementerDepartmentIdsApprovedAwaitingReceiveGridFilter(element) {
+            var implementerDepartmentIds = [];
+            var implementerDepartmentNames = [];
+            var grid = $("#ApprovedAwaitingReceiveGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var departments = getImplementerDepartments(this.ImplementerDepartmentIds);
+                $.each(departments, function () {
+                    var department = this;
+                    var obj = { Value: department.id, Text: department.departmentName != "" ? department.departmentName : "Chưa phân công" };
+                    if ($.inArray(department.departmentName, implementerDepartmentNames) == -1) {
+                        implementerDepartmentIds.push(obj);
+                        implementerDepartmentNames.push(department.departmentName);
+                    }
+                });
             });
             element.kendoDropDownList({
                 dataSource: implementerDepartmentIds,
