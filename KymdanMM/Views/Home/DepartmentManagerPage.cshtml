@@ -217,7 +217,7 @@
                     confirmation: "Bạn có chắc muốn xóa ?"
                 },
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -351,7 +351,7 @@
                 ],
                 editable: true,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -529,7 +529,7 @@
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ImplementerDepartmentIds" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ImplementerDepartmentIds" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -616,6 +616,7 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            ImplementerUserNames: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
@@ -698,6 +699,7 @@
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 80 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100 },
+                    { field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "80px" }
@@ -768,6 +770,7 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            ImplementerUserNames: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
@@ -857,6 +860,12 @@
                             ui: implementerUserNameApprovedImplementedGridFilter
                         }
                     },
+                    {
+                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        filterable: {
+                            ui: implementerUserNamesApprovedImplementedGridFilter
+                        }
+                    },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
@@ -887,7 +896,7 @@
                     }
                 },
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -956,6 +965,7 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            ImplementerUserNames: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
@@ -1045,6 +1055,12 @@
                             ui: implementerUserNameFinishedGridFilter
                         }
                     },
+                    {
+                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        filterable: {
+                            ui: implementerUserNamesFinishedGridFilter
+                        }
+                    },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
@@ -1060,7 +1076,7 @@
                 ],
                 editable: false,
                 filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function() {
@@ -1129,6 +1145,7 @@
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
+                            ImplementerUserNames: { type: "string" },
                             LastProposalDeparmentComment: { type: "string", editable: false },
                             LastImplementDepartmentComment: { type: "string", editable: false },
                             LastGeneralManagerComment: { type: "string", editable: false },
@@ -1218,6 +1235,12 @@
                             ui: implementerUserNameReceivedGridFilter
                         }
                     },
+                    {
+                        field: "ImplementerUserNames", title: "Những người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100,
+                        filterable: {
+                            ui: implementerUserNamesReceivedGridFilter
+                        }
+                    },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
                     {
@@ -1233,7 +1256,7 @@
                 ],
                 editable: false,
                 filterMenuInit: function (e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ProgressStatusId") {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
                         var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
                         e.container.find(".k-filter-help-text").hide();
                         setTimeout(function () {
@@ -1378,6 +1401,61 @@
                                 type: "post"
                             }
                         }
+                    }
+                });
+        }
+        
+        function getImplementerUsers(userNames) {
+            var users = [];
+            $.each(userNames.split(','), function () {
+                var displayName = "";
+                var userName = this;
+                $.each(implementerUserDataSource._data, function () {
+                    if (this.UserName == userName) {
+                        displayName = this.DisplayName;
+                    }
+                });
+                users.push({ userName: userName, displayName: displayName });
+            });
+            return users;
+        }
+
+        function getImplementerDisplayNames(userNames) {
+            var displayNames = [];
+            $.each(userNames.split(','), function () {
+                var displayName = "";
+                var userName = this;
+                $.each(implementerUserDataSource._data, function () {
+                    if (this.UserName == userName) {
+                        displayName = this.DisplayName;
+                    }
+                });
+                displayNames.push(displayName);
+            });
+            return displayNames.join(',');
+        }
+
+        function implementerUsersEditor(container, options) {
+            $('<input data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoMultiSelect({
+                    autoBind: true,
+                    dataTextField: "DisplayName",
+                    dataValueField: "UserName",
+                    optionLabel: "-Chọn-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "/Home/GetUser?departmentIds=" + options.model.ImplementerDepartmentIds,
+                                type: "post"
+                            }
+                        }
+                    },
+                    open: function () {
+                        this.value(options.model.ImplementerUserNames.split(','));
+                    },
+                    change: function (e) {
+                        options.model.set("ImplementerUserNames", this.value());
                     }
                 });
         }
@@ -1566,6 +1644,29 @@
                 optionLabel: "-Chọn-",
             });
         }
+        
+        function implementerUserNamesApprovedImplementedGridFilter(element) {
+            var implementerUserNames = [];
+            var implementerDisplayNames = [];
+            var grid = $("#ApprovedImplementedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var users = getImplementerUsers(this.ImplementerUserNames);
+                $.each(users, function () {
+                    var user = this;
+                    var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
+                    if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
+                        implementerUserNames.push(obj);
+                        implementerDisplayNames.push(user.displayName);
+                    }
+                });
+            });
+            element.kendoDropDownList({
+                dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
 
         function implementerUserNameFinishedGridFilter(element) {
             var implementerUserNames = [];
@@ -1578,6 +1679,29 @@
                     implementerUserNames.push(obj);
                     implementerDisplayNames.push(displayName);
                 }
+            });
+            element.kendoDropDownList({
+                dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
+        
+        function implementerUserNamesFinishedGridFilter(element) {
+            var implementerUserNames = [];
+            var implementerDisplayNames = [];
+            var grid = $("#FinishedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var users = getImplementerUsers(this.ImplementerUserNames);
+                $.each(users, function () {
+                    var user = this;
+                    var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
+                    if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
+                        implementerUserNames.push(obj);
+                        implementerDisplayNames.push(user.displayName);
+                    }
+                });
             });
             element.kendoDropDownList({
                 dataSource: implementerUserNames,
@@ -1666,7 +1790,29 @@
                 optionLabel: "-Chọn-",
             });
         }
-        
+
+        function implementerUserNamesReceivedGridFilter(element) {
+            var implementerUserNames = [];
+            var implementerDisplayNames = [];
+            var grid = $("#ReceivedGrid").data("kendoGrid");
+            $.each(grid.dataSource._data, function () {
+                var users = getImplementerUsers(this.ImplementerUserNames);
+                $.each(users, function () {
+                    var user = this;
+                    var obj = { Value: user.userName, Text: user.displayName != "" ? user.displayName : "Chưa phân công" };
+                    if ($.inArray(user.displayName, implementerDisplayNames) == -1) {
+                        implementerUserNames.push(obj);
+                        implementerDisplayNames.push(user.displayName);
+                    }
+                });
+            });
+            element.kendoDropDownList({
+                dataSource: implementerUserNames,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                optionLabel: "-Chọn-",
+            });
+        }
 
         function progressStatusIdReceivedGridFilter(element) {
             var progressStatusIds = [];
