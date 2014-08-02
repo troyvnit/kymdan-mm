@@ -860,7 +860,7 @@
         });
 
         $("#approveAllMaterial").on("click", function () {
-            $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find("* > tr"));
+            $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").select($("#ReceiveAndAwaitingApproveGrid").data("kendoGrid").tbody.find(">tr"));
             approveMaterial();
         });
 
@@ -869,11 +869,9 @@
             var grid = $("#ReceiveAndAwaitingApproveGrid").data("kendoGrid");
             grid.select().each(function () {
                 var dataItem = grid.dataItem($(this));
-                if (dataItem.ImplementerDepartmentId > 0) {
+                if (dataItem.ImplementerDepartmentIds) {
                     ids.push(dataItem.Id);
-                } else {
-                    alert("Vật tư " + dataItem.MaterialName + " chưa chỉ định đơn vị thực hiện!");
-                }
+                } 
             });
             if (ids.length > 0) {
                 $.ajax({

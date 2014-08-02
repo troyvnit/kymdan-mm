@@ -15,6 +15,13 @@
     var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
 }
 
+<div id="ImportExcelWindow" style="display: none;">
+    <input type="file" id="importExcel" name="files" />
+    <div class="pull-right margin-top-10px">
+        <button type="button" id="importExcelSave" class="btn btn-primary">Lưu tạm</button>
+        <button type="button" id="importExcelSent" class="btn btn-primary">Gửi</button>
+    </div>
+</div>
 <span id="popupNotification"></span>
 <div class="row">&nbsp;</div>
 <div class="row">
@@ -104,6 +111,7 @@
                 <a href="#" onclick="history.back(); return false;" class="btn btn-default navbar-btn" role="button">Trở lại</a>
                 @if (!Model.Sent)
                 {
+                    <input type="button" id="importExcelMaterialProposal" class="btn btn-success navbar-btn" value="Nhập từ Excel" />
                     <input type="button" id="saveDraftMaterialProposal" class="btn btn-primary navbar-btn" value="Lưu tạm" />
                     <input type="button" id="submitMaterialProposal" class="btn btn-primary navbar-btn" value="Gửi" />
                 }
@@ -190,10 +198,10 @@
             }
             @if (Thread.CurrentPrincipal.IsInRole("Admin") && !ViewBag.Approved)
             {
-                <div class="col-sm-2">
+                @*<div class="col-sm-2">
                     <label>Đơn vị thực hiện:</label>
                     <input id="ImplementerDepartment" />
-                </div>
+                </div>*@
                 <div class="col-sm-2">
                     <label>Đơn vị thực hiện:</label>
                     <input id="ImplementerDepartments" />
@@ -331,7 +339,7 @@
                 { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
                 { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
-                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
+                { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: true },
                 { field: "ImplementerDepartmentIds", title: "Đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
                 { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
                 { field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
@@ -484,29 +492,52 @@
                 data: $("form").serialize(),
                 dataType: "json",
                 async: false,
-                success: function (id) {
-                    popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
-                    $("#Id").val(id);
-                    var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
-                    if (data) {
-                        data.dirty = true;
-                        $("#MaterialGrid").data("kendoGrid").saveChanges();
-                    } else {
-                        $("#MaterialGrid").addClass("input-validation-error");
-                    }
-                    if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
-                        if (isSend) {
-                            if ('@Model.FromHardProposal' == 'True') {
-                                window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
-                            } else {
-                                window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
-                            }
+                success: function (result) {
+                    if (result.success) {
+                        var id = result.Id;
+                        popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
+                        $("#Id").val(id);
+                        var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
+                        if (data) {
+                            data.dirty = true;
+                            $("#MaterialGrid").data("kendoGrid").saveChanges();
                         } else {
-                            window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
+                            $("#MaterialGrid").addClass("input-validation-error");
+                        }
+                        if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
+                            if (isSend) {
+                                if ('@Model.FromHardProposal' == 'True') {
+                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
+                                } else {
+                                    window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                                }
+                            } else {
+                                window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
+                            }
+                        }
+                        if (isApprove) {
+                            approveMaterial();
                         }
                     }
-                    if (isApprove) {
-                        approveMaterial();
+                    else {
+                        alert('Mã đề xuất đã tồn tại!');
+                        $("#submitMaterialProposal").on("click", function () {
+                            if (!$("#MaterialProposalForm").valid()) {
+                                return;
+                            }
+                            $("#submitMaterialProposal").unbind("click");
+                            $("#saveDraftMaterialProposal").unbind("click");
+                            submitMaterialProposal(true, false);
+                        });
+
+                        $("#saveDraftMaterialProposal").on("click", function () {
+                            if (!$("#MaterialProposalForm").valid()) {
+                                return;
+                            }
+                            $("#submitMaterialProposal").unbind("click");
+                            $("#saveDraftMaterialProposal").unbind("click");
+                            submitMaterialProposal(false, false);
+                        });
                     }
                 }
             });
@@ -519,7 +550,7 @@
         });
 
         $("#approveAllMaterial").on("click", function () {
-            $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find("* > tr"));
+            $("#MaterialGrid").data("kendoGrid").select($("#MaterialGrid").data("kendoGrid").tbody.find(">tr"));
             if ($("#MaterialProposalForm").valid()) {
                 submitMaterialProposal(true, true);
             }
@@ -530,11 +561,9 @@
             var grid = $("#MaterialGrid").data("kendoGrid");
             grid.select().each(function () {
                 var dataItem = grid.dataItem($(this));
-                if (dataItem.ImplementerDepartmentId > 0 || dataItem.ImplementerDepartmentIds) {
+                if (dataItem.ImplementerDepartmentIds) {
                     ids.push(dataItem.Id);
-                } else {
-                    alert("Vật tư " + dataItem.MaterialName + " chưa chỉ định đơn vị thực hiện!");
-                }
+                } 
             });
             if (ids.length > 0) {
                 $.ajax({
@@ -597,6 +626,88 @@
             if (e.keyCode == 13) {
                 $("#submitComment").trigger("click");
             }
+        });
+        
+        var importExcelWindow;
+        importExcelWindow = $("#ImportExcelWindow")
+        .kendoWindow({
+            title: "Nhập từ Excel",
+            modal: true,
+            visible: false,
+            width: 600
+        }).data("kendoWindow");
+        $("#importExcel").kendoUpload({
+            multiple: true,
+            async: {
+                saveUrl: '@Url.Action("ImportExcel", "Home")',
+                autoUpload: false
+            },
+            localization: {
+                select: "Chọn tập tin",
+                uploadSelectedFiles: "Tải lên"
+            },
+            select: function(e) {
+                $.each(e.files, function (index, value) {
+                    var ok = value.extension == ".xls" || value.extension == ".xlsx" || value.extension == ".XLS" || value.extension == ".XLSX";
+
+                    if (!ok) {
+                        e.preventDefault();
+                        alert("Chỉ chấp nhận tập tin Excel!");
+                    }
+                });
+            },
+            upload: function(e) {
+                e.data = { materialProposalId: $("#Id").val() };
+            },
+            success: function (e) {
+                importExcelWindow.close();
+                popupNotification.show({ message: "Nhập từ excel thành công!" }, "success");
+                if ('@Thread.CurrentPrincipal.IsInRole("Department Manager")' == 'True') {
+                    if ($("#Sent").val() == "true") {
+                        if ('@Model.FromHardProposal' == 'True') {
+                            window.location = '@Url.Action("DepartmentManagerPage")' + '#ApprovedImplemented';
+                        } else {
+                            window.location = '@Url.Action("DepartmentManagerPage")' + '#SentAndAwaitingApprove';
+                        }
+                    } else {
+                        window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
+                    }
+                }
+            }
+        });
+        
+        function importExcelSubmitMaterialProposal(isSend) {
+            if (isSend) {
+                $("#Sent").val(isSend);
+            }
+            $.ajax({
+                url: '@Url.Action("AddOrUpdateMaterialProposal", "Home")',
+                type: "POST",
+                data: $("form").serialize(),
+                dataType: "json",
+                async: false,
+                success: function (id) {
+                    popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
+                    $("#Id").val(id);
+                    $("#ImportExcelWindow .k-upload-selected").trigger("click");
+                }
+            });
+        }
+        
+        $("#importExcelSent").on("click", function () {
+            $("#importExcelSent").unbind("click");
+            $("#importExcelSave").unbind("click");
+            importExcelSubmitMaterialProposal(true);
+        });
+
+        $("#importExcelSave").on("click", function () {
+            $("#importExcelSent").unbind("click");
+            $("#importExcelSave").unbind("click");
+            importExcelSubmitMaterialProposal(false);
+        });
+        
+        $("#importExcelMaterialProposal").on("click", function () {
+            importExcelWindow.open().center();
         });
     });
 

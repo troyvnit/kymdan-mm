@@ -25,7 +25,7 @@
     var relateMaterials = ViewBag.RelateMaterials;
 }
 
-<form class="form-horizontal" role="form" style="position: fixed; bottom: 0;">
+<div class="form-horizontal" role="form" style="position: fixed; bottom: 0;">
     <div class="form-group">
         <label class="col-sm-2 control-label">Phản hồi</label>
         <div class="col-sm-8">
@@ -45,7 +45,7 @@
             @Html.DropDownList("RelateIdsSelector", new SelectList(relateMaterials, "Id", "MaterialName"), new { @class = "form-control", multiple = "multiple" })
         </div>
     </div>
-</form>
+</div>
 <ul class="chat">
     @foreach (var comment in Model.Comments.OrderByDescending(a => a.CreatedDate))
     {
@@ -103,7 +103,7 @@
         }
     }
 </ul>
-    <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
         $("#submitComment").on("click", function () {
             if ($("#comment").val() == "") {
@@ -111,28 +111,27 @@
             }
             $.ajax({
                 url: '@Url.Action("AddComment", "Home")',
-                    type: "POST",
-                    data: { ids: $("#RelateIdsSelector").val().join(','), content: $("#comment").val() },
-                    dataType: "json",
-                    success: function (result) {
-                        if (result) {
-                            window.commentWindow.refresh();
-                        }
+                type: "POST",
+                data: { ids: $("#RelateIdsSelector").val().join(','), content: $("#comment").val() },
+                dataType: "json",
+                success: function (result) {
+                    if (result) {
+                        window.commentWindow.refresh();
                     }
-            });
-            return false;
-            });
-
-            $("#comment").on("keypress", function (e) {
-                if (e.keyCode == 13) {
-                    $("#submitComment").trigger("click");
                 }
             });
+        });
 
-            $("#RelateIdsSelector").multiselect({
-                buttonWidth: '100%',
-                includeSelectAllOption: true
-            });
-            $("#RelateIdsSelector").multiselect('select', '@Model.Id');
+        $("#comment").on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                $("#submitComment").trigger("click");
+            }
+        });
+
+        $("#RelateIdsSelector").multiselect({
+            buttonWidth: '100%',
+            includeSelectAllOption: true
+        });
+        $("#RelateIdsSelector").multiselect('select', '@Model.Id');
     });
-    </script>
+</script>

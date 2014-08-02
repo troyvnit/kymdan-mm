@@ -231,3 +231,11 @@ li.k-file div.file-wrapper {
     padding-bottom: 105px;
     display: none;
 }
+
+#ImportExcelWindow .k-upload-selected {
+    display: none !important;
+}
+
+.margin-top-10px {
+    margin-top: 10px;
+}

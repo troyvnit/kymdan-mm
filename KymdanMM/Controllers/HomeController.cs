@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using AutoMapper;
+using Excel;
 using KymdanMM.Data;
 using KymdanMM.Data.Service;
 using KymdanMM.Filters;
@@ -16,7 +19,6 @@ using KymdanMM.Model.Models;
 using KymdanMM.Models;
 using Newtonsoft.Json;
 using PagedList;
-using WebMatrix.WebData;
 
 namespace KymdanMM.Controllers
 {
@@ -324,7 +326,7 @@ namespace KymdanMM.Controllers
             {
                 var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
                 var currentDepartmentName = _departmentService.GetDepartment(currentUser.DepartmentId).DepartmentName;
-                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.ProposalCode)
+                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.CreatedDate)
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
                         lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
@@ -361,29 +363,36 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             var existed =
-                _materialProposalService.GetMaterialProposals().FirstOrDefault(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", "") || a.Id == materialProposalViewModel.Id);
+                _materialProposalService.GetMaterialProposals().FirstOrDefault(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", ""));
             if (existed != null)
             {
-                materialProposalViewModel.Id = existed.Id;
-                var src = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
-                foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
+                if (existed.Id == materialProposalViewModel.Id)
                 {
-                    if (item.Name != "Comments" && item.Name != "Materials" && item.Name != "Sent")
+                    materialProposalViewModel.Id = existed.Id;
+                    var src = Mapper.Map<MaterialProposalViewModel, MaterialProposal>(materialProposalViewModel);
+                    foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
                     {
-                        item.SetValue(existed, item.GetValue(src));
-                    }
-                    if (item.Name == "Sent")
-                    {
-                        if (!existed.Sent)
+                        if (item.Name != "Comments" && item.Name != "Materials" && item.Name != "Sent")
                         {
                             item.SetValue(existed, item.GetValue(src));
                         }
+                        if (item.Name == "Sent")
+                        {
+                            if (!existed.Sent)
+                            {
+                                item.SetValue(existed, item.GetValue(src));
+                            }
+                        }
                     }
+                    existed.CreatedDate = DateTime.MinValue;
+                    existed.CreatedUserName = null;
+                    _materialProposalService.AddOrUpdateMaterialProposal(existed);
+                    return Json(new {success = true, existed.Id}, JsonRequestBehavior.AllowGet);
                 }
-                existed.CreatedDate = DateTime.MinValue;
-                existed.CreatedUserName = null;
-                _materialProposalService.AddOrUpdateMaterialProposal(existed);
-                return Json(existed.Id, JsonRequestBehavior.AllowGet);
+                else
+                {
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                }
             }
             else
             {
@@ -393,7 +402,7 @@ namespace KymdanMM.Controllers
                 var currentUser = users.FirstOrDefault(a => a.UserName == materialProposal.ProposerUserName);
                 if (currentUser != null) materialProposal.ProposerDepartmentId = currentUser.DepartmentId;
                 _materialProposalService.AddOrUpdateMaterialProposal(materialProposal);
-                return Json(materialProposal.Id, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, materialProposal.Id }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -887,6 +896,87 @@ namespace KymdanMM.Controllers
             }
             return Json(fileNames, "text/plain");
         }
+
+        [HttpPost]
+        public ActionResult ImportExcel(IEnumerable<HttpPostedFileBase> files, int? materialProposalId)
+        {
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    if (file.ContentLength > 0)
+                    {
+                        var fileExtension = Path.GetExtension(file.FileName);
+
+                        if (fileExtension == ".xls" || fileExtension == ".xlsx")
+                        {
+                            var fileLocation = Server.MapPath("~/App_Data/") + file.FileName;
+                            if (System.IO.File.Exists(fileLocation))
+                            {
+
+                                System.IO.File.Delete(fileLocation);
+                            }
+                            file.SaveAs(fileLocation);
+
+                            FileStream stream = System.IO.File.Open(fileLocation, FileMode.Open, FileAccess.Read);
+
+                            IExcelDataReader excelReader = fileExtension == ".xls" ? ExcelReaderFactory.CreateBinaryReader(stream) : ExcelReaderFactory.CreateOpenXmlReader(stream);
+                           
+                            excelReader.IsFirstRowAsColumnNames = true;
+                            DataSet result = excelReader.AsDataSet();
+
+                            var readUserNames = new List<string>();
+                            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+                            if (user != null)
+                            {
+                                readUserNames.Add(user.UserName);
+                            }
+                            var materials = result.Tables[0].AsEnumerable().Select(dataRow => user != null && dataRow[0] != DBNull.Value ? new Material
+                                                                                                             {
+                                                                                                                 MaterialName = dataRow[0] != DBNull.Value ? (string) dataRow[0] : "",
+                                                                                                                 Description = dataRow[1] != DBNull.Value ? (string) dataRow[1] : "",
+                                                                                                                 Quantity = dataRow[2] != DBNull.Value ? Convert.ToDecimal((double)dataRow[2]) : 0,
+                                                                                                                 Unit = dataRow[3] != DBNull.Value ? (string) dataRow[3] : "",
+                                                                                                                 InventoryQuantity = dataRow[4] != DBNull.Value ? Convert.ToDecimal((double) dataRow[4]) : 0,
+                                                                                                                 Used = dataRow[5] != DBNull.Value && (double) dataRow[5] == 1,
+                                                                                                                 Deadline = dataRow[6] != DBNull.Value ? DateTime.ParseExact((string) dataRow[6], "dd/MM/yyyy", new CultureInfo("en-GB")) : DateTime.MinValue,
+                                                                                                                 UsingPurpose = dataRow[7] != DBNull.Value ? (string)dataRow[7] : "",
+                                                                                                                 Comments = dataRow[8] != DBNull.Value ? new List<Comment> { new Comment { Approved = true, Content = (string)dataRow[8], PosterUserName = Thread.CurrentPrincipal.Identity.Name, PosterDisplayName = user.DisplayName, ReadUserNames = string.Join(",", readUserNames) } } : new List<Comment>()
+                                                                                                             } : null).Where(a => a != null).ToList();
+
+                            excelReader.Close();
+
+                            foreach (var material in materials)
+                            {
+                                material.MaterialProposalId = materialProposalId ?? material.MaterialProposalId;
+                                material.Deadline = material.Deadline != null
+                                    ? ((DateTime)material.Deadline).AddHours(7)
+                                    : material.Deadline;
+                                material.ApproveDate = material.ApproveDate != null
+                                    ? ((DateTime)material.ApproveDate).AddHours(7)
+                                    : material.ApproveDate;
+                                material.StartDate = material.StartDate != null
+                                    ? ((DateTime)material.StartDate).AddHours(7)
+                                    : material.StartDate;
+                                material.FinishDate = material.FinishDate != null
+                                    ? ((DateTime)material.FinishDate).AddHours(7)
+                                    : material.FinishDate;
+                                material.ImplementerDepartmentIds = material.ImplementerDepartmentIds ?? "";
+                                material.ImplementerUserNames = material.ImplementerUserNames ?? "";
+                                var users = usersContext.UserProfiles.ToList();
+                                var currentUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
+                                if (currentUser != null) material.ImplementerDepartmentId = currentUser.DepartmentId;
+                                _materialService.AddOrUpdateMaterial(material);
+                            }
+
+                            return Json(Mapper.Map<List<Material>, List<MaterialViewModel>>(materials));
+                        }
+
+                    }
+                }
+            }
+            return Content("");
+        } 
 
         public ActionResult About()
         {
