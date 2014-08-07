@@ -210,7 +210,7 @@
                     { field: "Deadline", format: '{0:dd/MM/yyyy}', title: "Ngày đề nghị nhận", width: 150 },
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 200 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 200 },
-                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "" }], title: " ", width: "90px" }
                 ],
                 editable: {
                     confirmation: "Bạn có chắc muốn xóa ?"
@@ -349,7 +349,7 @@
                     { field: "ProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= Id #' class='label label-primary'>#= ProposalCode #</a>" },
                     { field: "CreatedDate", format: '{0:dd/MM/yyyy}', title: "Ngày lập bảng" },
                     { field: "Approved", title: "Duyệt", template: $("#approveStatusTemplate").html() },
-                    { command: [{ name: "destroy", title: "&nbsp;", text: "Xóa", width: 90 }] }
+                    { command: [{ name: "destroy", title: "&nbsp;", text: "", width: 14 }] }
                 ],
                 editable: true,
                 filterMenuInit: function(e) {
@@ -568,7 +568,202 @@
                     exportGridToExcel('ApprovedAwaitingReceive');
                 }
             });
+
             //----------Tab 4-----------//
+            var receivedDataSource = new kendo.data.DataSource({
+                autoSync: true,
+                transport: {
+                    read: {
+                        url: "/Home/GetMaterials",
+                        type: "post"
+                    },
+                    update: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    destroy: {
+                        url: "/Home/DeleteMaterial",
+                        type: "post",
+                    },
+                    create: {
+                        url: "/Home/AddOrUpdateMaterial",
+                        type: "post"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {
+                                materials: kendo.stringify(options.models)
+                            };
+                        } else {
+                            return {
+                                pageNumber: options.page,
+                                pageSize: options.pageSize,
+                                command: "Received"
+                            };
+                        }
+                    }
+                },
+                batch: true,
+                //pageSize: 10,
+                //serverPaging: true,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: false, defaultValue: 0 },
+                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
+                            MaterialName: { editable: false, type: "string", validation: { required: true } },
+                            Description: { type: "string" },
+                            Quantity: { type: "number" },
+                            InventoryQuantity: { type: "number" },
+                            Unit: { type: "string", validation: { required: true } },
+                            Used: { type: "boolean" },
+                            UsingPurpose: { type: "string" },
+                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            DeliveryDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
+                            ProgressStatusId: { type: "number" },
+                            Note: { type: "string" },
+                            ImplementerDepartmentId: { editable: false, type: "number" },
+                            ImplementerUserName: { type: "string" },
+                            ImplementerUserNames: { type: "string" },
+                            LastProposalDeparmentComment: { type: "string", editable: false },
+                            LastImplementDepartmentComment: { type: "string", editable: false },
+                            LastGeneralManagerComment: { type: "string", editable: false },
+                            ApproveStatus: { type: "number", editable: false },
+                            Finished: { type: "boolean", editable: false }
+                        }
+                    },
+                    total: "total",
+                    data: "data"
+                }
+            });
+
+            $("#ReceivedGrid").kendoGrid({
+                autoBind: false,
+                dataSource: receivedDataSource,
+                navigatable: true,
+                //pageable: true,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                filterable: {
+                    extra: false,
+                    messages: {
+                        info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
+                        filter: "Lọc", // sets the text for the "Filter" button
+                        clear: "Xóa lọc", // sets the text for the "Clear" button
+
+                        // when filtering boolean numbers
+                        isTrue: "đúng", // sets the text for "isTrue" radio button
+                        isFalse: "sai", // sets the text for "isFalse" radio button
+
+                        //changes the text of the "And" and "Or" of the filter menu
+                        and: "Và",
+                        or: "Hoặc"
+                    },
+                    operators: {
+                        //filter menu for "string" type columns
+                        string: {
+                            contains: "Chứa",
+                            startswith: "Bắt đầu với",
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            endswith: "Kết thúc với"
+                        },
+                        //filter menu for "number" type columns
+                        number: {
+                            eq: "Bằng với",
+                            neq: "Khác với",
+                            gte: "Lớn hơn hoặc bằng",
+                            gt: "Lớn hơn",
+                            lte: "Nhỏ hơn hoặc bằng",
+                            lt: "Nhỏ hơn"
+                        },
+                        //filter menu for "date" type columns
+                        date: {
+                            eq: "Đúng ngày",
+                            neq: "Khác ngày",
+                            gte: "Đúng hoặc sau ngày",
+                            gt: "Sau ngày",
+                            lte: "Đúng hoặc trước ngày",
+                            lt: "Trước ngày"
+                        },
+                        //filter menu for foreign key values
+                        enums: {
+                            eq: "Bằng với",
+                            neq: "Khác với"
+                        }
+                    }
+                },
+                groupable: {
+                    messages: {
+                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
+                    }
+                },
+                //toolbar: [{ name: "create", text: "Thêm" }],
+                columns: [
+                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
+                    { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
+                    {
+                        hidden: true,
+                        field: "ImplementerUserName",
+                        title: "Người thực hiện",
+                        editor: implementerUserEditor,
+                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
+                        width: 100,
+                        filterable: {
+                            ui: implementerUserNameReceivedGridFilter
+                        }
+                    },
+                    {
+                        field: "ImplementerUserNames",
+                        title: "Người thực hiện",
+                        editor: implementerUsersEditor,
+                        template: "#= getImplementerDisplayNames(ImplementerUserNames) #",
+                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #",
+                        width: 100,
+                        filterable: {
+                            ui: implementerUserNamesReceivedGridFilter
+                        }
+                    },
+                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
+                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
+                    {
+                        field: "ProgressStatusId",
+                        title: "Trạng thái tiến độ",
+                        editor: progressStatusEditor,
+                        template: "#= getProgressStatus(ProgressStatusId) #",
+                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
+                        width: 100,
+                        filterable: {
+                            ui: progressStatusIdReceivedGridFilter
+                        }
+                    },
+                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
+                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
+                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
+                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
+                ],
+                editable: false,
+                filterMenuInit: function (e) {
+                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
+                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
+                        e.container.find(".k-filter-help-text").hide();
+                        setTimeout(function () {
+                            firstValueDropDown.wrapper.hide();
+                        });
+                    }
+                },
+                dataBound: function () {
+                    exportGridToExcel('Received');
+                }
+            });
+            
+            //----------Tab 5-----------//
             var approvedAwaitingImplementDataSource = new kendo.data.DataSource({
                 sync: function(e) {
                     $("#ApprovedAwaitingImplementGrid").data("kendoGrid").dataSource.read();
@@ -728,7 +923,7 @@
                 }
             });
 
-            //----------Tab 5-----------//
+            //----------Tab 6-----------//
             var approvedImplementedDataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
@@ -905,7 +1100,7 @@
                     { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { field: "Finished", title: "Hoàn thành", template: "<input type='checkbox' #= (Finished === true) ? checked='checked' : '' # disabled />", width: 70 },
-                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "Xóa" }], title: " ", width: "110px" }
+                    { command: [{ text: "Phản hồi", click: showComment }, { name: "destroy", text: "" }], title: " ", width: "90px" }
                 ],
                 editable: {
                     confirmation: "Bạn có chắc muốn xóa ? Lưu ý: Bấm lưu để hoàn tất thao tác!"
@@ -934,7 +1129,7 @@
                 }
             });
 
-            //----------Tab 6-----------//
+            //----------Tab 7-----------//
             var finishedDataSource = new kendo.data.DataSource({
                 autoSync: true,
                 transport: {
@@ -1125,200 +1320,6 @@
                 },
                 dataBound: function () {
                     exportGridToExcel('Finished');
-                }
-            });
-
-            //----------Tab 7-----------//
-            var receivedDataSource = new kendo.data.DataSource({
-                autoSync: true,
-                transport: {
-                    read: {
-                        url: "/Home/GetMaterials",
-                        type: "post"
-                    },
-                    update: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    destroy: {
-                        url: "/Home/DeleteMaterial",
-                        type: "post",
-                    },
-                    create: {
-                        url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
-                    },
-                    parameterMap: function(options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return {
-                                materials: kendo.stringify(options.models)
-                            };
-                        } else {
-                            return {
-                                pageNumber: options.page,
-                                pageSize: options.pageSize,
-                                command: "Received"
-                            };
-                        }
-                    }
-                },
-                batch: true,
-                //pageSize: 10,
-                //serverPaging: true,
-                schema: {
-                    model: {
-                        id: "Id",
-                        fields: {
-                            Id: { editable: false, nullable: false, defaultValue: 0 },
-                            MaterialProposalCode: { editable: false, type: "string", validation: { required: true } },
-                            MaterialName: { editable: false, type: "string", validation: { required: true } },
-                            Description: { type: "string" },
-                            Quantity: { type: "number" },
-                            InventoryQuantity: { type: "number" },
-                            Unit: { type: "string", validation: { required: true } },
-                            Used: { type: "boolean" },
-                            UsingPurpose: { type: "string" },
-                            Deadline: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            StartDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            DeliveryDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number" },
-                            Note: { type: "string" },
-                            ImplementerDepartmentId: { editable: false, type: "number" },
-                            ImplementerUserName: { type: "string" },
-                            ImplementerUserNames: { type: "string" },
-                            LastProposalDeparmentComment: { type: "string", editable: false },
-                            LastImplementDepartmentComment: { type: "string", editable: false },
-                            LastGeneralManagerComment: { type: "string", editable: false },
-                            ApproveStatus: { type: "number", editable: false },
-                            Finished: { type: "boolean", editable: false }
-                        }
-                    },
-                    total: "total",
-                    data: "data"
-                }
-            });
-
-            $("#ReceivedGrid").kendoGrid({
-                autoBind: false,
-                dataSource: receivedDataSource,
-                navigatable: true,
-                //pageable: true,
-                sortable: true,
-                reorderable: true,
-                resizable: true,
-                filterable: {
-                    extra: false,
-                    messages: {
-                        info: "Lọc theo tiêu chí:", // sets the text on top of the filter menu
-                        filter: "Lọc", // sets the text for the "Filter" button
-                        clear: "Xóa lọc", // sets the text for the "Clear" button
-
-                        // when filtering boolean numbers
-                        isTrue: "đúng", // sets the text for "isTrue" radio button
-                        isFalse: "sai", // sets the text for "isFalse" radio button
-
-                        //changes the text of the "And" and "Or" of the filter menu
-                        and: "Và",
-                        or: "Hoặc"
-                    },
-                    operators: {
-                        //filter menu for "string" type columns
-                        string: {
-                            contains: "Chứa",
-                            startswith: "Bắt đầu với",
-                            eq: "Bằng với",
-                            neq: "Khác với",
-                            endswith: "Kết thúc với"
-                        },
-                        //filter menu for "number" type columns
-                        number: {
-                            eq: "Bằng với",
-                            neq: "Khác với",
-                            gte: "Lớn hơn hoặc bằng",
-                            gt: "Lớn hơn",
-                            lte: "Nhỏ hơn hoặc bằng",
-                            lt: "Nhỏ hơn"
-                        },
-                        //filter menu for "date" type columns
-                        date: {
-                            eq: "Đúng ngày",
-                            neq: "Khác ngày",
-                            gte: "Đúng hoặc sau ngày",
-                            gt: "Sau ngày",
-                            lte: "Đúng hoặc trước ngày",
-                            lt: "Trước ngày"
-                        },
-                        //filter menu for foreign key values
-                        enums: {
-                            eq: "Bằng với",
-                            neq: "Khác với"
-                        }
-                    }
-                },
-                groupable: {
-                    messages: {
-                        empty: "Kéo thả tên cột vào đây để xem theo nhóm."
-                    }
-                },
-                //toolbar: [{ name: "create", text: "Thêm" }],
-                columns: [
-                    { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
-                    { field: "MaterialName", title: "Tên vật tư", template: "#= getMaterialName(Id, MaterialName, File) #", width: 120 },
-                    {
-                        hidden: true,
-                        field: "ImplementerUserName",
-                        title: "Người thực hiện",
-                        editor: implementerUserEditor,
-                        template: "#= getImplementerDisplayName(ImplementerUserName) #",
-                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #",
-                        width: 100,
-                        filterable: {
-                            ui: implementerUserNameReceivedGridFilter
-                        }
-                    },
-                    {
-                        field: "ImplementerUserNames",
-                        title: "Người thực hiện",
-                        editor: implementerUsersEditor,
-                        template: "#= getImplementerDisplayNames(ImplementerUserNames) #",
-                        groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #",
-                        width: 100,
-                        filterable: {
-                            ui: implementerUserNamesReceivedGridFilter
-                        }
-                    },
-                    { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
-                    { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
-                    {
-                        field: "ProgressStatusId",
-                        title: "Trạng thái tiến độ",
-                        editor: progressStatusEditor,
-                        template: "#= getProgressStatus(ProgressStatusId) #",
-                        groupHeaderTemplate: "Trạng thái tiến độ: #= getProgressStatus(value) #",
-                        width: 100,
-                        filterable: {
-                            ui: progressStatusIdReceivedGridFilter
-                        }
-                    },
-                    { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
-                    { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
-                    { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
-                    { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
-                ],
-                editable: false,
-                filterMenuInit: function(e) {
-                    if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
-                        var firstValueDropDown = e.container.find("select:eq(0)").data("kendoDropDownList");
-                        e.container.find(".k-filter-help-text").hide();
-                        setTimeout(function() {
-                            firstValueDropDown.wrapper.hide();
-                        });
-                    }
-                },
-                dataBound: function () {
-                    exportGridToExcel('Received');
                 }
             });
 

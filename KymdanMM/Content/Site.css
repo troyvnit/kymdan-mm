@@ -239,3 +239,19 @@ li.k-file div.file-wrapper {
 .margin-top-10px {
     margin-top: 10px;
 }
+
+.nav-tabs {
+    font-size: 12px;
+}
+
+.exportRow {
+    font-size: 12px;
+}
+.exportRow .btn{
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+.k-grid tbody .k-button {
+    min-width: 14px;
+}

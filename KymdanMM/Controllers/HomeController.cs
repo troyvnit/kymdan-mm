@@ -55,7 +55,7 @@ namespace KymdanMM.Controllers
             }
             if (Thread.CurrentPrincipal.IsInRole("Department Manager"))
             {
-                return RedirectToAction("DepartmentManagerPage");
+                return Redirect("/Home/DepartmentManagerPage#ApprovedAwaitingImplement");
             }
             if (Thread.CurrentPrincipal.IsInRole("Member"))
             {
@@ -553,7 +553,7 @@ namespace KymdanMM.Controllers
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
                     {
-                        materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content.Length > 120 ? lastProposalDeparmentComment.Content.Substring(0, 120) + "..." : lastProposalDeparmentComment.Content;
+                        materialViewModel.LastProposalDeparmentComment = lastProposalDeparmentComment.Content.Length > 50 ? lastProposalDeparmentComment.Content.Substring(0, 50) + "..." : lastProposalDeparmentComment.Content;
                         materialViewModel.LastProposalDeparmentCommentReadClass = lastProposalDeparmentComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
                     }
                     else
@@ -576,7 +576,7 @@ namespace KymdanMM.Controllers
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)
                     {
-                        materialViewModel.LastImplementDepartmentComment = lastImplementDepartmentComment.Content.Length > 120 ? lastImplementDepartmentComment.Content.Substring(0, 120) + "..." : lastImplementDepartmentComment.Content;
+                        materialViewModel.LastImplementDepartmentComment = lastImplementDepartmentComment.Content.Length > 50 ? lastImplementDepartmentComment.Content.Substring(0, 50) + "..." : lastImplementDepartmentComment.Content;
                         materialViewModel.LastImplementDepartmentCommentReadClass = lastImplementDepartmentComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
                     }
                     else
@@ -587,8 +587,8 @@ namespace KymdanMM.Controllers
                     var lastGeneralManagerComment = generalManagerComments.LastOrDefault();
                     if (lastGeneralManagerComment != null)
                     {
-                        materialViewModel.LastGeneralManagerComment = lastGeneralManagerComment.Content.Length > 120
-                            ? lastGeneralManagerComment.Content.Substring(0, 120) + "..."
+                        materialViewModel.LastGeneralManagerComment = lastGeneralManagerComment.Content.Length > 50
+                            ? lastGeneralManagerComment.Content.Substring(0, 50) + "..."
                             : lastGeneralManagerComment.Content;
                         materialViewModel.LastGeneralManagerCommentReadClass =
                             lastGeneralManagerComment.ReadUserNames.Contains(user.UserName) ? "" : "unread";
@@ -597,6 +597,10 @@ namespace KymdanMM.Controllers
                     {
                         materialViewModel.LastGeneralManagerComment = "";
                     }
+
+                    materialViewModel.Description = materialViewModel.Description.Length > 50
+                            ? materialViewModel.Description.Substring(0, 50) + "..."
+                            : materialViewModel.Description;
                 }
                 return Json(new { data = materialViewModels, total = materials.TotalItemCount },
                     JsonRequestBehavior.AllowGet);
