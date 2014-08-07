@@ -60,6 +60,40 @@
         $(document).ready(function() {
             kendo.culture("en-GB");
         });
+        var exportGridToExcel = function (gridName) {
+            var grid = $('#' + gridName + 'Grid').data("kendoGrid");
+            $('.exportRow').remove();
+            $('#' + gridName + '').prepend('<div class="row exportRow">&nbsp;</div><div class="row exportRow"><div id="' + gridName + 'ColumnsPanel" class="col-sm-11"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
+            $('#' + gridName + 'ColumnsPanel').prepend('<select id="' + gridName + 'GridColumns" multiple="multiple" data-placeholder="Chọn cột muốn xuất ..."></select>');
+            var columns = [];
+            for (var i = 0; i < grid.columns.length; i++) {
+                var title = grid.columns[i].title,
+                    field = grid.columns[i].field;
+                if (typeof (field) === "undefined" || grid.columns[i].hidden) { continue; /* no data! */ }
+                if (typeof (title) === "undefined") { title = field }
+
+                title = title.replace(/"/g, '""');
+                columns.push({ field: field, title: title });
+                //$('#' + gridName + 'GridColumns').append('<option value="' + field + '">' + title + '</option>');
+            }
+            $('#' + gridName + 'GridColumns').kendoMultiSelect({
+                dataTextField: "title",
+                dataValueField: "field",
+                autoBind: false,
+                dataSource: columns,
+                value: columns
+            });
+
+            $('#' + gridName + 'ExportPanel').prepend('<button id="' + gridName + 'ExportButton" class="btn btn-success" style="width:100%">' + 'Xuất</button>');
+            $('#' + gridName + 'ExportButton').on('click', function () {
+                var link = document.createElement("a");
+                var blob = new Blob(["\ufeff", toCSV('' + gridName + 'Grid')]);
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "report.csv");
+                link.click();
+            });
+        }
     </script>
 </body>
 </html>

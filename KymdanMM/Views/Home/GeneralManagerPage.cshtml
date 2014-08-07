@@ -256,6 +256,7 @@
                         $("#ReceiveAndAwaitingApproveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-warning active");
                     }
                 }
+                exportGridToExcel('ReceiveAndAwaitingApprove');
             },
             filterMenuInit: function (e) {
                 if (e.field == "ImplementerDepartmentId" || e.field == "ImplementerDepartmentIds" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
@@ -489,6 +490,7 @@
                         $("#ApprovedAssignedGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
                     }
                 }
+                exportGridToExcel('ApprovedAssigned');
             },
             filterMenuInit: function (e) {
                 if (e.field == "ImplementerDepartmentId" || e.field == "ImplementerDepartmentIds" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
@@ -716,6 +718,9 @@
                         firstValueDropDown.wrapper.hide();
                     });
                 }
+            },
+            dataBound: function () {
+                exportGridToExcel('AssignedFinished');
             }
         });
 

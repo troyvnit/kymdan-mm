@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "DepartmentManagerPage";
 }
-
 <div id="UploadFileWindow"></div>
 <div id="CommentWindow"></div>
 <div class="row">&nbsp;</div>
@@ -67,7 +66,7 @@
         # } #
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             implementerDepartmentDataSource.read();
             implementerUserDataSource.read();
             progressStatusDataSource.read();
@@ -224,6 +223,9 @@
                             firstValueDropDown.wrapper.hide();
                         });
                     }
+                },
+                dataBound: function () {
+                    exportGridToExcel('SentAndAwaitingApprove');
                 }
             });
 
@@ -563,9 +565,9 @@
                             $("#ApprovedAwaitingReceiveGrid tbody").find("tr[data-uid=" + dataView[i].uid + "]").addClass("btn-primary active");
                         }
                     }
+                    exportGridToExcel('ApprovedAwaitingReceive');
                 }
             });
-
             //----------Tab 4-----------//
             var approvedAwaitingImplementDataSource = new kendo.data.DataSource({
                 sync: function(e) {
@@ -720,6 +722,9 @@
                     if (e.model.StartDate == null) {
                         e.model.set("StartDate", new Date());
                     }
+                },
+                dataBound: function () {
+                    exportGridToExcel('ApprovedAwaitingImplement');
                 }
             });
 
@@ -916,6 +921,7 @@
 
                         }
                     }
+                    exportGridToExcel('ApprovedImplemented');
                 },
                 filterMenuInit: function(e) {
                     if (e.field == "ImplementerDepartmentId" || e.field == "ProposerDepartmentId" || e.field == "ImplementerUserName" || e.field == "ImplementerUserNames" || e.field == "ProgressStatusId") {
@@ -1116,6 +1122,9 @@
                             firstValueDropDown.wrapper.hide();
                         });
                     }
+                },
+                dataBound: function () {
+                    exportGridToExcel('Finished');
                 }
             });
 
@@ -1307,6 +1316,9 @@
                             firstValueDropDown.wrapper.hide();
                         });
                     }
+                },
+                dataBound: function () {
+                    exportGridToExcel('Received');
                 }
             });
 

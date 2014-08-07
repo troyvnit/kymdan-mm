@@ -207,6 +207,7 @@
 
                         }
                     }
+                    exportGridToExcel('BeAssignedUnfinished');
                 }
             });
 
@@ -361,7 +362,10 @@
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
-                editable: false
+                editable: false,
+                dataBound: function () {
+                    exportGridToExcel('BeAssignedFinished');
+                }
             });
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 $(e.target.hash + "Grid").data("kendoGrid").dataSource.read();
