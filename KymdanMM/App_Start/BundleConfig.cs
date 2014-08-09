@@ -29,6 +29,7 @@ namespace KymdanMM
                       "~/Scripts/bootstrap-checkbox.js",
                       "~/Scripts/kendo-all-min.js",
                       "~/Scripts/kendo-culture-en-GB-min.js",
+                      "~/Scripts/excellentexport.js",
                       "~/Scripts/kendo.grid.csv.download.js",
                       "~/Scripts/jquery-serializeJSON-min.js",
                       "~/Scripts/respond.js",

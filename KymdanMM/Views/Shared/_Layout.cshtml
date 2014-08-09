@@ -84,15 +84,17 @@
                 value: columns
             });
 
-            $('#' + gridName + 'ExportPanel').prepend('<button id="' + gridName + 'ExportButton" class="btn btn-success" style="width:100%">' + 'Xuất</button>');
+            $('#' + gridName + 'ExportPanel').prepend('<a href="#" id="' + gridName + 'ExportButton" class="btn btn-success" style="width:100%">' + 'Xuất</a>');
             $('#' + gridName + 'ExportButton').on('click', function () {
-                var link = document.createElement("a");
-                var blob = new Blob(["\ufeff", toCSV('' + gridName + 'Grid')]);
-                var url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", "report.csv");
-                link.click();
+                //var link = document.createElement("a");
+                //var blob = new Blob(["\ufeff", toCSV('' + gridName + 'Grid')]);
+                //var url = URL.createObjectURL(blob);
+                //link.setAttribute("href", url);
+                //link.setAttribute("download", "report.csv");
+                //link.click();
+                ExcellentExport.excelFromData(this, toTable('' + gridName + 'Grid'), 'Sheet Name Here');
             });
+            
         }
     </script>
 </body>
