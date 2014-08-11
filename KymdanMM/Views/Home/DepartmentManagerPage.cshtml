@@ -22,6 +22,17 @@
         <div class="tab-pane active" id="SentAndAwaitingApprove">
             <div class="row">&nbsp;</div>
             <div id="SentAndAwaitingApproveGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#SentAndAwaitingApprovePanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="Temp">
             <div class="row">&nbsp;</div>
@@ -30,22 +41,77 @@
         <div class="tab-pane" id="ApprovedAwaitingReceive">
             <div class="row">&nbsp;</div>
             <div id="ApprovedAwaitingReceiveGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#ApprovedAwaitingReceivePanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="Received">
             <div class="row">&nbsp;</div>
             <div id="ReceivedGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#ReceivedPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="ApprovedAwaitingImplement">
             <div class="row">&nbsp;</div>
             <div id="ApprovedAwaitingImplementGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#ApprovedAwaitingImplementPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="ApprovedImplemented">
             <div class="row">&nbsp;</div>
             <div id="ApprovedImplementedGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#ApprovedImplementedPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="Finished">
             <div class="row">&nbsp;</div>
             <div id="FinishedGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#FinishedPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
     </div>
 </div>
@@ -1405,7 +1471,7 @@
 
         function implementerDepartmentsEditor(container, options) {
             var model = options.model;
-            $('<input data-bind="value:' + options.field + '"/>')
+            $('<input />')
                 .appendTo(container)
                 .kendoMultiSelect({
                     dataTextField: "DepartmentName",
@@ -1493,7 +1559,7 @@
         }
 
         function implementerUsersEditor(container, options) {
-            $('<input data-bind="value:' + options.field + '"/>')
+            $('<input />')
                 .appendTo(container)
                 .kendoMultiSelect({
                     autoBind: true,

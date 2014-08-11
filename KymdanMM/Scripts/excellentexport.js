@@ -151,7 +151,6 @@ ExcellentExport = (function() {
             var ctx = { worksheet: name || 'Worksheet', table: tableData };
             var hrefvalue = uri.excel + base64(format(template.excel, ctx));
             anchor.href = hrefvalue;
-            anchor.dowload = 'report.xls';
             // Return true to allow the link to work
             return true;
         }

@@ -63,8 +63,9 @@
         var exportGridToExcel = function (gridName) {
             var grid = $('#' + gridName + 'Grid').data("kendoGrid");
             $('.exportRow').remove();
-            $('#' + gridName + '').prepend('<div class="row exportRow">&nbsp;</div><div class="row exportRow"><div id="' + gridName + 'ColumnsPanel" class="col-sm-11"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
+            $('#' + gridName + '').prepend('<div class="row exportRow">&nbsp;</div><div id="' + gridName + 'Panel" class="exportRow" style="display:none"><div id="' + gridName + 'ColumnsPanel" class="col-sm-10"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
             $('#' + gridName + 'ColumnsPanel').prepend('<select id="' + gridName + 'GridColumns" multiple="multiple" data-placeholder="Chọn cột muốn xuất ..."></select>');
+        
             var columns = [];
             for (var i = 0; i < grid.columns.length; i++) {
                 var title = grid.columns[i].title,
@@ -84,7 +85,7 @@
                 value: columns
             });
 
-            $('#' + gridName + 'ExportPanel').prepend('<a href="#" id="' + gridName + 'ExportButton" class="btn btn-success" style="width:100%">' + 'Xuất</a>');
+            $('#' + gridName + 'ExportPanel').prepend('<a download="baocao.xls" href="#" id="' + gridName + 'ExportButton" class="btn btn-success" style="width:100%">' + 'Xuất</a>');
             $('#' + gridName + 'ExportButton').on('click', function () {
                 //var link = document.createElement("a");
                 //var blob = new Blob(["\ufeff", toCSV('' + gridName + 'Grid')]);
@@ -94,7 +95,10 @@
                 //link.click();
                 ExcellentExport.excelFromData(this, toTable('' + gridName + 'Grid'), 'Sheet Name Here');
             });
-            
+            $('#' + gridName + 'Panel').kendoWindow({
+                width: "900px",
+                title: "Chọn cột muốn xuất"
+            });
         }
     </script>
 </body>

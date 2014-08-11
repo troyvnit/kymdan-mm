@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -87,16 +88,16 @@ namespace KymdanMM.Controllers
             var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
             if (proposerDepartment != null)
                 material.ProposerDepartmentName = proposerDepartment.DepartmentName;
-            var implementDepartment = _departmentService.GetDepartment(material.ImplementerDepartmentId);
-            if (implementDepartment != null)
-                material.ImplementerDepartmentName = implementDepartment.DepartmentName;
+            var implementDepartmentIds = material.ImplementerDepartmentIds.Split(',');
+            var implementDepartmentNames = (from implementDepartmentId in implementDepartmentIds select _departmentService.GetDepartment(Convert.ToInt32(implementDepartmentId)) into implementDepartment where implementDepartment != null select implementDepartment.DepartmentName).ToList();
+            material.ImplementerDepartmentNames = string.Join(",", implementDepartmentNames); 
             var progressStatus = _progressStatusService.GetProgressStatus(material.ProgressStatusId);
             if (progressStatus != null)
                 material.Status = progressStatus.Status;
-            var implementUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
-            if (implementUser != null)
-                material.ImplementerDisplayName = implementUser.DisplayName;
             var proposeUser = users.FirstOrDefault(a => a.UserName == material.ProposerUserName);
+            var implementUserNames = material.ImplementerUserNames.Split(',');
+            var implementerDisplayNames = (from implementUserName in implementUserNames select users.FirstOrDefault(a => a.UserName == implementUserName) into implementUser where implementUser != null select implementUser.DisplayName).ToList();
+            material.ImplementerDisplayNames = string.Join(",", implementerDisplayNames); 
             if (proposeUser != null)
                 material.ProposerDisplayName = proposeUser.DisplayName;
             ViewBag.Departments = departments;

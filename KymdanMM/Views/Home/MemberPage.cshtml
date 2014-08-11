@@ -16,10 +16,32 @@
         <div class="tab-pane active" id="BeAssignedUnfinished">
             <div class="row">&nbsp;</div>
             <div id="BeAssignedUnfinishedGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#BeAssignedUnfinishedPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="tab-pane" id="BeAssignedFinished">
             <div class="row">&nbsp;</div>
             <div id="BeAssignedFinishedGrid"></div>
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                <div class="container">
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <input type="button" class="btn btn-success navbar-btn" value="Xuất Excel" onclick="$('#BeAssignedFinishedPanel').data('kendoWindow').center().open();" />
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
     </div>
 </div>
@@ -493,7 +515,7 @@
         }
 
         function getMaterialName(id, materialName, file) {
-            return file != "" && file != "[]" ? "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/attachment.png' style='width: 15px;'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName :
+            return file != "" && file != "[]" && file != null ? "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/attachment.png' style='width: 15px;'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName :
                 "<a href='/Home/Material/" + id + "' class='label label-success pull-right'><img src='/Images/view.png' style='width: 15px;'></a> " + materialName;
         }
 
