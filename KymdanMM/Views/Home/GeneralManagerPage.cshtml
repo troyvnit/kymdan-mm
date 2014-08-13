@@ -997,7 +997,9 @@
                         departmentName = this.DepartmentName;
                     }
                 });
-                departmentNames.push(departmentName);
+                if (departmentName != "") {
+                    departmentNames.push(departmentName);
+                }
             });
             return departmentNames.join(', ');
         }
@@ -1088,7 +1090,9 @@
                         displayName = this.DisplayName;
                     }
                 });
-                displayNames.push(displayName);
+                if (displayName != "") {
+                    displayNames.push(displayName);
+                }
             });
             return displayNames.join(', ');
         }
