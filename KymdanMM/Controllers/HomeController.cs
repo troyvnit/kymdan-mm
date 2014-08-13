@@ -422,7 +422,9 @@ namespace KymdanMM.Controllers
         public ActionResult GetMaterials(string command, int? pageNumber, int? pageSize, int? id, bool? approved, string keyWord, int? departmentId, int? progressStatusId, bool? approveStatus, bool? finished)
         {
             //var materials = _materialService.GetMaterials(pageNumber, pageSize, id);
-            var user = usersContext.UserProfiles.ToList().FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            var users = usersContext.UserProfiles.ToList();
+            var user = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            var usersSameDepartment = users.Where(u => user != null && u.DepartmentId == user.DepartmentId).Select(u => u.UserName);
             if (user != null)
             {
                 IPagedList<Material> materials;
@@ -456,7 +458,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId) || a.ImplementerDepartmentIds == user.DepartmentId.ToString()) &&
-                                string.IsNullOrEmpty(a.ImplementerUserNames) &&
+                                (usersSameDepartment.Count(username => a.ImplementerUserNames.StartsWith(username + ",") || a.ImplementerUserNames.Contains("," + username + ",") || a.ImplementerUserNames.EndsWith("," + username) || a.ImplementerUserNames == username) <= 0) &&
                                 !a.Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
@@ -466,7 +468,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId) || a.ImplementerDepartmentIds == user.DepartmentId.ToString()) &&
-                                !string.IsNullOrEmpty(a.ImplementerUserNames) &&
+                                (usersSameDepartment.Count(username => a.ImplementerUserNames.StartsWith(username + ",") || a.ImplementerUserNames.Contains("," + username + ",") || a.ImplementerUserNames.EndsWith("," + username) || a.ImplementerUserNames == username) > 0) &&
                                 !a.Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
@@ -630,8 +632,22 @@ namespace KymdanMM.Controllers
                     ? ((DateTime)material.FinishDate).AddHours(7)
                     : material.FinishDate;
                 var users = usersContext.UserProfiles.ToList();
-                var currentUser = users.FirstOrDefault(a => a.UserName == material.ImplementerUserName);
-                if (currentUser != null) material.ImplementerDepartmentId = currentUser.DepartmentId;
+                var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+                if (currentUser != null)
+                {
+                    var usersSameDepartment = Thread.CurrentPrincipal.IsInRole("Admin") ? users.Select(a => a.UserName).ToList() : users.Where(a => a.DepartmentId == currentUser.DepartmentId).Select(a => a.UserName).ToList();
+                    var existedMaterial = _materialService.GetMaterials().FirstOrDefault(a => a.Id == material.Id);
+                    if (existedMaterial != null)
+                    {
+                        var implementerUserNames = existedMaterial.ImplementerUserNames.Split(',').ToList();
+                        foreach (var userSameDepartment in usersSameDepartment)
+                        {
+                            implementerUserNames.Remove(userSameDepartment);
+                        }
+                        implementerUserNames.AddRange(material.ImplementerUserNames.Split(','));
+                        material.ImplementerUserNames = string.Join(",", implementerUserNames);
+                    }
+                }
                 _materialService.AddOrUpdateMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);

@@ -63,7 +63,7 @@
         var exportGridToExcel = function (gridName) {
             var grid = $('#' + gridName + 'Grid').data("kendoGrid");
             $('.exportRow').remove();
-            $('#' + gridName + '').prepend('<div class="row exportRow">&nbsp;</div><div id="' + gridName + 'Panel" class="exportRow" style="display:none"><div id="' + gridName + 'ColumnsPanel" class="col-sm-10"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
+            $('#' + gridName + '').prepend('<div id="' + gridName + 'Panel" class="exportRow" style="display:none"><div id="' + gridName + 'ColumnsPanel" class="col-sm-10"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
             $('#' + gridName + 'ColumnsPanel').prepend('<select id="' + gridName + 'GridColumns" multiple="multiple" data-placeholder="Chọn cột muốn xuất ..."></select>');
         
             var columns = [];

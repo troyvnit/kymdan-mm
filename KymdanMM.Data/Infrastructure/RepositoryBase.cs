@@ -69,7 +69,7 @@ namespace KymdanMM.Data.Infrastructure
         }
         public virtual IEnumerable<T> GetAll()
         {
-            return _dbset.ToList();
+            return _dbset.AsNoTracking().ToList();
         }
         public virtual IEnumerable<T> GetMany(Expression<Func<T, bool>> where)
         {

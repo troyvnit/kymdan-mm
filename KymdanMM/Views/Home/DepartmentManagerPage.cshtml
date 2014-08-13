@@ -1043,7 +1043,7 @@
                             ApproveDate: { editable: false, type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             FinishDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
                             DeliveryDate: { type: "date", format: "dd/MM/yyyy", validation: { required: true } },
-                            ProgressStatusId: { type: "number", editable: false },
+                            ProgressStatusId: { type: "number" },
                             Note: { type: "string" },
                             ImplementerDepartmentId: { editable: false, type: "number" },
                             ImplementerUserName: { type: "string" },
@@ -1464,7 +1464,9 @@
                         departmentName = this.DepartmentName;
                     }
                 });
-                departmentNames.push(departmentName);
+                if (departmentName != "") {
+                    departmentNames.push(departmentName);
+                }
             });
             return departmentNames.join(', ');
         }
@@ -1553,7 +1555,9 @@
                         displayName = this.DisplayName;
                     }
                 });
-                displayNames.push(displayName);
+                if (displayName != "") {
+                    displayNames.push(displayName);
+                }
             });
             return displayNames.join(', ');
         }
