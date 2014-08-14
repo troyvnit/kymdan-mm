@@ -14,6 +14,7 @@ using System.Web.Security;
 using AutoMapper;
 using Excel;
 using KymdanMM.Data;
+using KymdanMM.Data.Infrastructure;
 using KymdanMM.Data.Service;
 using KymdanMM.Filters;
 using KymdanMM.Model.Models;
@@ -604,6 +605,18 @@ namespace KymdanMM.Controllers
                     materialViewModel.Description = materialViewModel.Description.Length > 50
                             ? materialViewModel.Description.Substring(0, 50) + "..."
                             : materialViewModel.Description;
+
+                    if (!Thread.CurrentPrincipal.IsInRole("Admin"))
+                    {
+                        var assignInfo =
+                            materialViewModel.AssignInfoes.FirstOrDefault(a => a.DepartmentId == user.DepartmentId); 
+                        materialViewModel.StartDate =
+                           assignInfo != null ?
+                            assignInfo.StartDate : null;
+                        materialViewModel.FinishDate =
+                           assignInfo != null ?
+                            assignInfo.FinishDate : null;
+                    }
                 }
                 return Json(new { data = materialViewModels, total = materials.TotalItemCount },
                     JsonRequestBehavior.AllowGet);
@@ -635,17 +648,41 @@ namespace KymdanMM.Controllers
                 var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
                 if (currentUser != null)
                 {
-                    var usersSameDepartment = Thread.CurrentPrincipal.IsInRole("Admin") ? users.Select(a => a.UserName).ToList() : users.Where(a => a.DepartmentId == currentUser.DepartmentId).Select(a => a.UserName).ToList();
+                    //var usersSameDepartment = Thread.CurrentPrincipal.IsInRole("Admin") ? users.Select(a => a.UserName).ToList() : users.Where(a => a.DepartmentId == currentUser.DepartmentId).Select(a => a.UserName).ToList();
                     var existedMaterial = _materialService.GetMaterials().FirstOrDefault(a => a.Id == material.Id);
                     if (existedMaterial != null)
                     {
                         var implementerUserNames = existedMaterial.ImplementerUserNames.Split(',').ToList();
-                        foreach (var userSameDepartment in usersSameDepartment)
-                        {
-                            implementerUserNames.Remove(userSameDepartment);
-                        }
+                        //foreach (var userSameDepartment in usersSameDepartment)
+                        //{
+                        //    implementerUserNames.Remove(userSameDepartment);
+                        //}
                         implementerUserNames.AddRange(material.ImplementerUserNames.Split(','));
-                        material.ImplementerUserNames = string.Join(",", implementerUserNames);
+                        material.ImplementerUserNames = string.Join(",", implementerUserNames.Distinct().Where(a => !string.IsNullOrEmpty(a)));
+
+                        using (var _dbContext = new DatabaseFactory().Get())
+                        {
+                            var _dbSet = _dbContext.Set<Material>();
+                            _dbSet.Attach(existedMaterial);
+                            var asignInfo =
+                                existedMaterial.AssignInfoes.FirstOrDefault(a => a.DepartmentId == currentUser.DepartmentId);
+                            if (asignInfo != null)
+                            {
+                                asignInfo.StartDate = material.StartDate;
+                                asignInfo.FinishDate = material.FinishDate;
+                            }
+                            else
+                            {
+                                existedMaterial.AssignInfoes.Add(new AssignInfo
+                                {
+                                    DepartmentId = currentUser.DepartmentId,
+                                    StartDate = material.StartDate,
+                                    FinishDate = material.FinishDate
+                                });
+                            }
+                            _dbContext.Entry(existedMaterial).State = EntityState.Modified;
+                            _dbContext.Commit();
+                        }
                     }
                 }
                 _materialService.AddOrUpdateMaterial(material);

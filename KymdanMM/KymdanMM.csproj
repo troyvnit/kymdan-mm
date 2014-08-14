@@ -261,6 +261,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\AssignInfoViewModel.cs" />
     <Compile Include="Models\CommentViewModel.cs" />
     <Compile Include="Models\FileViewModel.cs" />
     <Compile Include="Models\MaterialProposalViewModel.cs" />

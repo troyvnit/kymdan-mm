@@ -34,6 +34,7 @@ namespace KymdanMM.Mappers
                 .ForMember(a => a.ManagementCode, o => o.MapFrom(a => a.ManagementCode.ToUpper()));
             Mapper.CreateMap<MaterialViewModel, Material>();
             Mapper.CreateMap<CommentViewModel, Comment>();
+            Mapper.CreateMap<AssignInfoViewModel, AssignInfo>();
         }
     }
 
@@ -58,6 +59,7 @@ namespace KymdanMM.Mappers
                 .ForMember(a => a.StartDate, o => o.MapFrom(a => a.StartDate != null ? ((DateTime)a.StartDate).Date : a.StartDate))
                 .ForMember(a => a.FinishDate, o => o.MapFrom(a => a.FinishDate != null ? ((DateTime)a.FinishDate).Date : a.FinishDate));
             Mapper.CreateMap<Comment, CommentViewModel>();
+            Mapper.CreateMap<AssignInfo, AssignInfoViewModel>();
         }
     }
 }

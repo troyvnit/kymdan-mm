@@ -81,6 +81,7 @@ namespace KymdanMM.Models
         public string LastProposalDeparmentCommentReadClass { get; set; }
         public string LastImplementDepartmentCommentReadClass { get; set; }
         public string LastGeneralManagerCommentReadClass { get; set; }
-        public IList<CommentViewModel> Comments { get; set; } 
+        public IList<CommentViewModel> Comments { get; set; }
+        public virtual IList<AssignInfoViewModel> AssignInfoes { get; set; } 
     }
 }

@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AssignInfo.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Department.cs" />

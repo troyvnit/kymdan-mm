@@ -8,6 +8,7 @@ namespace KymdanMM.Model.Models
         public Material()
         {
             Comments = new List<Comment>();
+            AssignInfoes = new List<AssignInfo>();
         }
         public string MaterialName { get; set; }
         public string Description { get; set; }
@@ -33,6 +34,7 @@ namespace KymdanMM.Model.Models
         public string ImplementerDepartmentIds { get; set; }
         public int MaterialProposalId { get; set; }
         public virtual MaterialProposal MaterialProposal { get; set; }
-        public virtual IList<Comment> Comments { get; set; } 
+        public virtual IList<Comment> Comments { get; set; }
+        public virtual IList<AssignInfo> AssignInfoes { get; set; } 
     }
 }
