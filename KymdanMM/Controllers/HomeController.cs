@@ -554,6 +554,8 @@ namespace KymdanMM.Controllers
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
                                 return poster != null && model.ProposerDepartmentId == poster.DepartmentId && !(model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
+                    materialViewModel.ProposalDeparmentComments = string.Join(", ",
+                        proposalDeparmentComments.Select(a => a.PosterDisplayName + ": " + "\"" + a.Content + "\""));
                     var lastProposalDeparmentComment = proposalDeparmentComments.LastOrDefault();
                     if (lastProposalDeparmentComment != null)
                     {
@@ -577,6 +579,8 @@ namespace KymdanMM.Controllers
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
                                 return poster != null && model.ProposerDepartmentId == poster.DepartmentId && (model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
+                    materialViewModel.ImplementDepartmentComments = string.Join(", ",
+                        implementDepartmentComments.Select(a => a.PosterDisplayName + ": " + "\"" + a.Content + "\""));
                     var lastImplementDepartmentComment = implementDepartmentComments.LastOrDefault();
                     if (lastImplementDepartmentComment != null)
                     {
@@ -588,6 +592,8 @@ namespace KymdanMM.Controllers
                         materialViewModel.LastImplementDepartmentComment = "";
                     }
                     var generalManagerComments = materialViewModel.Comments.Where(a => Roles.IsUserInRole(a.PosterUserName, "Admin"));
+                    materialViewModel.GeneralManagerComments = string.Join(", ",
+                        generalManagerComments.Select(a => a.PosterDisplayName + ": " + "\"" + a.Content + "\""));
                     var lastGeneralManagerComment = generalManagerComments.LastOrDefault();
                     if (lastGeneralManagerComment != null)
                     {

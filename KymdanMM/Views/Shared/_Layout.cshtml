@@ -60,7 +60,7 @@
         $(document).ready(function() {
             kendo.culture("en-GB");
         });
-        var exportGridToExcel = function (gridName) {
+        var exportGridToExcel = function (gridName, ignoreFields) {
             var grid = $('#' + gridName + 'Grid').data("kendoGrid");
             $('.exportRow').remove();
             $('#' + gridName + '').prepend('<div id="' + gridName + 'Panel" class="exportRow" style="display:none"><div id="' + gridName + 'ColumnsPanel" class="col-sm-10"></div><div id="' + gridName + 'ExportPanel" class="col-sm-1"></div></div>');
@@ -70,7 +70,7 @@
             for (var i = 0; i < grid.columns.length; i++) {
                 var title = grid.columns[i].title,
                     field = grid.columns[i].field;
-                if (typeof (field) === "undefined" || grid.columns[i].hidden) { continue; /* no data! */ }
+                if (typeof (field) === "undefined" || ignoreFields.indexOf(field) !== -1) { continue; /* no data! */ }
                 if (typeof (title) === "undefined") { title = field }
 
                 title = title.replace(/"/g, '""');

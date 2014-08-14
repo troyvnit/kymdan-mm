@@ -16,7 +16,7 @@
         <div class="tab-pane active" id="BeAssignedUnfinished">
             <div class="row">&nbsp;</div>
             <div id="BeAssignedUnfinishedGrid"></div>
-            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+            @*<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
                 <div class="container">
                     <div class="col-sm-8">
                     </div>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </div>
-            </nav>
+            </nav>*@
         </div>
         <div class="tab-pane" id="BeAssignedFinished">
             <div class="row">&nbsp;</div>
@@ -229,7 +229,7 @@
 
                         }
                     }
-                    exportGridToExcel('BeAssignedUnfinished');
+                    //exportGridToExcel('BeAssignedUnfinished');
                 }
             });
 
@@ -370,6 +370,13 @@
                 columns: [
                     { field: "MaterialProposalCode", title: "Mã đề xuất", template: "<a href='/chinh-sua-de-xuat/#= MaterialProposalId #' class='label label-primary'>#= MaterialProposalCode #</a>", width: 80 },
                     { field: "MaterialName", template: "#= getMaterialName(Id, MaterialName, File) #", title: "Tên vật tư", width: 100 },
+                    { field: "Description", title: "Mô tả", hidden: true },
+                    { field: "Quantity", title: "SL", hidden: true },
+                    { field: "InventoryQuantity", title: "Tồn kho", hidden: true },
+                    { field: "Unit", title: "ĐVT", hidden: true },
+                    { field: "UsingPurpose", title: "Mục đích sử dụng", hidden: true },
+                    { field: "ImplementerDepartmentIds", title: "ĐV thực hiện", template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", hidden: true },
+                    { field: "ProposerDepartmentId", title: "ĐV đề nghị", template: "#= getImplementerDepartmentName(ProposerDepartmentId) #", hidden: true },
                     { field: "ApproveDate", format: '{0:dd/MM/yyyy}', title: "Ngày duyệt", width: 80 },
                     { field: "StartDate", format: '{0:dd/MM/yyyy}', title: "Ngày triển khai", width: 80 },
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80 },
@@ -382,11 +389,14 @@
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100 },
                     { field: "LastImplementDepartmentComment", template: "<p class='#= LastImplementDepartmentCommentReadClass #'>#= LastImplementDepartmentComment #</p>", title: "Đơn vị thực hiện phản hồi", width: 100 },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100 },
+                    { field: "ProposalDeparmentComments", title: "Đơn vị đề xuất phản hồi", hidden: true },
+                    { field: "ImplementDepartmentComments", title: "Đơn vị thực hiện phản hồi", hidden: true },
+                    { field: "GeneralManagerComments", title: "Chỉ đạo của TGĐ", hidden: true },
                     { command: [{ text: "Phản hồi", click: showComment }], title: " ", width: "85px" }
                 ],
                 editable: false,
                 dataBound: function () {
-                    exportGridToExcel('BeAssignedFinished');
+                    exportGridToExcel('BeAssignedFinished', ["LastProposalDeparmentComment", "LastImplementDepartmentComment", "LastGeneralManagerComment"]);
                 }
             });
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
