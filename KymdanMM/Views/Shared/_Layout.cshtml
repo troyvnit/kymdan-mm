@@ -10,6 +10,7 @@
 
 </head>
 <body>
+    <span id="popupNotification"></span>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -56,9 +57,27 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="success">
+            <h3>#= message #</h3>
+        </div>
+    </script>
     <script type="text/javascript">
+        var popupNotification;
         $(document).ready(function() {
             kendo.culture("en-GB");
+            popupNotification = $("#popupNotification").kendoNotification({
+                position: {
+                    top: 10,
+                    right: 10
+                },
+                autoHideAfter: 5000,
+                stacking: "down",
+                templates: [{
+                    type: "success",
+                    template: $("#successTemplate").html()
+                }]
+            }).data("kendoNotification");
         });
         var exportGridToExcel = function (gridName, ignoreFields) {
             var grid = $('#' + gridName + 'Grid').data("kendoGrid");

@@ -697,6 +697,7 @@ namespace KymdanMM.Controllers
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
         }
 
+        [ValidateInput(false)]
         [HttpPost]
         public ActionResult DeleteMaterial(string materials)
         {

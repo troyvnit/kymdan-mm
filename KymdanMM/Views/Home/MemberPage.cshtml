@@ -134,6 +134,12 @@
                     },
                     total: "total",
                     data: "data"
+                },
+                requestEnd: function (e) {
+                    var response = e.response;
+                    if (response && e.type != 'read') {
+                        popupNotification.show({ message: "Thành công!" }, "success");
+                    }
                 }
             });
 
@@ -301,6 +307,12 @@
                     },
                     total: "total",
                     data: "data"
+                },
+                requestEnd: function (e) {
+                    var response = e.response;
+                    if (response && e.type != 'read') {
+                        popupNotification.show({ message: "Thành công!" }, "success");
+                    }
                 }
             });
 
