@@ -456,6 +456,38 @@
                     dataSource: implementerDepartmentDataSource
                 });
         }
+        
+        function getImplementerDepartments(ids) {
+            var departments = [];
+            $.each(ids.split(','), function () {
+                var departmentName = "";
+                var id = this;
+                $.each(implementerDepartmentDataSource._data, function () {
+                    if (this.Id == id) {
+                        departmentName = this.DepartmentName;
+                    }
+                });
+                departments.push({ id: id, departmentName: departmentName });
+            });
+            return departments;
+        }
+
+        function getImplementerDepartmentNames(ids) {
+            var departmentNames = [];
+            $.each(ids.split(','), function () {
+                var departmentName = "";
+                var id = this;
+                $.each(implementerDepartmentDataSource._data, function () {
+                    if (this.Id == id) {
+                        departmentName = this.DepartmentName;
+                    }
+                });
+                if (departmentName != "") {
+                    departmentNames.push(departmentName);
+                }
+            });
+            return departmentNames.join(', ');
+        }
 
         function getImplementerDisplayName(userName) {
             var displayName = "";
