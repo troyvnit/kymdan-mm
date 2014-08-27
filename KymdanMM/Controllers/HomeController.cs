@@ -672,7 +672,9 @@ namespace KymdanMM.Controllers
                         }
                         implementerUserNames.AddRange(material.ImplementerUserNames.Split(','));
                         material.ImplementerUserNames = string.Join(",", implementerUserNames.Distinct().Where(a => !string.IsNullOrEmpty(a)));
-
+                        material.Description = material.Description.Length >= 3 && material.Description.Substring(material.Description.Length - 3) == "..."
+                            ? existedMaterial.Description
+                            : material.Description;
                         using (var _dbContext = new DatabaseFactory().Get())
                         {
                             var _dbSet = _dbContext.Set<Material>();

@@ -284,7 +284,7 @@
                             ProgressStatusId: { editable: editable, type: "number" },
                             Note: { editable: editable, type: "string" },
                             ImplementerDepartmentId: { type: "number" },
-                            ImplementerDepartmentIds: { type: "string" },
+                            ImplementerDepartmentIds: { type: "string", defaultValue: '@Model.FromHardProposal' == 'True' && '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' ? '@currentUser.DepartmentId' : '' },
                             ImplementerUserName: { type: "string" },
                             ImplementerUserNames: { type: "string" },
                             File: { type: "string" },
@@ -329,7 +329,7 @@
                     { field: "FinishDate", format: '{0:dd/MM/yyyy}', title: "Thời hạn hoàn thành", width: 80, hidden: '@Model.FromHardProposal' != 'True' || '@Thread.CurrentPrincipal.IsInRole("Admin")' == 'True' },
                     { field: "ImplementerDepartmentId", title: "Đơn vị thực hiện", editor: implementerDepartmentEditor, template: "#= getImplementerDepartmentName(ImplementerDepartmentId) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentName(value) #", width: 100, hidden: true },
                     { field: "ImplementerDepartmentIds", title: "Đơn vị thực hiện", editor: implementerDepartmentsEditor, template: "#= getImplementerDepartmentNames(ImplementerDepartmentIds) #", groupHeaderTemplate: "Đơn vị thực hiện: #= getImplementerDepartmentNames(value) #", width: 100, hidden: '@Thread.CurrentPrincipal.IsInRole("Admin")' != 'True' },
-                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
+                    { field: "ImplementerUserName", title: "Người thực hiện", editor: implementerUserEditor, template: "#= getImplementerDisplayName(ImplementerUserName) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayName(value) #", width: 100, hidden: true },
                     { field: "ImplementerUserNames", title: "Người thực hiện", editor: implementerUsersEditor, template: "#= getImplementerDisplayNames(ImplementerUserNames) #", groupHeaderTemplate: "Người thực hiện: #= getImplementerDisplayNames(value) #", width: 100, hidden: '@Model.FromHardProposal' != 'True' },
                     { field: "LastProposalDeparmentComment", template: "<p class='#= LastProposalDeparmentCommentReadClass #'>#= LastProposalDeparmentComment #</p>", title: "Đơn vị đề xuất phản hồi", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
                     { field: "LastGeneralManagerComment", template: "<p class='#= LastGeneralManagerCommentReadClass #'>#= LastGeneralManagerComment #</p>", title: "Chỉ đạo của TGĐ", width: 100, hidden: '@Model.FromHardProposal' == 'True' || '@isNew' == 'True' },
@@ -482,6 +482,9 @@
                     async: false,
                     success: function(result) {
                         if (result.success) {
+                            if (isApprove) {
+                                approveMaterial();
+                            }
                             var id = result.Id;
                             popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
                             $("#Id").val(id);
@@ -502,9 +505,6 @@
                                 } else {
                                     window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
                                 }
-                            }
-                            if (isApprove) {
-                                approveMaterial();
                             }
                         } else {
                             alert('Mã đề xuất đã tồn tại!');
