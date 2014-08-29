@@ -236,7 +236,10 @@
                     },
                     update: {
                         url: "/Home/AddOrUpdateMaterial",
-                        type: "post"
+                        type: "post",
+                        complete: function (e) {
+                            $("#MaterialGrid").data("kendoGrid").dataSource.read();
+                        }
                     },
                     destroy: {
                         url: "/Home/DeleteMaterial",
@@ -482,14 +485,24 @@
                     async: false,
                     success: function(result) {
                         if (result.success) {
-                            if (isApprove) {
-                                approveMaterial();
-                            }
                             var id = result.Id;
                             popupNotification.show({ message: "Lưu đề xuất thành công!" }, "success");
                             $("#Id").val(id);
                             var data = $("#MaterialGrid").data("kendoGrid").dataSource.data()[0];
                             if (data) {
+                                if (isApprove) {
+                                    var ids = [];
+                                    var grid = $("#MaterialGrid").data("kendoGrid");
+                                    grid.select().each(function () {
+                                        var dataItem = grid.dataItem($(this));
+                                        if (dataItem.ImplementerDepartmentIds) {
+                                            ids.push(dataItem.Id);
+                                        }
+                                    });
+                                    if (ids.indexOf(data.Id) > -1) {
+                                        data.Approved = true;
+                                    }
+                                }
                                 data.dirty = true;
                                 $("#MaterialGrid").data("kendoGrid").saveChanges();
                             } else {
@@ -506,6 +519,9 @@
                                     window.location = '@Url.Action("DepartmentManagerPage")' + '#Temp';
                                 }
                             }
+                            //if (isApprove) {
+                            //    approveMaterial();
+                            //}
                         } else {
                             alert('Mã đề xuất đã tồn tại!');
                             $("#submitMaterialProposal").on("click", function() {

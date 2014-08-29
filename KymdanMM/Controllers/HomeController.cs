@@ -583,7 +583,9 @@ namespace KymdanMM.Controllers
                             a =>
                             {
                                 var poster = usersContext.UserProfiles.ToList().FirstOrDefault(u => u.UserName == a.PosterUserName);
-                                return poster != null && model.ProposerDepartmentId == poster.DepartmentId && (model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
+                                return poster != null &&
+                                    (model.ImplementerDepartmentIds.StartsWith(poster.DepartmentId + ",") || model.ImplementerDepartmentIds.Contains("," + poster.DepartmentId + ",") || model.ImplementerDepartmentIds.EndsWith("," + poster.DepartmentId) || model.ImplementerDepartmentIds == poster.DepartmentId.ToString()) &&
+                                    (model.ImplementerUserNames.StartsWith(a.PosterUserName + ",") || model.ImplementerUserNames.Contains("," + a.PosterUserName + ",") || model.ImplementerUserNames.EndsWith("," + a.PosterUserName) || model.ImplementerUserNames == a.PosterUserName) && !Roles.IsUserInRole(a.PosterUserName, "Admin");
                             });
                     materialViewModel.ImplementDepartmentComments = string.Join("<br/> ",
                         implementDepartmentComments.Select(a => a.PosterDisplayName + " (" + a.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss") + "): " + "\"" + a.Content + "\""));
@@ -621,13 +623,21 @@ namespace KymdanMM.Controllers
                     if (!Thread.CurrentPrincipal.IsInRole("Admin") && materialViewModel.ImplementerDepartmentIds.Split(',').Contains(user.DepartmentId.ToString()))
                     {
                         var assignInfo =
-                            materialViewModel.AssignInfoes.FirstOrDefault(a => a.DepartmentId == user.DepartmentId); 
-                        materialViewModel.StartDate =
-                           assignInfo != null ?
-                            assignInfo.StartDate : null;
-                        materialViewModel.FinishDate =
-                           assignInfo != null ?
-                            assignInfo.FinishDate : null;
+                            materialViewModel.AssignInfoes.FirstOrDefault(a => a.DepartmentId == user.DepartmentId);
+                        if (assignInfo != null)
+                        {
+                            materialViewModel.StartDate = assignInfo.StartDate;
+                            materialViewModel.FinishDate = assignInfo.FinishDate;
+                            materialViewModel.ProgressStatusId = assignInfo.ProgressStatusId;
+                            materialViewModel.Finished = assignInfo.Finished;
+                        }
+                        else
+                        {
+                            materialViewModel.StartDate = null;
+                            materialViewModel.FinishDate = null;
+                            materialViewModel.ProgressStatusId = 0;
+                            materialViewModel.Finished = false;
+                        }
                     }
                 }
                 return Json(new { data = materialViewModels, total = materials.TotalItemCount },
@@ -675,6 +685,10 @@ namespace KymdanMM.Controllers
                         material.Description = material.Description.Length >= 3 && material.Description.Substring(material.Description.Length - 3) == "..."
                             ? existedMaterial.Description
                             : material.Description;
+                        if (material.Approved && !existedMaterial.Approved)
+                        {
+                            material.ApproveDate = DateTime.Now;
+                        }
                         using (var _dbContext = new DatabaseFactory().Get())
                         {
                             var _dbSet = _dbContext.Set<Material>();
@@ -685,6 +699,8 @@ namespace KymdanMM.Controllers
                             {
                                 asignInfo.StartDate = material.StartDate;
                                 asignInfo.FinishDate = material.FinishDate;
+                                asignInfo.ProgressStatusId = material.ProgressStatusId;
+                                asignInfo.Finished = material.Finished;
                             }
                             else
                             {
@@ -692,7 +708,9 @@ namespace KymdanMM.Controllers
                                 {
                                     DepartmentId = currentUser.DepartmentId,
                                     StartDate = material.StartDate,
-                                    FinishDate = material.FinishDate
+                                    FinishDate = material.FinishDate,
+                                    ProgressStatusId = material.ProgressStatusId,
+                                    Finished = material.Finished
                                 });
                             }
                             _dbContext.Entry(existedMaterial).State = EntityState.Modified;
