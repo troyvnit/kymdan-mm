@@ -456,7 +456,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
-                                !a.Finished &&
+                                (a.AssignInfoes.Count == 0 || a.AssignInfoes.Count(assign => !assign.Finished) != 0) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -466,7 +466,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId) || a.ImplementerDepartmentIds == user.DepartmentId.ToString()) &&
                                 (usersSameDepartment.Count(username => a.ImplementerUserNames.StartsWith(username + ",") || a.ImplementerUserNames.Contains("," + username + ",") || a.ImplementerUserNames.EndsWith("," + username) || a.ImplementerUserNames == username) <= 0) &&
-                                !a.Finished &&
+                                (a.AssignInfoes.Count(assign => assign.DepartmentId == user.DepartmentId) == 0 || !a.AssignInfoes.FirstOrDefault(assign => assign.DepartmentId == user.DepartmentId).Finished) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -476,7 +476,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId) || a.ImplementerDepartmentIds == user.DepartmentId.ToString()) &&
                                 (usersSameDepartment.Count(username => a.ImplementerUserNames.StartsWith(username + ",") || a.ImplementerUserNames.Contains("," + username + ",") || a.ImplementerUserNames.EndsWith("," + username) || a.ImplementerUserNames == username) > 0) &&
-                                !a.Finished &&
+                                (a.AssignInfoes.Count(assign => assign.DepartmentId == user.DepartmentId) == 0 || !a.AssignInfoes.FirstOrDefault(assign => assign.DepartmentId == user.DepartmentId).Finished) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -485,7 +485,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !string.IsNullOrEmpty(a.ImplementerDepartmentIds) &&
-                                !a.Finished &&
+                                (a.AssignInfoes.Count == 0 || a.AssignInfoes.Count(assign => !assign.Finished) != 0) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -494,7 +494,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.Finished &&
+                                a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -504,7 +504,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerDepartmentIds.StartsWith(user.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + user.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + user.DepartmentId) || a.ImplementerDepartmentIds == user.DepartmentId.ToString()) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.Finished &&
+                                a.AssignInfoes.FirstOrDefault(assign => assign.DepartmentId == user.DepartmentId).Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -514,7 +514,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.Finished &&
+                                a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -523,7 +523,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerUserNames.StartsWith(Thread.CurrentPrincipal.Identity.Name + ",") || a.ImplementerUserNames.Contains("," + Thread.CurrentPrincipal.Identity.Name + ",") || a.ImplementerUserNames.EndsWith("," + Thread.CurrentPrincipal.Identity.Name) || a.ImplementerUserNames == Thread.CurrentPrincipal.Identity.Name) &&
-                                !a.Finished &&
+                                (a.AssignInfoes.Count(assign => assign.DepartmentId == user.DepartmentId) == 0 || !a.AssignInfoes.FirstOrDefault(assign => assign.DepartmentId == user.DepartmentId).Finished) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -532,7 +532,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 (a.ImplementerUserNames.StartsWith(Thread.CurrentPrincipal.Identity.Name + ",") || a.ImplementerUserNames.Contains("," + Thread.CurrentPrincipal.Identity.Name + ",") || a.ImplementerUserNames.EndsWith("," + Thread.CurrentPrincipal.Identity.Name) || a.ImplementerUserNames == Thread.CurrentPrincipal.Identity.Name) &&
-                                a.Finished &&
+                                a.AssignInfoes.FirstOrDefault(assign => assign.DepartmentId == user.DepartmentId).Finished &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -689,35 +689,39 @@ namespace KymdanMM.Controllers
                         {
                             material.ApproveDate = DateTime.Now;
                         }
-                        using (var _dbContext = new DatabaseFactory().Get())
+                        if (!Thread.CurrentPrincipal.IsInRole("Admin"))
                         {
-                            var _dbSet = _dbContext.Set<Material>();
-                            _dbSet.Attach(existedMaterial);
-                            var asignInfo =
-                                existedMaterial.AssignInfoes.FirstOrDefault(a => a.DepartmentId == currentUser.DepartmentId);
-                            if (asignInfo != null)
+                            using (var _dbContext = new DatabaseFactory().Get())
                             {
-                                asignInfo.StartDate = material.StartDate;
-                                asignInfo.FinishDate = material.FinishDate;
-                                asignInfo.ProgressStatusId = material.ProgressStatusId;
-                                asignInfo.Finished = material.Finished;
-                            }
-                            else
-                            {
-                                existedMaterial.AssignInfoes.Add(new AssignInfo
+                                var _dbSet = _dbContext.Set<Material>();
+                                _dbSet.Attach(existedMaterial);
+                                var asignInfo =
+                                    existedMaterial.AssignInfoes.FirstOrDefault(a => a.DepartmentId == currentUser.DepartmentId);
+                                if (asignInfo != null)
                                 {
-                                    DepartmentId = currentUser.DepartmentId,
-                                    StartDate = material.StartDate,
-                                    FinishDate = material.FinishDate,
-                                    ProgressStatusId = material.ProgressStatusId,
-                                    Finished = material.Finished
-                                });
+                                    asignInfo.StartDate = material.StartDate;
+                                    asignInfo.FinishDate = material.FinishDate;
+                                    asignInfo.ProgressStatusId = material.ProgressStatusId;
+                                    asignInfo.Finished = material.Finished;
+                                }
+                                else
+                                {
+                                    existedMaterial.AssignInfoes.Add(new AssignInfo
+                                    {
+                                        DepartmentId = currentUser.DepartmentId,
+                                        StartDate = material.StartDate,
+                                        FinishDate = material.FinishDate,
+                                        ProgressStatusId = material.ProgressStatusId,
+                                        Finished = material.Finished
+                                    });
+                                }
+                                _dbContext.Entry(existedMaterial).State = EntityState.Modified;
+                                _dbContext.Commit();
                             }
-                            _dbContext.Entry(existedMaterial).State = EntityState.Modified;
-                            _dbContext.Commit();
                         }
                     }
                 }
+                material.Finished = material.AssignInfoes.Count(a => !a.Finished) == 0;
                 _materialService.AddOrUpdateMaterial(material);
             }
             return Json(materialViewModels, JsonRequestBehavior.AllowGet);
