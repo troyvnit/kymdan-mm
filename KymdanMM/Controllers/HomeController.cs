@@ -85,6 +85,30 @@ namespace KymdanMM.Controllers
         {
             var material = Mapper.Map<Material, MaterialViewModel>(_materialService.GetMaterial(id));
             var users = usersContext.UserProfiles.ToList();
+            var currentUser = users.FirstOrDefault(a => a.UserName == Thread.CurrentPrincipal.Identity.Name);
+            if (currentUser != null)
+            {
+                if (!Thread.CurrentPrincipal.IsInRole("Admin"))
+                {
+                    var assignInfoViewModel = material.AssignInfoes.FirstOrDefault(
+                        assign =>
+                            assign.DepartmentId == currentUser.DepartmentId);
+                    if (assignInfoViewModel != null)
+                    {
+                        material.ProgressStatusId = assignInfoViewModel.ProgressStatusId;
+                        material.Finished = assignInfoViewModel.Finished;
+                    }
+                    else
+                    {
+                        material.ProgressStatusId = 0;
+                        material.Finished = false;
+                    }
+                }
+                else
+                {
+                    material.Finished = material.AssignInfoes.Any() && material.AssignInfoes.Count(assign => !assign.Finished) == 0;
+                }
+            }
             var departments = _departmentService.GetDepartments();
             var proposerDepartment = _departmentService.GetDepartment(material.ProposerDepartmentId);
             if (proposerDepartment != null)
@@ -494,7 +518,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
+                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -514,7 +538,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
+                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
