@@ -509,7 +509,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !string.IsNullOrEmpty(a.ImplementerDepartmentIds) &&
-                                (a.AssignInfoes.Count == 0 || a.AssignInfoes.Count(assign => !assign.Finished) != 0) &&
+                                (a.AssignInfoes.Count == 0 || a.AssignInfoes.Count(assign => (a.ImplementerDepartmentIds.StartsWith(assign.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + assign.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + assign.DepartmentId) || a.ImplementerDepartmentIds == assign.DepartmentId.ToString()) && !assign.Finished) != 0) &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -518,7 +518,7 @@ namespace KymdanMM.Controllers
                         materials = _materialService.GetMaterials(pageNumber ?? 1, pageSize ?? 1,
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
+                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign =>  (a.ImplementerDepartmentIds.StartsWith(assign.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + assign.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + assign.DepartmentId) || a.ImplementerDepartmentIds == assign.DepartmentId.ToString()) && !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
@@ -538,7 +538,7 @@ namespace KymdanMM.Controllers
                             a => (a.MaterialProposal.Id == id || id == null) &&
                                 a.MaterialProposal.ProposerDepartmentId == user.DepartmentId &&
                                 !string.IsNullOrEmpty(a.ImplementerUserNames) &&
-                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign => !assign.Finished) == 0 &&
+                                a.AssignInfoes.Any() && a.AssignInfoes.Count(assign =>  (a.ImplementerDepartmentIds.StartsWith(assign.DepartmentId + ",") || a.ImplementerDepartmentIds.Contains("," + assign.DepartmentId + ",") || a.ImplementerDepartmentIds.EndsWith("," + assign.DepartmentId) || a.ImplementerDepartmentIds == assign.DepartmentId.ToString()) && !assign.Finished) == 0 &&
                                 a.Approved &&
                                 a.MaterialProposal.Sent &&
                                 !a.Deleted);
