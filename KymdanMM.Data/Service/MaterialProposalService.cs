@@ -47,7 +47,7 @@ namespace KymdanMM.Data.Service
 
         public bool AddOrUpdateMaterialProposal(MaterialProposal materialProposal)
         {
-            if (materialProposal.Id != 0 || _materialProposalRepository.GetAll().Count(a => a.ProposalCode == materialProposal.ProposalCode) > 0)
+            if (materialProposal.Id != 0 || _materialProposalRepository.GetAll().Count(a => a.ProposalCode == materialProposal.ProposalCode && a.Materials.Count(m => !m.Deleted) > 0) > 0)
             {
                 _materialProposalRepository.Update(materialProposal);
                 _unitOfWork.Commit();

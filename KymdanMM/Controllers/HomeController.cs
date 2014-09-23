@@ -358,7 +358,7 @@ namespace KymdanMM.Controllers
             {
                 var currentYear = DateTime.Now.Year.ToString().Substring(2, 2);
                 var currentDepartmentName = _departmentService.GetDepartment(currentUser.DepartmentId).DepartmentName;
-                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().OrderBy(a => a.CreatedDate)
+                var lastMaterialProposal = _materialProposalService.GetMaterialProposals().Where(a => a.Materials.Count(m => !m.Deleted) > 0).OrderBy(a => a.CreatedDate)
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
                         lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
@@ -395,7 +395,7 @@ namespace KymdanMM.Controllers
         public ActionResult AddOrUpdateMaterialProposal(MaterialProposalViewModel materialProposalViewModel, string materials)
         {
             var existed =
-                _materialProposalService.GetMaterialProposals().FirstOrDefault(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", ""));
+                _materialProposalService.GetMaterialProposals().FirstOrDefault(a => a.ProposalCode == materialProposalViewModel.ProposalCode.ToUpper().Replace("_", "") && a.Materials.Count(m => !m.Deleted) > 0);
             if (existed != null)
             {
                 if (existed.Id == materialProposalViewModel.Id)
