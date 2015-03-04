@@ -362,10 +362,16 @@ namespace KymdanMM.Controllers
                     .LastOrDefault(a => a.ProposalCode.Contains(currentYear + "/" + currentDepartmentName));
                     var currentProposalCodeSplited = lastMaterialProposal != null ?
                         lastMaterialProposal.ProposalCode.Split('/') : new [] { currentYear , currentDepartmentName, "00000"};
+                int num;
+                var result = Int32.TryParse(currentProposalCodeSplited[2], out num);
+                if (!result)
+                {
+                    num = 0;
+                }
                 var materialProposal = id != null ? _materialProposalService.GetMaterialProposal((int)id) : 
                     new MaterialProposal
                     {
-                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (Int32.Parse(currentProposalCodeSplited[2]) + 1) : ""
+                        ProposalCode = fromHardProposal != true || Thread.CurrentPrincipal.IsInRole("Admin") ? currentProposalCodeSplited[0] + "/" + currentProposalCodeSplited[1] + "/" + (num + 1) : ""
                     };
                 var approved = materialProposal.Materials.Count(m => !m.Approved) == 0;
                 var materialProposalViewModel = Mapper.Map<MaterialProposal, MaterialProposalViewModel>(materialProposal);
