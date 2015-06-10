@@ -646,9 +646,9 @@ namespace KymdanMM.Controllers
                         materialViewModel.LastGeneralManagerComment = "";
                     }
 
-                    materialViewModel.Description = materialViewModel.Description.Length > 50
-                            ? materialViewModel.Description.Substring(0, 50) + "..."
-                            : materialViewModel.Description;
+                    //materialViewModel.Description = materialViewModel.Description.Length > 50
+                    //        ? materialViewModel.Description.Substring(0, 50) + "..."
+                    //        : materialViewModel.Description;
 
                     if (!Thread.CurrentPrincipal.IsInRole("Admin") && materialViewModel.ImplementerDepartmentIds.Split(',').Contains(user.DepartmentId.ToString()))
                     {
